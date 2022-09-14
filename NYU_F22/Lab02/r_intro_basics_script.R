@@ -62,4 +62,4 @@ plot(x, y)
 # visualize our data see (https://www.autodesk.com/research/publications/same-stats-different-graphs)
 #
 # To view HTML version see here:
-# https://www747.github.io/NYU/Lab_2/r_intro_basics.html
+# https://wwwedu.github.io/NYU_F22/Lab02/r_intro_basics.html
