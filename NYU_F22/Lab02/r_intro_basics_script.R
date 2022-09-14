@@ -53,7 +53,7 @@ paste0("Vector X ",my.table[4,1])
 paste0("Vector Y ",my.table[4,2])
 
 # Basic plot:
-
+windows()
 plot(x, y)
 # plot(mydata)  # Since only two variables can just use this
 
