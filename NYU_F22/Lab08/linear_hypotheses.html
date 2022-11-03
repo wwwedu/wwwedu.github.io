@@ -13197,7 +13197,7 @@ $$
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Inferences-based-on-unrestricted-regression-estimation">Inferences based on unrestricted regression estimation<a class="anchor-link" href="#Inferences-based-on-unrestricted-regression-estimation">&#182;</a></h3><p>We consider testing a set of $J$ linear restrictions stated in the null hypothesis</p>
+<h3 id="Inferences-based-on-the-unrestricted-regression-estimates">Inferences based on the unrestricted regression estimates<a class="anchor-link" href="#Inferences-based-on-the-unrestricted-regression-estimates">&#182;</a></h3><p>We consider testing a set of $J$ linear restrictions stated in the null hypothesis</p>
 $$
 H_{0}: \mathbf{R} \beta-\mathbf{q}=\mathbf{0}
 $$<p>against the alternative hypothesis,</p>
@@ -13238,7 +13238,7 @@ $$</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="The-restricted-regression-approach">The restricted regression approach<a class="anchor-link" href="#The-restricted-regression-approach">&#182;</a></h3><p>The preceding is a kind of postmortem examination because we try to find out whether the linear restriction is satisfied after estimating the "unrestricted" regression. A direct approach would be to incorporate the restriction into the estimating procedure at the outset.</p>
+<h3 id="Restricted-vs.-unrestricted-regression-comparison">Restricted vs. unrestricted regression comparison<a class="anchor-link" href="#Restricted-vs.-unrestricted-regression-comparison">&#182;</a></h3><p>The preceding is a kind of postmortem examination because we try to find out whether the linear restriction is satisfied after estimating the "unrestricted" regression. A direct approach would be to incorporate the restriction into the estimating procedure at the outset.</p>
 <p>Alternatively,
 $$
 F[J, n-K \mid \mathbf{X}]=\frac{\left(\operatorname{RSS}_{R}-\operatorname{RSS}_{U R}\right) / J}{\operatorname{RSS}_{U R} /(n-K)}=\frac{\left(R_{U R}^{2}-R_{R}^{2}\right) / J}{\left(1-R_{U R}^{2}\right) /(n-K)}
@@ -13263,7 +13263,7 @@ $$
 \beta_{2}+\beta_{3}=1
 $$<p>which is an example of a linear equality restriction.
 How does one find out if there are constant returns to scale, that is, if the restriction is valid? There are two approaches.</p>
-<h3 id="t-test-approach">t-test approach<a class="anchor-link" href="#t-test-approach">&#182;</a></h3><p>Per <a href="http://pages.stern.nyu.edu/~wgreene/Text/Greene-EA-7&amp;8ed-Appendices.pdf">Greene Appendix</a> the variance of the sum of two random variables is:</p>
+<h3 id="Based-on-unrestricted-regression-estimation">Based on unrestricted regression estimation<a class="anchor-link" href="#Based-on-unrestricted-regression-estimation">&#182;</a></h3><p>Per <a href="http://pages.stern.nyu.edu/~wgreene/Text/Greene-EA-7&amp;8ed-Appendices.pdf">Greene Appendix</a> the variance of the sum of two random variables is:</p>
 <center> <img src="image7.png" width="500" /> </center><p>Therefore,</p>
 \begin{aligned}
 t &amp;=\frac{\left(\hat{\beta}_{2}+\hat{\beta}_{3}\right)-\left(\beta_{2}+\beta_{3}\right)}{\operatorname{se}\left(\hat{\beta}_{2}+\hat{\beta}_{3}\right)} \\
@@ -13281,7 +13281,7 @@ $$$$
 0 &amp; 10 &amp; 80
 \end{array}
 \right]
-$$<p>Test $H_{0}: \beta_2 + \beta_3=1$ versus $H_{a}: \beta_2 + \beta_3 \neq 0$</p>
+$$<p>Test $H_{0}: \beta_2 + \beta_3=1$ versus $H_{a}: \beta_2 + \beta_3 \neq 1$</p>
 
 </div>
 </div>
@@ -13289,7 +13289,7 @@ $$<p>Test $H_{0}: \beta_2 + \beta_3=1$ versus $H_{a}: \beta_2 + \beta_3 \neq 0$<
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Restricted-regression-approach-(F-test):">Restricted regression approach (F-test):<a class="anchor-link" href="#Restricted-regression-approach-(F-test):">&#182;</a></h3><p>In the present example, this procedure can be done easily. We see that
+<h3 id="Restricted-vs.-unrestricted-regression">Restricted vs. unrestricted regression<a class="anchor-link" href="#Restricted-vs.-unrestricted-regression">&#182;</a></h3><p>In the present example, this procedure can be done easily. We see that
 $\beta_{2}=1-\beta_{3}$ or $\beta_{3}=1-\beta_{2}$</p>
 <p>Therefore, using either of these equalities, we can eliminate one of the $\beta$ coefficients in and estimate the resulting equation. Thus, if we use, we can write the Cobb-Douglas production function as</p>
 $$
