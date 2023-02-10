@@ -13114,8 +13114,8 @@ $( document ).ready(function(){
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Intro:-The-Grunfeld-dataset">Intro: The Grunfeld dataset<a class="anchor-link" href="#Intro:-The-Grunfeld-dataset">&#182;</a></h2><p>To illustrate the basics of SUR analysis with R we will use a subset of the Grunfeld data set by Arnold Zellner in his classic 1962 paper on seemingly unrelated regressions. Grunfeld originally used the dataset in his 1958 PhD thesis <em>The determinants of corporate investment.</em> at the  University of Chicago.</p>
-<p>Our subset includes just two of the 10 firms, US (US Steel) and DM (Diamond Match) observed over the period 1935 to 1954. The problem is to find the determinants of investment by a firm, $i n v_{i t}$ among regressors such as the value of the firm, $v_{i t}$, and capital stock $k_{i t}$.</p>
+<h2 id="Intro:-The-Grunfeld-dataset">Intro: The Grunfeld dataset<a class="anchor-link" href="#Intro:-The-Grunfeld-dataset">&#182;</a></h2><p>To illustrate the basics of SUR analysis with R we will use a subset of the Grunfeld dataset. This is the data made famous by Arnold Zellner with his classic 1962 paper on seemingly unrelated regressions. Grunfeld originally used the dataset in his 1958 PhD thesis <em>The determinants of corporate investment.</em> at the  University of Chicago.</p>
+<p>Our subset includes just two firms, US (US Steel) and DM (Diamond Match) observed over the period 1935 to 1954. The problem is to find the determinants of investment by a firm, $i n v_{i t}$ among regressors such as the value of the firm, $v_{i t}$, and capital stock $k_{i t}$.</p>
 <p>The Grunfeld Investment model is as follows:
 $$
 inv_{i t}=\beta_{0 i}+\beta_{1 i} v_{i t}+\beta_{2 i} k_{i t}+\epsilon_{i t}
@@ -13126,7 +13126,7 @@ $$</p>
 {v}_{{i t}}&amp;=\text { market value of firm } {i} \text { at } {t} \\ 
 {k}_{{i t}} &amp;=\text { capital stock of firm } {i} \text { at } {t} . 
 \end{aligned}$</p>
-<p>If you'd like to play with the full dataset (10 firms) you can access it <a href="http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF10-4.csv">here</a>.</p>
+<p>If you'd like to play with the full dataset you can access it <a href="http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF10-4.csv">here</a> or <a href="https://www.zeileis.org/grunfeld/Grunfeld.csv">here</a>. More on this dataset <a href="https://www.zeileis.org/grunfeld/">here</a></p>
 
 </div>
 </div>
@@ -13640,7 +13640,7 @@ height=450
 <div class="output_text output_subarea ">
 <pre>
 Model Formula: inv ~ val + cap
-&lt;environment: 0x0000000041d80190&gt;
+&lt;environment: 0x0000000041cf9b00&gt;
 
 Coefficients:
    (Intercept)       val     cap
@@ -13669,7 +13669,7 @@ US   -49.19832 0.1748560 0.38964
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="n">myOLS.sysfit</span> <span class="o">&lt;-</span> <span class="nf">systemfit</span><span class="p">(</span><span class="n">inv</span> <span class="o">~</span> <span class="n">val</span> <span class="o">+</span> <span class="n">cap</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="s">&quot;OLS&quot;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">my.data</span><span class="p">)</span>
-<span class="c1">#summary(myOLS.sysfit)</span>
+<span class="c1"># summary(myOLS.sysfit)$coeff</span>
 <span class="nf">get_estimates</span><span class="p">(</span><span class="n">myOLS.sysfit</span><span class="p">)</span>
 </pre></div>
 
@@ -13715,6 +13715,64 @@ US   -49.19832 0.1748560 0.38964
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<p>We could also compute the coefficients manually.  This also highlights the data matrix arrangement in the SUR model:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">X1</span> <span class="o">&lt;-</span> <span class="nf">cbind</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="n">US.data</span><span class="o">$</span><span class="n">val</span><span class="p">,</span> <span class="n">US.data</span><span class="o">$</span><span class="n">cap</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">)</span>  <span class="c1">#top half of the matrix</span>
+<span class="n">X2</span> <span class="o">&lt;-</span> <span class="nf">cbind</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">1</span><span class="p">,</span> <span class="n">DM.data</span><span class="o">$</span><span class="n">val</span><span class="p">,</span> <span class="n">DM.data</span><span class="o">$</span><span class="n">cap</span><span class="p">)</span>  <span class="c1">#bottome half</span>
+
+<span class="n">X</span> <span class="o">&lt;-</span> <span class="nf">rbind</span><span class="p">(</span><span class="n">X1</span><span class="p">,</span><span class="n">X2</span><span class="p">)</span>                               <span class="c1">#bind the two halfs</span>
+<span class="n">y</span> <span class="o">&lt;-</span> <span class="n">my.raw.data</span><span class="o">$</span><span class="n">inv</span>                            <span class="c1">#y vector</span>
+
+<span class="n">betas.ols</span> <span class="o">&lt;-</span> <span class="nf">solve</span><span class="p">(</span><span class="nf">t</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">%*%</span> <span class="n">X</span><span class="p">)</span> <span class="o">%*%</span> <span class="nf">t</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">%*%</span> <span class="n">y</span>
+<span class="n">betas.ols</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<table class="dataframe">
+<caption>A matrix: 6 × 1 of type dbl</caption>
+<tbody>
+	<tr><td>-49.198321862</td></tr>
+	<tr><td>  0.174856015</td></tr>
+	<tr><td>  0.389641889</td></tr>
+	<tr><td>  0.161518567</td></tr>
+	<tr><td>  0.004573432</td></tr>
+	<tr><td>  0.437369190</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Checking-residuals-covariance-matrix">Checking residuals covariance matrix<a class="anchor-link" href="#Checking-residuals-covariance-matrix">&#182;</a></h2>
 </div>
 </div>
@@ -13729,7 +13787,7 @@ US   -49.19832 0.1748560 0.38964
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="nf">summary</span><span class="p">(</span><span class="n">myOLS.sysfit</span><span class="p">)</span><span class="o">$</span><span class="n">residCov</span>
@@ -13771,7 +13829,7 @@ US   -49.19832 0.1748560 0.38964
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="nf">summary</span><span class="p">(</span><span class="n">myOLS.sysfit</span><span class="p">)</span><span class="o">$</span><span class="n">residCor</span>
@@ -13814,6 +13872,94 @@ US   -49.19832 0.1748560 0.38964
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<p>For some practice with Kronecker products in R, we may want to compute the estimated variance covariance matrix $\hat{\Omega}$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">N</span> <span class="o">&lt;-</span> <span class="nf">length</span><span class="p">(</span><span class="n">DM.data</span><span class="o">$</span><span class="n">inv</span><span class="p">)</span>
+<span class="n">sigma_hat</span> <span class="o">&lt;-</span> <span class="nf">summary</span><span class="p">(</span><span class="n">myOLS.sysfit</span><span class="p">)</span><span class="o">$</span><span class="n">residCov</span>
+<span class="n">omega_hat</span> <span class="o">&lt;-</span> <span class="n">sigma_hat</span> <span class="o">%x%</span> <span class="nf">diag</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="c1"># Kronecker product</span>
+<span class="n">omega_hat</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<table class="dataframe">
+<caption>A matrix: 40 × 40 of type dbl</caption>
+<tbody>
+	<tr><td> 1.178043</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 1.178043</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 1.178043</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 1.178043</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 1.178043</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 1.178043</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 1.178043</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 1.178043</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 1.178043</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 1.178043</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>  73.45838</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>  73.45838</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>  73.45838</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>  73.45838</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>  73.45838</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>  73.45838</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>  73.45838</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>  73.45838</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>  73.45838</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>  73.45838</td></tr>
+	<tr><td>73.458384</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td>73.458384</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td>73.458384</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>73.458384</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>73.458384</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>73.458384</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>73.458384</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>73.458384</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>73.458384</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>73.458384</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>9299.60405</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>9299.60405</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>9299.60405</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>9299.60405</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>9299.60405</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>9299.60405</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>9299.60405</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>9299.60405</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>9299.60405</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>9299.60405</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Tests-for-cross-sectional-dependence">Tests for cross-sectional dependence<a class="anchor-link" href="#Tests-for-cross-sectional-dependence">&#182;</a></h2>
 </div>
 </div>
@@ -13828,7 +13974,7 @@ US   -49.19832 0.1748560 0.38964
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="nf">pcdtest</span><span class="p">(</span><span class="n">myOLS.pvcm</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&quot;lm&quot;</span><span class="p">))</span>
@@ -13867,7 +14013,7 @@ alternative hypothesis: cross-sectional dependence
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="nf">pcdtest</span><span class="p">(</span><span class="n">myOLS.pvcm</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&quot;cd&quot;</span><span class="p">))</span>
@@ -13921,11 +14067,11 @@ alternative hypothesis: cross-sectional dependence
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="n">mySUR.sysfit</span> <span class="o">&lt;-</span> <span class="nf">systemfit</span><span class="p">(</span><span class="n">inv</span> <span class="o">~</span> <span class="n">val</span> <span class="o">+</span> <span class="n">cap</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="s">&quot;SUR&quot;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">my.data</span><span class="p">)</span>
-<span class="c1"># summary(mySUR.sysfit)</span>
+<span class="c1"># summary(mySUR.sysfit)$coeff</span>
 <span class="nf">get_estimates</span><span class="p">(</span><span class="n">mySUR.sysfit</span><span class="p">)</span>
 </pre></div>
 
@@ -13993,7 +14139,7 @@ alternative hypothesis: cross-sectional dependence
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="n">my.Pooled.model</span> <span class="o">&lt;-</span> <span class="nf">plm</span><span class="p">(</span><span class="n">inv</span> <span class="o">~</span> <span class="n">val</span> <span class="o">+</span> <span class="n">cap</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">my.data</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="s">&quot;pooling&quot;</span><span class="p">)</span>
@@ -14038,7 +14184,7 @@ alternative hypothesis: cross-sectional dependence
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="nf">pooltest</span><span class="p">(</span><span class="n">my.Pooled.model</span><span class="p">,</span> <span class="n">myOLS.pvcm</span><span class="p">)</span>
