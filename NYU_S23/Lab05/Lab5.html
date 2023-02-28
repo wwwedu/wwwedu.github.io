@@ -14042,7 +14042,9 @@ These covariates are defined as follows:</p>
 <div class=" highlight hl-r"><pre><span></span><span class="c1"># estimate all seven models</span>
 <span class="n">fatalities_mod1</span> <span class="o">&lt;-</span> <span class="nf">lm</span><span class="p">(</span><span class="n">fatal_rate</span> <span class="o">~</span> <span class="n">beertax</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">Fatalities</span><span class="p">)</span>
 
-<span class="n">fatalities_mod2</span> <span class="o">&lt;-</span> <span class="nf">plm</span><span class="p">(</span><span class="n">fatal_rate</span> <span class="o">~</span> <span class="n">beertax</span> <span class="o">+</span> <span class="n">state</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">Fatalities</span><span class="p">)</span>
+<span class="n">fatalities_mod2</span> <span class="o">&lt;-</span> <span class="nf">plm</span><span class="p">(</span><span class="n">fatal_rate</span> <span class="o">~</span> <span class="n">beertax</span> <span class="o">+</span> <span class="n">state</span><span class="p">,</span>
+                       <span class="n">index</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&quot;state&quot;</span><span class="p">,</span><span class="s">&quot;year&quot;</span><span class="p">),</span>
+                       <span class="n">model</span><span class="o">=</span><span class="s">&#39;within&#39;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">Fatalities</span><span class="p">)</span>
 
 <span class="n">fatalities_mod3</span> <span class="o">&lt;-</span> <span class="nf">plm</span><span class="p">(</span><span class="n">fatal_rate</span> <span class="o">~</span> <span class="n">beertax</span> <span class="o">+</span> <span class="n">state</span> <span class="o">+</span> <span class="n">year</span><span class="p">,</span>
                        <span class="n">index</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&quot;state&quot;</span><span class="p">,</span><span class="s">&quot;year&quot;</span><span class="p">),</span>
@@ -14093,7 +14095,7 @@ These covariates are defined as follows:</p>
 <div class=" highlight hl-r"><pre><span></span><span class="n">models</span> <span class="o">&lt;-</span> <span class="nf">list</span><span class="p">(</span><span class="n">OLS</span> <span class="o">=</span> <span class="n">fatalities_mod1</span><span class="p">,</span> <span class="n">State.FE</span> <span class="o">=</span> <span class="n">fatalities_mod2</span><span class="p">,</span> <span class="n">TWFE</span> <span class="o">=</span> <span class="n">fatalities_mod3</span><span class="p">,</span> 
                <span class="n">TWFE.Full</span> <span class="o">=</span> <span class="n">fatalities_mod4</span><span class="p">,</span> <span class="n">TWFE.No.Econ</span> <span class="o">=</span> <span class="n">fatalities_mod5</span><span class="p">,</span> <span class="n">TWFE.82.88</span> <span class="o">=</span> <span class="n">fatalities_mod6</span><span class="p">)</span>
 
-<span class="nf">modelsummary</span><span class="p">(</span><span class="n">models</span><span class="p">,</span><span class="n">output</span> <span class="o">=</span> <span class="s">&quot;jupyter&quot;</span><span class="p">,</span>
+<span class="nf">modelsummary</span><span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="s">&quot;jupyter&quot;</span><span class="p">,</span>
         <span class="n">stars</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span>
         <span class="n">title</span> <span class="o">=</span><span class="s">&quot;Panel Regression Models of Traffic Fatalities due to Drunk Driving&quot;</span><span class="p">)</span>
 </pre></div>
@@ -14507,6 +14509,71 @@ These covariates are defined as follows:</p>
 <li><p><strong>Specification (6) reveals that reducing the amount of available information (we only use 95 observations for the period 1982 and 1988 here) inflates standard errors but does not lead to drastic changes in coefficient estimate.</strong></p>
 </li>
 </ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Hausman-test:-fixed-effects-vs.-random-effects">Hausman test: fixed effects vs. random effects<a class="anchor-link" href="#Hausman-test:-fixed-effects-vs.-random-effects">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To decide between fixed or random effects you can run a Hausman test where the null hypothesis is that the preferred model is random effects vs. the alternative the fixed effects (see Greene). It basically tests whether the unique errors ($u_i$) are correlated with the regressors, the null hypothesis is they are not.  Technically, the Hausman test null hypothesis is: "The random effects model is more efficient."</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">fixed</span> <span class="o">&lt;-</span> <span class="nf">plm</span><span class="p">(</span><span class="n">fatal_rate</span> <span class="o">~</span> <span class="n">beertax</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s">&quot;within&quot;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">Fatalities</span><span class="p">)</span>
+
+<span class="n">random</span> <span class="o">&lt;-</span> <span class="nf">plm</span><span class="p">(</span><span class="n">fatal_rate</span> <span class="o">~</span> <span class="n">beertax</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s">&quot;random&quot;</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">Fatalities</span><span class="p">)</span>
+<span class="nf">phtest</span><span class="p">(</span><span class="n">fixed</span><span class="p">,</span> <span class="n">random</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea ">
+<pre>
+	Hausman Test
+
+data:  fatal_rate ~ beertax
+chisq = 18.353, df = 1, p-value = 1.835e-05
+alternative hypothesis: one model is inconsistent
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This indicates that the fixed effects model is preferred in our case.</p>
 
 </div>
 </div>
