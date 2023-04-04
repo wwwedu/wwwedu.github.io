@@ -13612,75 +13612,6 @@ over time.</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Note that we get the same results if we first detrend the dependent and independent variables and run the regression on the detrended data.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="n">mdl3</span> <span class="o">&lt;-</span> <span class="nf">dynlm</span><span class="p">(</span><span class="nf">log</span><span class="p">(</span><span class="n">invpc</span><span class="p">)</span> <span class="o">~</span> <span class="nf">trend</span><span class="p">(</span><span class="n">tsdata</span><span class="p">),</span> <span class="n">data</span><span class="o">=</span><span class="n">tsdata</span><span class="p">)</span>
-<span class="n">mdl4</span> <span class="o">&lt;-</span> <span class="nf">dynlm</span><span class="p">(</span><span class="nf">log</span><span class="p">(</span><span class="n">price</span><span class="p">)</span> <span class="o">~</span> <span class="nf">trend</span><span class="p">(</span><span class="n">tsdata</span><span class="p">),</span> <span class="n">data</span><span class="o">=</span><span class="n">tsdata</span><span class="p">)</span>
-
-<span class="n">invpc_detrended</span> <span class="o">&lt;-</span> <span class="n">mdl3</span><span class="o">$</span><span class="n">res</span>
-<span class="n">price_detrended</span> <span class="o">&lt;-</span> <span class="n">mdl4</span><span class="o">$</span><span class="n">res</span>
-
-<span class="n">mdl5</span> <span class="o">&lt;-</span> <span class="nf">dynlm</span><span class="p">(</span><span class="n">invpc_detrended</span> <span class="o">~</span> <span class="n">price_detrended</span><span class="p">)</span>
-<span class="nf">stargazer</span><span class="p">(</span><span class="n">mdl3</span><span class="p">,</span><span class="n">mdl4</span><span class="p">,</span><span class="n">mdl5</span><span class="p">,</span> <span class="n">type</span><span class="o">=</span><span class="s">&quot;text&quot;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>
-===================================================================
-                                       Dependent variable:         
-                              -------------------------------------
-                              log(invpc) log(price) invpc_detrended
-                                 (1)        (2)           (3)      
--------------------------------------------------------------------
-trend(tsdata)                  0.008***   0.004***                 
-                               (0.002)    (0.0004)                 
-                                                                   
-price_detrended                                         -0.381     
-                                                        (0.670)    
-                                                                   
-Constant                      -0.841***  -0.188***      -0.000     
-                               (0.045)    (0.011)       (0.022)    
-                                                                   
--------------------------------------------------------------------
-Observations                      42         42           42       
-R2                              0.335      0.729         0.008     
-Adjusted R2                     0.319      0.722        -0.017     
-Residual Std. Error (df = 40)   0.142      0.033         0.142     
-F Statistic (df = 1; 40)      20.190***  107.566***      0.323     
-===================================================================
-Note:                                   *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Computing-R-Squared-when-the-dependent-variable-is-trending">Computing R-Squared when the dependent variable is trending<a class="anchor-link" href="#Computing-R-Squared-when-the-dependent-variable-is-trending">&#182;</a></h3><p>$R$-squareds in time series regressions are often very high, especially compared with typical $R$-squareds for cross-sectional data. Does this mean that we learn more about factors affecting $y$ from time series data? Not necessarily. On one hand, time series data often come in aggregate form (such as average hourly wages in the U.S. economy), and aggregates are often easier to explain than outcomes on individuals, families, or firms, which is often the nature of cross-sectional data. But the usual and adjusted $R$-squareds for time series regressions can be artificially high when the dependent variable is trending. Remember that $R^{2}$ is a measure of how large the error variance is relative to the variance of $y$. The formula for the adjusted $R$-squared shows this directly:</p>
 $$
 \bar{R}^{2}=1-\left(\hat{\sigma}_{u}^{2} / \hat{\sigma}_{y}^{2}\right),
@@ -13813,7 +13744,7 @@ Note:                          *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01
 
 
 <div class="output_png output_subarea ">
-<img src="Lab8_files/Lab8_24_0.png"
+<img src="Lab8_files/Lab8_22_0.png"
 width=750
 height=750
 >
@@ -13829,7 +13760,7 @@ height=750
 
 
 <div class="output_png output_subarea ">
-<img src="Lab8_files/Lab8_24_1.png"
+<img src="Lab8_files/Lab8_22_1.png"
 width=750
 height=750
 >
@@ -13950,7 +13881,7 @@ $$
 
 
 <div class="output_png output_subarea ">
-<img src="Lab8_files/Lab8_26_1.png"
+<img src="Lab8_files/Lab8_24_1.png"
 width=750
 height=900
 >
@@ -14027,7 +13958,7 @@ height=900
 
 
 <div class="output_png output_subarea ">
-<img src="Lab8_files/Lab8_30_0.png"
+<img src="Lab8_files/Lab8_28_0.png"
 width=450
 height=450
 >
@@ -14200,6 +14131,14 @@ p-value = 0.04986
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To model two cointegrated time series, you would typically use a Vector Error Correction Model (VECM). A VECM is a type of multivariate time series model that allows for the modeling of both the short-run dynamics of the series and the long-run equilibrium relationship between them.  The VECM specifies the dynamics of each series as a function of its own lags, the lags of the other series, and an error correction term that captures the deviations from the long-run equilibrium relationship.</p>
+
+</div>
+</div>
 </div>
     </div>
   </div>
