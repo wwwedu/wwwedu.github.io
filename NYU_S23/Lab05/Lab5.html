@@ -14509,6 +14509,7 @@ These covariates are defined as follows:</p>
 <li><p><strong>Specification (6) reveals that reducing the amount of available information (we only use 95 observations for the period 1982 and 1988 here) inflates standard errors but does not lead to drastic changes in coefficient estimate.</strong></p>
 </li>
 </ul>
+<p>We have not found evidence that severe punishments and increasing the minimum drinking age reduce traffic fatalities due to drunk driving. Nonetheless, there seems to be a negative effect of alcohol taxes on traffic fatalities which, however, is estimated imprecisely and cannot be interpreted as the causal effect of interest as there still may be a bias. The issue is that there may be omitted variables that differ across states and change over time and this bias remains even though we use a panel approach that controls for entity specific and time invariant unobservables.</p>
 
 </div>
 </div>
@@ -14574,6 +14575,22 @@ alternative hypothesis: one model is inconsistent
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>This indicates that the fixed effects model is preferred in our case.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Fixed-vs-random-effects-vs-pooling">Fixed vs random effects vs pooling<a class="anchor-link" href="#Fixed-vs-random-effects-vs-pooling">&#182;</a></h3><p>Deciding between using fixed  or random effects not easy.  In the case you have covariates it is more intuitive: If we are truly convinced that the regressors and the fixed effect are correlated (i.e. the endogenous case), then we do not have much choice but to use the fixed effects estimator.</p>
+<p>But this has the disadvantages of a) not being able to estimate the coefficients on the time-invariant variables, and b) being inefficient if in fact the regressors and the fixed effect are not correlated.</p>
+<p>The main advantage of random effects over using OLS on a cross-section is that it is more efficient. But it does not address the endogeneity issue in any way.</p>
+<p>For more intuition of the  difference see <a href="https://stats.stackexchange.com/questions/4700/what-is-the-difference-between-fixed-effect-random-effect-and-mixed-effect-mode/4702#4702">this discussion</a>:</p>
+<p>"The most important practical difference between the two is this: Random effects are estimated with partial pooling, while fixed effects are not.</p>
+<p>Partial pooling means that, if you have few data points in a group, the group's effect estimate will be based partially on the more abundant data from other groups. This can be a nice compromise between estimating an effect by completely pooling all groups, which masks group-level variation, and estimating an effect for all groups completely separately, which could give poor estimates for low-sample groups.</p>
+<p>To motivate the random effects model, ask yourself: why would you partial pool? Probably because you think the little subgroups are part of some bigger group with a common mean effect. The subgroup means can deviate a bit from the big group mean, but not by an arbitrary amount. To formalize that idea, we posit that the deviations follow a distribution, typically Gaussian. That's where the "random" in random effects comes in: we're assuming the deviations of subgroups from a parent follow the distribution of a random variable.</p>
+<p>Suppose you want to estimate average US household income by ZIP code. You have a large dataset containing observations of households' incomes and ZIP codes. Some ZIP codes are well represented in the dataset, but others have only a couple households.</p>
+<p>For your initial model you would most likely take the mean income in each ZIP. This will work well when you have lots of data for a ZIP, but the estimates for your poorly sampled ZIPs will suffer from high variance. You can mitigate this by using a shrinkage estimator (aka partial pooling), which will push extreme values towards the mean income across all ZIP codes."</p>
 
 </div>
 </div>
