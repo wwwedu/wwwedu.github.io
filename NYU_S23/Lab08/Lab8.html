@@ -13636,10 +13636,13 @@ $$<p>This $R$-squared better reflects how well $x_{t 1}$ explains $y_{t}$ becaus
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="n">mdl6</span> <span class="o">&lt;-</span> <span class="nf">dynlm</span><span class="p">(</span><span class="n">invpc_detrended</span> <span class="o">~</span> <span class="nf">log</span><span class="p">(</span><span class="n">price</span><span class="p">)</span> <span class="o">+</span> <span class="nf">trend</span><span class="p">(</span><span class="n">tsdata</span><span class="p">),</span> <span class="n">data</span><span class="o">=</span><span class="n">tsdata</span><span class="p">)</span>
+<div class=" highlight hl-r"><pre><span></span><span class="n">mdl3</span> <span class="o">&lt;-</span> <span class="nf">dynlm</span><span class="p">(</span><span class="nf">log</span><span class="p">(</span><span class="n">invpc</span><span class="p">)</span> <span class="o">~</span> <span class="nf">trend</span><span class="p">(</span><span class="n">tsdata</span><span class="p">),</span> <span class="n">data</span><span class="o">=</span><span class="n">tsdata</span><span class="p">)</span>
+<span class="n">invpc_detrended</span> <span class="o">&lt;-</span> <span class="n">mdl3</span><span class="o">$</span><span class="n">res</span>
+
+<span class="n">mdl6</span> <span class="o">&lt;-</span> <span class="nf">dynlm</span><span class="p">(</span><span class="n">invpc_detrended</span> <span class="o">~</span> <span class="nf">log</span><span class="p">(</span><span class="n">price</span><span class="p">)</span> <span class="o">+</span> <span class="nf">trend</span><span class="p">(</span><span class="n">tsdata</span><span class="p">),</span> <span class="n">data</span><span class="o">=</span><span class="n">tsdata</span><span class="p">)</span>
 <span class="nf">stargazer</span><span class="p">(</span><span class="n">mdl2</span><span class="p">,</span> <span class="n">mdl6</span><span class="p">,</span> <span class="n">type</span><span class="o">=</span><span class="s">&quot;text&quot;</span><span class="p">)</span>
 </pre></div>
 
@@ -13698,7 +13701,7 @@ Note:                          *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="nf">data</span><span class="p">(</span><span class="s">&quot;usa&quot;</span><span class="p">)</span>
@@ -13788,7 +13791,7 @@ $$
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="n">N</span> <span class="o">&lt;-</span> <span class="m">500</span>
@@ -13918,7 +13921,7 @@ height=900
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="bp">T</span> <span class="o">&lt;-</span> <span class="m">1000</span>
@@ -13972,7 +13975,7 @@ height=450
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="n">spurious.ols</span> <span class="o">&lt;-</span> <span class="nf">lm</span><span class="p">(</span><span class="n">y</span> <span class="o">~</span> <span class="n">x</span><span class="p">)</span>
@@ -14041,7 +14044,7 @@ Let us apply this method to determine the state of cointegration between the ser
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="n">b</span> <span class="o">&lt;-</span> <span class="n">usa.ts.df</span><span class="o">$</span><span class="n">b</span>
@@ -14094,7 +14097,7 @@ alternative hypothesis: stationary
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="n">bfx</span> <span class="o">&lt;-</span> <span class="nf">as.matrix</span><span class="p">(</span><span class="nf">cbind</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">f</span><span class="p">),</span> <span class="n">demean</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">)</span>
