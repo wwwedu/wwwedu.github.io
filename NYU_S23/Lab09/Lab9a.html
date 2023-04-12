@@ -14276,8 +14276,8 @@ $$<p>Since both the mean and variance of the process depend on $p_{i}$ - any fac
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>This circumstance calls for an approach that uses a nonlinear function to model the conditional probability function of a binary dependent variable. Commonly used methods are Probit and Logit regression.</p>
-<h3 id="LPM-suitability">LPM suitability<a class="anchor-link" href="#LPM-suitability">&#182;</a></h3><p>The major advantage of the LPM is its intuitive interpretation of the coefficients. Interpretation of Probit and Logic parameters is less intuitive (odds ratios, z-scores, local effects, etc.).</p>
-<p>If the probabilities modeled are extreme — close to 0 or 1 — then you probably have to use logistic regression. But if the probabilities are more moderate — say between .20 and .80 - then the linear and logistic models fit about equally well, and the linear model should be favored for its ease of interpretation.</p>
+<h3 id="LPM-suitability">LPM suitability<a class="anchor-link" href="#LPM-suitability">&#182;</a></h3><p>The major advantage of the LPM is its intuitive interpretation of the coefficients. Interpretation of Probit and Logit parameters is less intuitive (odds ratios, z-scores, local effects, etc.).</p>
+<p>If the probabilities modeled are extreme — close to 0 or 1 — then you probably have to use nonlinear regression. But if the probabilities are more moderate — say between .20 and .80 - then the linear and nonlinear models fit about equally well, and the linear model should be favored for its ease of interpretation.</p>
 <p>Consider a case where y is driven by a single X:</p>
 <center> <img src="image1a.png" width="600" /> </center><p>So LPM is more suitable for the case with slight differentiation.</p>
 <p>Bottom line, if modeling the probability of participating in the labor force, voting, or of being overweight, then nearly all the modeled probabilities will be between .20 and .80, and a linear probability model should fit nicely and offer a straightforward interpretation. On the other hand, if modeling the probability that a bank transaction is fraudulent then the modeled probabilities typically range between .000001 and .20. In that situation, the linear model just isn’t viable, and a nonlinear model should be used.</p>
@@ -14645,7 +14645,7 @@ $$<p>is the CDF of a standard logistically distributed random variable.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="n">models</span> <span class="o">&lt;-</span> <span class="nf">list</span><span class="p">(</span><span class="n">LPM</span> <span class="o">=</span> <span class="n">LPM</span><span class="p">,</span> <span class="n">Probit</span> <span class="o">=</span> <span class="n">probit_glm</span><span class="p">,</span> <span class="n">Logit</span> <span class="o">=</span> <span class="n">logit_glm</span><span class="p">)</span>
