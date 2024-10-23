@@ -13152,7 +13152,7 @@ $( document ).ready(function(){
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Part 1 <a href="https://www747.github.io/NYU_F23/Lab10/reg_diagnostics_part_1.html">here</a></p>
+<p>Part 1 <a href="https://wwwedu.github.io/NYU_F24/Lecture7/reg_diagnostics_part_1.html">here</a></p>
 <h2 id="Examination-of-the-statistical-assumptions-needed-for-correct-interpretation-of-the-output">Examination of the statistical assumptions needed for correct interpretation of the output<a class="anchor-link" href="#Examination-of-the-statistical-assumptions-needed-for-correct-interpretation-of-the-output">&#182;</a></h2><p>If we collect all of the various problems that can arise - we can rank them in terms of severity roughly as:</p>
 $$\text { outliers }&gt;\text { non }-\text { linearity }&gt; \text { heteroskedasticity }&gt;\text { autocorrelation } &gt;\text { non }-\text { normality }$$<p>In terms of impact on OLS estimation:</p>
 \begin{array}{lcccc}
@@ -13409,7 +13409,7 @@ height=420
 <span class="nf">qui</span><span class="p">(</span><span class="nf">if</span><span class="p">(</span><span class="o">!</span><span class="nf">require</span><span class="p">(</span><span class="n">modelsummary</span><span class="p">)){</span><span class="nf">install.packages</span><span class="p">(</span><span class="s">&#39;modelsummary&#39;</span><span class="p">)})</span><span class="w">  </span><span class="c1">#datasummary_skim(), modelsummary(), datasummary_correlation()</span>
 <span class="nf">qui</span><span class="p">(</span><span class="nf">if</span><span class="p">(</span><span class="o">!</span><span class="nf">require</span><span class="p">(</span><span class="n">reshape2</span><span class="p">)){</span><span class="nf">install.packages</span><span class="p">(</span><span class="s">&#39;reshape2&#39;</span><span class="p">)})</span><span class="w"> </span><span class="c1"># for melt()</span>
 
-<span class="n">ds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">read.csv</span><span class="p">(</span><span class="s">&quot;https://www747.github.io/NYU_F23/Lab10/lab_10_dataset_1.csv&quot;</span><span class="p">)</span>
+<span class="n">ds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">read.csv</span><span class="p">(</span><span class="s">&quot;diag_dataset_1.csv&quot;</span><span class="p">)</span>
 
 <span class="n">ds.small</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span>
 <span class="w">  </span><span class="n">dplyr</span><span class="o">::</span><span class="nf">select</span><span class="p">(</span><span class="s">&quot;glbcc_risk&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;age&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;education&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;income&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;ideol&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span>
