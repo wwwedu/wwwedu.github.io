@@ -2,7 +2,7 @@
 <html>
 <head><meta charset="utf-8" />
 
-<title>SUR_proofs</title>
+<title>SUR_examples</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -13128,7 +13128,7 @@ div#notebook {
 <script>
 $( document ).ready(function(){
 
-            var cfg = {"base_numbering": 1, "nav_menu": {}, "number_sections": true, "sideBar": true, "skip_h1_title": true, "title_cell": "Table of Contents", "title_sidebar": "Contents", "toc_cell": false, "toc_position": {"height": "calc(100% - 180px)", "left": "10px", "top": "150px", "width": "304.475px"}, "toc_section_display": true, "toc_window_display": true};
+            var cfg = {"base_numbering": 1, "nav_menu": {}, "number_sections": true, "sideBar": true, "skip_h1_title": true, "title_cell": "Table of Contents", "title_sidebar": "Contents", "toc_cell": false, "toc_position": {"height": "calc(100% - 180px)", "left": "10px", "top": "150px", "width": "307.2px"}, "toc_section_display": true, "toc_window_display": true};
 
             // fire the main function with these parameters
             require(['nbextensions/toc2/toc2'], function (toc2) {
@@ -13145,35 +13145,26 @@ $( document ).ready(function(){
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Dragos Ailoae</strong></p>
 <p>Applied Statistics and Econometrics 2</p>
-<h1 id="Seemingly-Unrelated-Regression-(SUR)"><center>Seemingly Unrelated Regression (SUR)</center><a class="anchor-link" href="#Seemingly-Unrelated-Regression-(SUR)">&#182;</a></h1>
+<h1 id="Seemingly-Unrelated-Regression-(SUR)"><center>Seemingly Unrelated Regression (SUR)</center><a class="anchor-link" href="#Seemingly-Unrelated-Regression-(SUR)">&#182;</a></h1><h1 id="Examples"><center>Examples</center><a class="anchor-link" href="#Examples">&#182;</a></h1>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="The-three-SUR-cases">The three SUR cases<a class="anchor-link" href="#The-three-SUR-cases">&#182;</a></h2><p>In the analysis of SUR systems of equations three cases can be distinguished:</p>
-<ol>
-<li><p>Contemporaneously uncorrelated disturbances, namely $E\left(\mathbf{\varepsilon}_i \mathbf{\varepsilon}_j^{\prime}\right)=\mathbf{0}$, for $i \neq j$.</p>
-</li>
-<li><p>Contemporaneously correlated disturbances, with identical regressors across all the equations, namely
+<h2 id="Intro:-The-Grunfeld-dataset">Intro: The Grunfeld dataset<a class="anchor-link" href="#Intro:-The-Grunfeld-dataset">&#182;</a></h2><p>To illustrate the basics of SUR analysis with R we will use a subset of the Grunfeld dataset. This is the data made famous by Arnold Zellner with his classic 1962 paper on seemingly unrelated regressions. Grunfeld originally used the dataset in his 1958 PhD thesis <em>The determinants of corporate investment.</em> at the  University of Chicago.</p>
+<p>Our subset includes just two firms, US (US Steel) and DM (Diamond Match) observed over the period 1935 to 1954. The problem is to find the determinants of investment by a firm, $i n v_{i t}$ among regressors such as the value of the firm, $v_{i t}$, and capital stock $k_{i t}$.</p>
+<p>The Grunfeld Investment model is as follows:
 $$
-E\left(\mathbf{\varepsilon}_i \mathbf{\varepsilon}_j^{\prime}\right)=\sigma_{i j} \mathbf{I}_T \neq \mathbf{0},
-$$
-where $\mathbf{I}_T$ is an identity matrix of order $T$ and
-$$
-\mathbf{X}_i=\mathbf{X}_j \text {, for all } i, j .
+inv_{i t}=\beta_{0 i}+\beta_{1 i} v_{i t}+\beta_{2 i} k_{i t}+\epsilon_{i t}
 $$</p>
-</li>
-<li><p>Contemporaneously correlated disturbances, with different regressors across the equations, namely
-$$
-E\left(\mathbf{\varepsilon}_i \mathbf{\varepsilon}_j^{\prime}\right)=\sigma_{i j} \mathbf{I}_T \neq \mathbf{0},
-$$
-and
-$\mathbf{X}_i \neq \mathbf{X}_{\mathrm{j}}$, at least for some $i$, and $j$</p>
-</li>
-</ol>
-<p><strong>We can show that in cases 1 and 2, there are no efficiency gains from GLS and the estimator is identical to OLS.</strong></p>
+<p>where</p>
+<p>$\begin{aligned} 
+{inv}_{{i t}}&amp;= \text {gross investment for firm } {i} \text { at time } {t} \\
+{v}_{{i t}}&amp;=\text { market value of firm } {i} \text { at } {t} \\ 
+{k}_{{i t}} &amp;=\text { capital stock of firm } {i} \text { at } {t} . 
+\end{aligned}$</p>
+<p>If you'd like to play with the full dataset you can access it <a href="http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF10-4.csv">here</a> or <a href="https://www.zeileis.org/grunfeld/Grunfeld.csv">here</a>. More on this dataset <a href="https://www.zeileis.org/grunfeld/">here</a></p>
 
 </div>
 </div>
@@ -13181,83 +13172,403 @@ $\mathbf{X}_i \neq \mathbf{X}_{\mathrm{j}}$, at least for some $i$, and $j$</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Special-case-1:-No-contemporaneous-correlation">Special case 1: No contemporaneous correlation<a class="anchor-link" href="#Special-case-1:-No-contemporaneous-correlation">&#182;</a></h3><p>In this case $\sigma_{12} = \sigma_{21}=0$ so the VCM is block diagonal
-$$
-\Omega = \Sigma \otimes \mathbf{I} =
-\left[\begin{array}{cc}
-\sigma_{11}^{2} &amp; 0 \\
-0 &amp; \sigma_{22}^{2}
-\end{array}\right] \otimes \mathbf{I}
-$$</p>
-<p>Therefore, using the properties of the inverse of block diagonal matrices (see Greene Appendix A-73):</p>
-$$
-\begin{aligned}
-\mathbf{b}_{GLS}=\left[\begin{array}{l}
-\mathbf{b}_{1} \\
-\mathbf{b}_{2}
-\end{array}\right] = &amp;
-\left[\left(\mathbf{X}^{\prime} \Omega^{-1} \mathbf{X}\right)\right]^{-1} \mathbf{X}^{\prime} \Omega^{-1} \mathbf{y}=
-\\
-=&amp;{\left[\left(\begin{array}{cc}
-X_1^{\prime} &amp; 0 \\
-0 &amp; X_2^{\prime}
-\end{array}\right)\left(\begin{array}{cc}
-\Omega_{11}^{-1} &amp; 0 \\
-0 &amp; \Omega_{22}^{-1}
-\end{array}\right)\left(\begin{array}{cc}
-X_1 &amp; 0 \\
-0 &amp; X_2
-\end{array}\right)\right]^{-1} }
-{\left[\left(\begin{array}{cc}
-X_1^{\prime} &amp; 0 \\
-0 &amp; X_2^{\prime}
-\end{array}\right)\left(\begin{array}{cc}
-\Omega_{11}^{-1} &amp; 0 \\
-0 &amp; \Omega_{22}^{-1}
-\end{array}\right)\left(\begin{array}{c}
-y_1 \\
-y_2
-\end{array}\right)\right] } \\
-= &amp; \left(\begin{array}{cc}
-X_1^{\prime} \Omega_{11}^{-1} X_1 &amp; 0 \\
-0 &amp; X_2^{\prime} \Omega_{22}^{-1} X_2
-\end{array}\right)^{-1}\left(\begin{array}{c}
-X_1^{\prime} \Omega_{11}^{-1} y_1 \\
-X_2^{\prime} \Omega_{22}^{-1} y_2
-\end{array}\right) \\
-= &amp; \left(\begin{array}{c}
-\left(X_1^{\prime} \Omega_{11}^{-1} X_1\right)^{-1} X_1^{\prime} \Omega_{11}^{-1} y_1 \\
-\left(X_2^{\prime} \Omega_{22}^{-1} X_2\right)^{-1} X_2^{\prime} \Omega_{22}^{-1} y_2
-\end{array}\right) \\
-=&amp;\left[\begin{array}{l}\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} \\ \left(\mathbf{X}_{2}^{\prime} \mathbf{X}_{2}\right)^{-1} \mathbf{X}_{2}^{\prime} \mathbf{y}_{2}\end{array}\right] = \mathbf{b}_{OLS}
-\end{aligned} 
-$$
+<h2 id="Loading-the-data">Loading the data<a class="anchor-link" href="#Loading-the-data">&#182;</a></h2>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Alternately, we can use Greene's expanded version of the SUR GLS estimator (see Greene 8ed p 332 for M equation derivation).  Here the SUR estimator involves the elements of $\Sigma^{-1}$ denoted as $\sigma^{i j}$ by Greene.
-$$
-\mathbf{b}_{GLS}=\left[\begin{array}{ll}
-\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} &amp; \sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{X}_{2} \\
-\sigma^{21} \mathbf{X}_{2}^{\prime} \mathbf{X}_{1} &amp; \sigma^{22} \mathbf{X}_{2}^{\prime} \mathbf{X}_{2}
-\end{array}\right]^{-1}\left[\begin{array}{c}
-\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1}+\sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2} \\
-\sigma^{21} \mathbf{X}_{2}^{\prime} \mathbf{y}_{1}+\sigma^{22} \mathbf{X}_{2}^{\prime} \mathbf{y}_{2}
-\end{array}\right]
-$$</p>
-<p>If $\sigma^{12}=\sigma^{21}=0$ then</p>
-$$
-\mathbf{b}_{GLS}=\left[\begin{array}{cc}\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} &amp; 0 \\ 0_{1} &amp; \sigma^{22} \mathbf{X}_{2}^{\prime} \mathbf{X}_{2}\end{array}\right]^{-1}\left[\begin{array}{l}\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} \\ \sigma^{22} \mathbf{X}_{2}^{\prime} \mathbf{y}_{2}\end{array}\right]=\left[\begin{array}{l}\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} \\ \left(\mathbf{X}_{2}^{\prime} \mathbf{X}_{2}\right)^{-1} \mathbf{X}_{2}^{\prime} \mathbf{y}_{2}\end{array}\right]
-$$<p>Takeways:</p>
-<ul>
-<li><p>If the models are unrelated, then the GLS/SUR estimator is identical to OLS on each of the two models.</p>
-</li>
-<li><p>No efficiency gain, or improved inference, from using SUR/GLS.</p>
-</li>
-</ul>
+<p>Let's begin by loading some necessary packages and the dataset:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="nf">rm</span><span class="p">(</span><span class="n">list</span><span class="o">=</span><span class="nf">ls</span><span class="p">())</span><span class="w">    </span><span class="c1"># Removes all items in Environment!</span>
+<span class="nf">options</span><span class="p">(</span><span class="n">repr.plot.width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6</span><span class="p">,</span><span class="w"> </span><span class="n">repr.plot.height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6</span><span class="p">,</span><span class="n">repr.plot.res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">150</span><span class="p">)</span>
+
+<span class="c1"># LOAD PACKAGES:</span>
+<span class="n">packages</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;plm&quot;</span><span class="p">,</span><span class="s">&quot;systemfit&quot;</span><span class="p">,</span><span class="s">&quot;modelsummary&quot;</span><span class="p">)</span>
+<span class="c1"># Loop though vector and load respective packages:</span>
+<span class="n">zzz</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">lapply</span><span class="p">(</span><span class="n">packages</span><span class="p">,</span><span class="w"> </span><span class="nf">function</span><span class="p">(</span><span class="n">xxx</span><span class="p">)</span><span class="w"> </span><span class="nf">suppressMessages</span><span class="p">(</span><span class="nf">require</span><span class="p">(</span><span class="n">xxx</span><span class="p">,</span><span class="w"> </span>
+<span class="w">               </span><span class="n">character.only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">quietly</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">warn.conflicts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)))</span><span class="w">  </span><span class="c1"># quiet no warnings</span>
+<span class="c1">#zzz &lt;- lapply(packages, require, character.only = TRUE) # verbose with warnings</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">my.raw.data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">read.csv</span><span class="p">(</span><span class="nf">url</span><span class="p">(</span><span class="s">&quot;https://wwwedu.github.io/NYU_S25/Lecture02/grun_data.csv&quot;</span><span class="p">))</span>
+<span class="n">my.raw.data</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<table class="dataframe">
+<caption>A data.frame: 40 × 5</caption>
+<thead>
+	<tr><th scope=col>firm</th><th scope=col>year</th><th scope=col>inv</th><th scope=col>val</th><th scope=col>cap</th></tr>
+	<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>US</td><td>1935</td><td>209.90</td><td>1362.40</td><td> 53.80</td></tr>
+	<tr><td>US</td><td>1936</td><td>355.30</td><td>1807.10</td><td> 50.50</td></tr>
+	<tr><td>US</td><td>1937</td><td>469.90</td><td>2676.30</td><td>118.10</td></tr>
+	<tr><td>US</td><td>1938</td><td>262.30</td><td>1801.90</td><td>260.20</td></tr>
+	<tr><td>US</td><td>1939</td><td>230.40</td><td>1957.30</td><td>312.70</td></tr>
+	<tr><td>US</td><td>1940</td><td>361.60</td><td>2202.90</td><td>254.20</td></tr>
+	<tr><td>US</td><td>1941</td><td>472.80</td><td>2380.50</td><td>261.40</td></tr>
+	<tr><td>US</td><td>1942</td><td>445.60</td><td>2168.60</td><td>298.70</td></tr>
+	<tr><td>US</td><td>1943</td><td>361.60</td><td>1985.10</td><td>301.80</td></tr>
+	<tr><td>US</td><td>1944</td><td>288.20</td><td>1813.90</td><td>279.10</td></tr>
+	<tr><td>US</td><td>1945</td><td>258.70</td><td>1850.20</td><td>213.80</td></tr>
+	<tr><td>US</td><td>1946</td><td>420.30</td><td>2067.70</td><td>132.60</td></tr>
+	<tr><td>US</td><td>1947</td><td>420.50</td><td>1796.70</td><td>264.80</td></tr>
+	<tr><td>US</td><td>1948</td><td>494.50</td><td>1625.80</td><td>306.90</td></tr>
+	<tr><td>US</td><td>1949</td><td>405.10</td><td>1667.00</td><td>351.10</td></tr>
+	<tr><td>US</td><td>1950</td><td>418.80</td><td>1677.40</td><td>357.80</td></tr>
+	<tr><td>US</td><td>1951</td><td>588.20</td><td>2289.50</td><td>342.10</td></tr>
+	<tr><td>US</td><td>1952</td><td>645.50</td><td>2159.40</td><td>444.20</td></tr>
+	<tr><td>US</td><td>1953</td><td>641.00</td><td>2031.30</td><td>623.60</td></tr>
+	<tr><td>US</td><td>1954</td><td>459.30</td><td>2115.50</td><td>669.70</td></tr>
+	<tr><td>DM</td><td>1935</td><td>  2.54</td><td>  70.91</td><td>  4.50</td></tr>
+	<tr><td>DM</td><td>1936</td><td>  2.00</td><td>  87.94</td><td>  4.71</td></tr>
+	<tr><td>DM</td><td>1937</td><td>  2.19</td><td>  82.20</td><td>  4.57</td></tr>
+	<tr><td>DM</td><td>1938</td><td>  1.99</td><td>  58.72</td><td>  4.56</td></tr>
+	<tr><td>DM</td><td>1939</td><td>  2.03</td><td>  80.54</td><td>  4.38</td></tr>
+	<tr><td>DM</td><td>1940</td><td>  1.81</td><td>  86.47</td><td>  4.21</td></tr>
+	<tr><td>DM</td><td>1941</td><td>  2.14</td><td>  77.68</td><td>  4.12</td></tr>
+	<tr><td>DM</td><td>1942</td><td>  1.86</td><td>  62.16</td><td>  3.83</td></tr>
+	<tr><td>DM</td><td>1943</td><td>  0.93</td><td>  62.24</td><td>  3.58</td></tr>
+	<tr><td>DM</td><td>1944</td><td>  1.18</td><td>  61.82</td><td>  3.41</td></tr>
+	<tr><td>DM</td><td>1945</td><td>  1.36</td><td>  65.85</td><td>  3.31</td></tr>
+	<tr><td>DM</td><td>1946</td><td>  2.24</td><td>  69.54</td><td>  3.23</td></tr>
+	<tr><td>DM</td><td>1947</td><td>  3.81</td><td>  64.97</td><td>  3.90</td></tr>
+	<tr><td>DM</td><td>1948</td><td>  5.66</td><td>  68.00</td><td>  5.38</td></tr>
+	<tr><td>DM</td><td>1949</td><td>  4.21</td><td>  71.24</td><td>  7.39</td></tr>
+	<tr><td>DM</td><td>1950</td><td>  3.42</td><td>  69.05</td><td>  8.74</td></tr>
+	<tr><td>DM</td><td>1951</td><td>  4.67</td><td>  83.04</td><td>  9.07</td></tr>
+	<tr><td>DM</td><td>1952</td><td>  6.00</td><td>  74.42</td><td>  9.93</td></tr>
+	<tr><td>DM</td><td>1953</td><td>  6.53</td><td>  63.51</td><td> 11.68</td></tr>
+	<tr><td>DM</td><td>1954</td><td>  5.12</td><td>  58.12</td><td> 14.33</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Equation-by-equation-estimation-using-the-lm()-function">Equation by equation estimation using the <em>lm()</em> function<a class="anchor-link" href="#Equation-by-equation-estimation-using-the-lm()-function">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>As a first step, we may want to fit the data for each firm using our old friend the lm() function. So let's break up the dataset into two separate subsets, one for Diamond Match and another for US Steel.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">US.data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">subset</span><span class="p">(</span><span class="n">my.raw.data</span><span class="p">,</span><span class="n">firm</span><span class="o">==</span><span class="s">&quot;US&quot;</span><span class="p">)</span>
+<span class="nf">head</span><span class="p">(</span><span class="n">US.data</span><span class="p">)</span>
+<span class="n">DM.data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">subset</span><span class="p">(</span><span class="n">my.raw.data</span><span class="p">,</span><span class="n">firm</span><span class="o">==</span><span class="s">&quot;DM&quot;</span><span class="p">)</span>
+<span class="nf">head</span><span class="p">(</span><span class="n">DM.data</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<table class="dataframe">
+<caption>A data.frame: 6 × 5</caption>
+<thead>
+	<tr><th></th><th scope=col>firm</th><th scope=col>year</th><th scope=col>inv</th><th scope=col>val</th><th scope=col>cap</th></tr>
+	<tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>1</th><td>US</td><td>1935</td><td>209.9</td><td>1362.4</td><td> 53.8</td></tr>
+	<tr><th scope=row>2</th><td>US</td><td>1936</td><td>355.3</td><td>1807.1</td><td> 50.5</td></tr>
+	<tr><th scope=row>3</th><td>US</td><td>1937</td><td>469.9</td><td>2676.3</td><td>118.1</td></tr>
+	<tr><th scope=row>4</th><td>US</td><td>1938</td><td>262.3</td><td>1801.9</td><td>260.2</td></tr>
+	<tr><th scope=row>5</th><td>US</td><td>1939</td><td>230.4</td><td>1957.3</td><td>312.7</td></tr>
+	<tr><th scope=row>6</th><td>US</td><td>1940</td><td>361.6</td><td>2202.9</td><td>254.2</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<table class="dataframe">
+<caption>A data.frame: 6 × 5</caption>
+<thead>
+	<tr><th></th><th scope=col>firm</th><th scope=col>year</th><th scope=col>inv</th><th scope=col>val</th><th scope=col>cap</th></tr>
+	<tr><th></th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>21</th><td>DM</td><td>1935</td><td>2.54</td><td>70.91</td><td>4.50</td></tr>
+	<tr><th scope=row>22</th><td>DM</td><td>1936</td><td>2.00</td><td>87.94</td><td>4.71</td></tr>
+	<tr><th scope=row>23</th><td>DM</td><td>1937</td><td>2.19</td><td>82.20</td><td>4.57</td></tr>
+	<tr><th scope=row>24</th><td>DM</td><td>1938</td><td>1.99</td><td>58.72</td><td>4.56</td></tr>
+	<tr><th scope=row>25</th><td>DM</td><td>1939</td><td>2.03</td><td>80.54</td><td>4.38</td></tr>
+	<tr><th scope=row>26</th><td>DM</td><td>1940</td><td>1.81</td><td>86.47</td><td>4.21</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can now fit the US Steel data using lm():</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">lm.US</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">lm</span><span class="p">(</span><span class="n">inv</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">cap</span><span class="p">,</span><span class="w"> </span><span class="n">US.data</span><span class="p">)</span>
+<span class="nf">summary</span><span class="p">(</span><span class="n">lm.US</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea ">
+<pre>
+Call:
+lm(formula = inv ~ val + cap, data = US.data)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-184.488  -77.210    4.508   59.421  144.035 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)  
+(Intercept) -49.1983   148.0754  -0.332   0.7438  
+val           0.1749     0.0742   2.357   0.0307 *
+cap           0.3896     0.1424   2.737   0.0140 *
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 96.43 on 17 degrees of freedom
+Multiple R-squared:  0.4709,	Adjusted R-squared:  0.4086 
+F-statistic: 7.564 on 2 and 17 DF,  p-value: 0.00447
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>And similarly for Diamond Match:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">lm.DM</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">lm</span><span class="p">(</span><span class="n">inv</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">cap</span><span class="p">,</span><span class="w"> </span><span class="n">DM.data</span><span class="p">)</span>
+<span class="nf">summary</span><span class="p">(</span><span class="n">lm.DM</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea ">
+<pre>
+Call:
+lm(formula = inv ~ val + cap, data = DM.data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.5748 -0.5972 -0.3036  0.3834  2.8344 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 0.161519   2.065564   0.078    0.939    
+val         0.004573   0.027161   0.168    0.868    
+cap         0.437369   0.079589   5.495 3.94e-05 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 1.085 on 17 degrees of freedom
+Multiple R-squared:  0.6432,	Adjusted R-squared:  0.6012 
+F-statistic: 15.32 on 2 and 17 DF,  p-value: 0.0001571
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="SUR-motivation:-contemporaneously-correlated-disturbances">SUR motivation: contemporaneously correlated disturbances<a class="anchor-link" href="#SUR-motivation:-contemporaneously-correlated-disturbances">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We may suspect that idiosyncratic macroeconomic shocks may have affected both firms.  Consequently, there may be contemporaneous correlations in our disturbances that can be exploited to improve the efficiency of our OLS estimators.</p>
+<p>Assuming the OLS estimation is unbiased, the residuals may be a good indicator of the economic disturbances so we may want to inspect visually if the two sets of residuals show similar patterns:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="nf">par</span><span class="p">(</span><span class="n">mfrow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">))</span>
+
+<span class="n">r</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lm.US</span><span class="o">$</span><span class="n">res</span>
+<span class="n">n</span><span class="o">&lt;-</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+<span class="c1"># add local polinomial trend</span>
+<span class="nf">lines</span><span class="p">(</span><span class="nf">predict</span><span class="p">(</span><span class="nf">loess</span><span class="p">(</span><span class="n">r</span><span class="o">~</span><span class="n">n</span><span class="p">)),</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s">&#39;red&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">lwd</span><span class="o">=</span><span class="m">2</span><span class="p">)</span>
+
+<span class="n">r</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lm.DM</span><span class="o">$</span><span class="n">res</span>
+<span class="n">n</span><span class="o">&lt;-</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+<span class="c1"># add local polinomial trend</span>
+<span class="nf">lines</span><span class="p">(</span><span class="nf">predict</span><span class="p">(</span><span class="nf">loess</span><span class="p">(</span><span class="n">r</span><span class="o">~</span><span class="n">n</span><span class="p">)),</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s">&#39;red&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">lwd</span><span class="o">=</span><span class="m">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="SUR_examples_files/SUR_examples_15_0.png"
+width=450
+height=450
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The trend of the residuals appear correlated so we may consider using a panel model to improve the efficiency of our estimators.</p>
 
 </div>
 </div>
@@ -13265,105 +13576,522 @@ $$<p>Takeways:</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Special-case-2:-Identical-regressors-across-all-equations">Special case 2: Identical regressors across all equations<a class="anchor-link" href="#Special-case-2:-Identical-regressors-across-all-equations">&#182;</a></h3><p>Here $$\mathbf{X}_{1}=\mathbf{X}_{2}$$</p>
-$$
-\begin{aligned}
-\mathbf{b}_{GLS}=&amp;\left[\begin{array}{ll}
-\sigma^{11}\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right) &amp; \sigma^{12}\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right) \\
-\sigma^{21}\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right) &amp; \sigma^{22}\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)
-\end{array}\right]^{-1}\left[\begin{array}{l}
-\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1}+\sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2} \\
-\sigma^{21} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1}+\sigma^{22} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2}
-\end{array}\right] \\
-=&amp;\left[\Sigma^{-1} \otimes\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)\right]^{-1}\left[\begin{array}{l}
-\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1}+\sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2} \\
-\sigma^{21} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1}+\sigma^{22} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2}
-\end{array}\right] \\
-=&amp;\left[\Sigma \otimes\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1}\right]\left[\begin{array}{l}
-\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1}+\sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2} \\
-\sigma^{21} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1}+\sigma^{22} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2}
-\end{array}\right]
-\end{aligned}
-$$
+<h2 id="R-packages-for-panel-data-analysis:-PLM-and-SYSTEMFIT">R packages for panel data analysis: PLM and SYSTEMFIT<a class="anchor-link" href="#R-packages-for-panel-data-analysis:-PLM-and-SYSTEMFIT">&#182;</a></h2><h3 id="Configuring-data-as-a-panel">Configuring data as a panel<a class="anchor-link" href="#Configuring-data-as-a-panel">&#182;</a></h3>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>In the last step we used the Kronecker Product property <a href="http://pages.stern.nyu.edu/~wgreene/Text/Greene-EA-7&amp;8ed-Appendices.pdf#page=24">A-76</a>
-$$
-(\mathbf{A} \otimes \mathbf{B})^{-1}=\left(\mathbf{A}^{-1} \otimes \mathbf{B}^{-1}\right)
-$$</p>
-<p>If OLS is applied on each model then
-$$
-\mathbf{b}_{j}=\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \mathbf{X}_{1}^{\prime} \mathbf{y}_{j}, \quad j=1,2
-$$
-since $\mathbf{X}_{2}=\mathbf{X}_{1}$, implying
-$\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right) \mathbf{b}_{j}=\mathbf{X}_{j}^{\prime} \mathbf{y}_{j}$</p>
-<p>So we can subsitute for $\mathbf{X}_{j}^{\prime} \mathbf{y}_{j}$ in the equation above resulting in:</p>
-$$
-\begin{aligned}
-\mathbf{b}_{GLS}=&amp;\left[\Sigma \otimes\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1}\right]\left[\begin{array}{l}
-\mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \sigma^{11} \mathbf{b}_{1}+\sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \mathbf{b}_{2} \\
-\mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \sigma^{21} \mathbf{b}_{1}+\sigma^{22} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \mathbf{b}_{2}
-\end{array}\right] \\
-=&amp;\left[\begin{array}{cc}
-\sigma_{11}^{2}\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} &amp; \sigma_{12}\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \\
-\sigma_{21}\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} &amp; \sigma_{22}^{2}\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1}
-\end{array}\right]\left[\begin{array}{l}
-\mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \sigma^{11} \mathbf{b}_{1}+\sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \mathbf{b}_{2} \\
-\mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \sigma^{21} \mathbf{b}_{1}+\sigma^{22} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \mathbf{b}_{2}
-\end{array}\right] \\
-=&amp;\left[\begin{array}{ll}
-\sigma_{11}^{2} \sigma^{11} \mathbf{b}_{1}+\sigma_{11}^{2} \sigma^{12} \mathbf{b}_{2}+\sigma_{12} \sigma^{21} \mathbf{b}_{1}+\sigma_{12} \sigma^{22} \mathbf{b}_{2} \\
-\sigma_{21} \sigma^{11} \mathbf{b}_{1}+\sigma_{21} \sigma^{12} \mathbf{b}_{2}+\sigma_{22}^{2} \sigma^{21} \mathbf{b}_{1}+\sigma_{22}^{2} \sigma^{22} \mathbf{b}_{2}
-\end{array}\right] \\
-=&amp;\left[\begin{array}{l}
-\mathbf{b}_{1}\left(\sigma_{11}^{2} \sigma^{11}+\sigma_{12} \sigma^{21}\right)+\mathbf{b}_{2}\left(\sigma_{11}^{2} \sigma^{12}+\sigma_{12} \sigma^{22}\right) \\
-\mathbf{b}_{1}\left(\sigma_{21} \sigma^{11}+\sigma_{22}^{2} \sigma^{21}\right)+\mathbf{b}_{2}\left(\sigma_{21} \sigma^{12}+\sigma_{22}^{2} \sigma^{22}\right)
-\end{array}\right]
-\end{aligned}
-$$
+<p>Two R packages frequently used for panel data analysis are PLM and SYSTEMFIT.  To use the functions in these packages we must first configure our data as a panel object by specifying the columns containing the i and t indexing:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">my.data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">pdata.frame</span><span class="p">(</span><span class="n">my.raw.data</span><span class="p">,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;firm&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;year&quot;</span><span class="p">))</span><span class="w">  </span><span class="c1">#configure the data as a panel</span>
+<span class="nf">head</span><span class="p">(</span><span class="n">my.data</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<table class="dataframe">
+<caption>A pdata.frame: 6 × 5</caption>
+<thead>
+	<tr><th></th><th scope=col>firm</th><th scope=col>year</th><th scope=col>inv</th><th scope=col>val</th><th scope=col>cap</th></tr>
+	<tr><th></th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>DM-1935</th><td>DM</td><td>1935</td><td>2.54</td><td>70.91</td><td>4.50</td></tr>
+	<tr><th scope=row>DM-1936</th><td>DM</td><td>1936</td><td>2.00</td><td>87.94</td><td>4.71</td></tr>
+	<tr><th scope=row>DM-1937</th><td>DM</td><td>1937</td><td>2.19</td><td>82.20</td><td>4.57</td></tr>
+	<tr><th scope=row>DM-1938</th><td>DM</td><td>1938</td><td>1.99</td><td>58.72</td><td>4.56</td></tr>
+	<tr><th scope=row>DM-1939</th><td>DM</td><td>1939</td><td>2.03</td><td>80.54</td><td>4.38</td></tr>
+	<tr><th scope=row>DM-1940</th><td>DM</td><td>1940</td><td>1.81</td><td>86.47</td><td>4.21</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Alternatives-to-lm()-for-equation-by-equation-estimation">Alternatives to <em>lm()</em> for equation by equation estimation<a class="anchor-link" href="#Alternatives-to-lm()-for-equation-by-equation-estimation">&#182;</a></h2>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The terms in the parentheses involving $\sigma$'s simplify to 1's and 0's. To see this write out
-$$
-\Sigma \Sigma^{-1}=\mathbf{I}
-$$
-as
-$$
-\begin{array}{r}
-{\left[\begin{array}{cc}
-\sigma_{11}^{2} &amp; \sigma_{12} \\
-\sigma_{21} &amp; \sigma_{22}^{2}
-\end{array}\right]
-\left[\begin{array}{cc}
-\sigma^{11} &amp; \sigma^{12} \\
-\sigma^{21} &amp; \sigma^{22}
-\end{array}\right]=\mathbf{I}=
-\left[\begin{array}{cc}
-1 &amp; 0 \\
-0 &amp; 1
-\end{array}\right]} \\
-\left(\sigma_{11}^{2} \sigma^{11}+\sigma_{12} \sigma^{21}\right) = 1\\
-\sigma_{11}^{2} \sigma^{12}+\sigma_{12} \sigma^{22}=0 \\
-\left(\sigma_{21} \sigma^{11}+\sigma_{22}^{2} \sigma^{21}=0\right. \\
-\sigma_{21} \sigma^{12}+\sigma_{22}^{2} \sigma^{22}=1
-\end{array}
-$$
-From this we see that the SUR GLS estimator becomes
-$$
-\mathbf{b}_{GLS}=\left[\begin{array}{l}
-\mathbf{b}_{1} \\
-\mathbf{b}_{2}
-\end{array}\right] = \left[\begin{array}{l}\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} \\ \left(\mathbf{X}_{2}^{\prime} \mathbf{X}_{2}\right)^{-1} \mathbf{X}_{2}^{\prime} \mathbf{y}_{2}\end{array}\right] = \mathbf{b}_{OLS}
-$$
-in the case of identical regressors $\mathbf{X}_{1}=\mathbf{X}_{2}$.</p>
+<p>Functions in these packages allow us to do equation by equation OLS estimation directly without having to split our data. For example, the pvcm() function in the PLM package calculates the variable coefficients for each equation:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">myOLS.pvcm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">pvcm</span><span class="p">(</span><span class="n">inv</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">cap</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my.data</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;within&quot;</span><span class="p">)</span>
+<span class="n">myOLS.pvcm</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea ">
+<pre>
+Model Formula: inv ~ val + cap
+&lt;environment: 0x000000003d2e90f8&gt;
+
+Coefficients:
+   (Intercept)       val     cap
+DM     0.16152 0.0045734 0.43737
+US   -49.19832 0.1748560 0.38964
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Or systemfit() in the SYSTEMFIT package:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">myOLS.sysfit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">systemfit</span><span class="p">(</span><span class="n">inv</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">cap</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;OLS&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my.data</span><span class="p">)</span>
+<span class="c1"># summary(myOLS.sysfit)$coeff</span>
+<span class="nf">get_estimates</span><span class="p">(</span><span class="n">myOLS.sysfit</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<table class="dataframe">
+<caption>A data.frame: 6 × 12</caption>
+<thead>
+	<tr><th scope=col>term</th><th scope=col>estimate</th><th scope=col>std.error</th><th scope=col>conf.level</th><th scope=col>conf.low</th><th scope=col>conf.high</th><th scope=col>statistic</th><th scope=col>df.error</th><th scope=col>p.value</th><th scope=col>component</th><th scope=col>s.value</th><th scope=col>group</th></tr>
+	<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>(Intercept)</td><td>  0.161518567</td><td>  2.06556414</td><td>0.95</td><td>  -4.19644084</td><td>  4.51947797</td><td> 0.07819586</td><td>17</td><td>9.385853e-01</td><td>DM</td><td>0.1 </td><td></td></tr>
+	<tr><td>val        </td><td>  0.004573432</td><td>  0.02716079</td><td>0.95</td><td>  -0.05273082</td><td>  0.06187768</td><td> 0.16838365</td><td>17</td><td>8.682686e-01</td><td>DM</td><td>0.2 </td><td></td></tr>
+	<tr><td>cap        </td><td>  0.437369190</td><td>  0.07958891</td><td>0.95</td><td>   0.26945128</td><td>  0.60528710</td><td> 5.49535372</td><td>17</td><td>3.940826e-05</td><td>DM</td><td>14.6</td><td></td></tr>
+	<tr><td>(Intercept)</td><td>-49.198321862</td><td>148.07536507</td><td>0.95</td><td>-361.61003378</td><td>263.21339006</td><td>-0.33225190</td><td>17</td><td>7.437606e-01</td><td>US</td><td>0.4 </td><td></td></tr>
+	<tr><td>val        </td><td>  0.174856015</td><td>  0.07419805</td><td>0.95</td><td>   0.01831182</td><td>  0.33140021</td><td> 2.35661209</td><td>17</td><td>3.069905e-02</td><td>US</td><td>5.0 </td><td></td></tr>
+	<tr><td>cap        </td><td>  0.389641889</td><td>  0.14236688</td><td>0.95</td><td>   0.08927403</td><td>  0.69000974</td><td> 2.73688583</td><td>17</td><td>1.404874e-02</td><td>US</td><td>6.2 </td><td></td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We could also compute the coefficients manually.  This also highlights the data matrix arrangement in the SUR model:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">X1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cbind</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">US.data</span><span class="o">$</span><span class="n">val</span><span class="p">,</span><span class="w"> </span><span class="n">US.data</span><span class="o">$</span><span class="n">cap</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">)</span><span class="w">  </span><span class="c1">#top half of the matrix</span>
+<span class="n">X2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cbind</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">DM.data</span><span class="o">$</span><span class="n">val</span><span class="p">,</span><span class="w"> </span><span class="n">DM.data</span><span class="o">$</span><span class="n">cap</span><span class="p">)</span><span class="w">  </span><span class="c1">#bottom half</span>
+
+<span class="n">X</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">rbind</span><span class="p">(</span><span class="n">X1</span><span class="p">,</span><span class="n">X2</span><span class="p">)</span><span class="w">                               </span><span class="c1">#bind the two halfs</span>
+<span class="n">y</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">my.raw.data</span><span class="o">$</span><span class="n">inv</span><span class="w">                            </span><span class="c1">#y vector</span>
+
+<span class="n">betas.ols</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="nf">t</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="w"> </span><span class="o">%*%</span><span class="w"> </span><span class="n">X</span><span class="p">)</span><span class="w"> </span><span class="o">%*%</span><span class="w"> </span><span class="nf">t</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="w"> </span><span class="o">%*%</span><span class="w"> </span><span class="n">y</span>
+<span class="n">betas.ols</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<table class="dataframe">
+<caption>A matrix: 6 × 1 of type dbl</caption>
+<tbody>
+	<tr><td>-49.198321862</td></tr>
+	<tr><td>  0.174856015</td></tr>
+	<tr><td>  0.389641889</td></tr>
+	<tr><td>  0.161518567</td></tr>
+	<tr><td>  0.004573432</td></tr>
+	<tr><td>  0.437369190</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Checking-residuals-covariance-matrix">Checking residuals covariance matrix<a class="anchor-link" href="#Checking-residuals-covariance-matrix">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The systemfit() output object allows us to quickly look at the contemporaneous covariance and correlation matrices:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="nf">summary</span><span class="p">(</span><span class="n">myOLS.sysfit</span><span class="p">)</span><span class="o">$</span><span class="n">residCov</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<table class="dataframe">
+<caption>A matrix: 2 × 2 of type dbl</caption>
+<thead>
+	<tr><th></th><th scope=col>DM</th><th scope=col>US</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>DM</th><td> 1.178043</td><td>  73.45838</td></tr>
+	<tr><th scope=row>US</th><td>73.458384</td><td>9299.60405</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="nf">summary</span><span class="p">(</span><span class="n">myOLS.sysfit</span><span class="p">)</span><span class="o">$</span><span class="n">residCor</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<table class="dataframe">
+<caption>A matrix: 2 × 2 of type dbl</caption>
+<thead>
+	<tr><th></th><th scope=col>DM</th><th scope=col>US</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>DM</th><td>1.0000000</td><td>0.7018245</td></tr>
+	<tr><th scope=row>US</th><td>0.7018245</td><td>1.0000000</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>For some practice with Kronecker products in R, we may want to compute the estimated variance covariance matrix $\hat{\Omega}$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">N</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">length</span><span class="p">(</span><span class="n">DM.data</span><span class="o">$</span><span class="n">inv</span><span class="p">)</span>
+<span class="n">sigma_hat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">summary</span><span class="p">(</span><span class="n">myOLS.sysfit</span><span class="p">)</span><span class="o">$</span><span class="n">residCov</span>
+<span class="n">omega_hat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sigma_hat</span><span class="w"> </span><span class="o">%x%</span><span class="w"> </span><span class="nf">diag</span><span class="p">(</span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="c1"># Kronecker product</span>
+<span class="n">omega_hat</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<table class="dataframe">
+<caption>A matrix: 40 × 40 of type dbl</caption>
+<tbody>
+	<tr><td> 1.178043</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 1.178043</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 1.178043</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 1.178043</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 1.178043</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 1.178043</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 1.178043</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 1.178043</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 1.178043</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 1.178043</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>  73.45838</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>  73.45838</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>  73.45838</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>  73.45838</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>  73.45838</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>  73.45838</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>  73.45838</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>  73.45838</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>  73.45838</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>  73.45838</td></tr>
+	<tr><td>73.458384</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td>73.458384</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td>73.458384</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>73.458384</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>73.458384</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>73.458384</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>73.458384</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>73.458384</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>73.458384</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>73.458384</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>9299.60405</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>9299.60405</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>9299.60405</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>9299.60405</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>9299.60405</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>9299.60405</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>9299.60405</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>9299.60405</td><td>   0.00000</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>9299.60405</td><td>   0.00000</td></tr>
+	<tr><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td> 0.000000</td><td>...</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>   0.00000</td><td>9299.60405</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Tests-for-cross-sectional-dependence">Tests for cross-sectional dependence<a class="anchor-link" href="#Tests-for-cross-sectional-dependence">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>As suspected from the visual inspection, we note that there is indeed significant contemporaneous association for our residuals. We will confirm this using the standard tests for cross-sectional dependence:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="nf">pcdtest</span><span class="p">(</span><span class="n">myOLS.pvcm</span><span class="p">,</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;lm&quot;</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea ">
+<pre>
+	Breusch-Pagan LM test for cross-sectional dependence in panels
+
+data:  NULL
+chisq = 9.8512, df = 1, p-value = 0.001697
+alternative hypothesis: cross-sectional dependence
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="nf">pcdtest</span><span class="p">(</span><span class="n">myOLS.pvcm</span><span class="p">,</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;cd&quot;</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea ">
+<pre>
+	Pesaran CD test for cross-sectional dependence in panels
+
+data:  NULL
+z = 3.1387, p-value = 0.001697
+alternative hypothesis: cross-sectional dependence
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Both tests confirm that we can reject the null hypothesis of "no cross-sectional dependence" so we will go ahead and estimate the model using SUR:</p>
 
 </div>
 </div>
@@ -13371,72 +14099,170 @@ in the case of identical regressors $\mathbf{X}_{1}=\mathbf{X}_{2}$.</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="The-General-(M-equations)-case-with-identical-regressors">The General (M equations) case with identical regressors<a class="anchor-link" href="#The-General-(M-equations)-case-with-identical-regressors">&#182;</a></h4><p>Now $\mathbf{X}_{j} \equiv \mathbf{X}_{0}$ for some $N \times K^{*}$ matrix $\mathbf{X}_{0}$, with $K^{*}=K / M$. Here the stacked matrix $\mathbf{X}$ takes the form
-$$
-\begin{aligned}
-\underset{(M N \times K)}{\mathbf{X}} &amp;=\left(\begin{array}{cccc}
-\mathbf{X}_{0} &amp; \mathbf{0} &amp; \ldots &amp; \mathbf{0} \\
-\mathbf{0} &amp; \mathbf{X}_{0} &amp; \ldots &amp; \ldots \\
-\ldots &amp; \ldots &amp; \ldots &amp; 0 \\
-\mathbf{0} &amp; \ldots &amp; 0 &amp; \mathbf{X}_{0}
-\end{array}\right) \\
-&amp;=\left(\mathbf{I}_{M} \otimes \mathbf{X}_{0}\right)
-\end{aligned}
-$$
-and the GLS estimator also reduces to classical OLS:
-$$
-\begin{aligned}
-{\mathbf{b}}_{GLS} &amp;=\left(\mathbf{X}^{\prime}\left(\boldsymbol{\Sigma} \otimes \mathbf{I}_{N}\right)^{-1} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime}\left(\boldsymbol{\Sigma} \otimes \mathbf{I}_{N}\right)^{-1} \mathbf{y} \\
-&amp;=\left(\left(\mathbf{I}_{M} \otimes \mathbf{X}\right)^{\prime}\left(\boldsymbol{\Sigma}^{-1} \otimes \mathbf{I}_{N}\right)\left(\mathbf{I}_{M} \otimes \mathbf{X}\right)\right)^{-1}\left(\mathbf{I}_{M} \otimes \mathbf{X}\right)^{\prime}\left(\boldsymbol{\Sigma}^{-1} \otimes \mathbf{I}_{N}\right) \mathbf{y} \\
-&amp;=\left(\boldsymbol{\Sigma}^{-1} \otimes \mathbf{X}^{\prime} \mathbf{X}\right)^{-1}\left(\boldsymbol{\Sigma}^{-1} \otimes \mathbf{X}^{\prime}\right) \mathbf{y} \\
-&amp;=\left(I_{M} \otimes\left(\mathbf{X}^{\prime} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime}\right)\left(\begin{array}{c}
-\mathbf{y}_{1} \\
-\mathbf{y}_{2} \\
-\ldots \\
-\mathbf{y}_{M}
-\end{array}\right) \\
-&amp;=\left(\begin{array}{c}
-\left(\mathbf{X}_{0}^{\prime} \mathbf{X}_{0}\right)^{-1} \mathbf{X}_{0}^{\prime} \mathbf{y}_{1} \\
-\left(\mathbf{X}_{0}^{\prime} \mathbf{X}_{0}\right)^{-1} \mathbf{X}_{0}^{\prime} \mathbf{y}_{2} \\
-\ldots \\
-\left(\mathbf{X}_{0}^{\prime} \mathbf{X}_{0}\right)^{-1} \mathbf{X}_{0}^{\prime} \mathbf{y}_{M}
-\end{array}\right) \\
-&amp;={\mathbf{b}}_{O L S}
-\end{aligned}
-$$</p>
-<p>Which again follows from using Kronecker Product <a href="http://pages.stern.nyu.edu/~wgreene/Text/Greene-EA-7&amp;8ed-Appendices.pdf#page=24">properties</a></p>
-$$
-(\mathbf{A} \otimes \mathbf{B})^{-1}=\left(\mathbf{A}^{-1} \otimes \mathbf{B}^{-1}\right),
-$$<p>and</p>
-$$
-(\mathbf{A} \otimes B)(\mathbf{C} \otimes \mathbf{D})=\mathbf{A C} \otimes \mathbf{B D}.
-$$
+<h2 id="Estimating-the-SUR-model">Estimating the SUR model<a class="anchor-link" href="#Estimating-the-SUR-model">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">mySUR.sysfit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">systemfit</span><span class="p">(</span><span class="n">inv</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">cap</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;SUR&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my.data</span><span class="p">)</span>
+<span class="c1"># summary(mySUR.sysfit)$coeff</span>
+<span class="nf">get_estimates</span><span class="p">(</span><span class="n">mySUR.sysfit</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<table class="dataframe">
+<caption>A data.frame: 6 × 12</caption>
+<thead>
+	<tr><th scope=col>term</th><th scope=col>estimate</th><th scope=col>std.error</th><th scope=col>conf.level</th><th scope=col>conf.low</th><th scope=col>conf.high</th><th scope=col>statistic</th><th scope=col>df.error</th><th scope=col>p.value</th><th scope=col>component</th><th scope=col>s.value</th><th scope=col>group</th></tr>
+	<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>(Intercept)</td><td>  1.453986158</td><td>  1.55155893</td><td>0.95</td><td>  -1.81951703</td><td>  4.72748935</td><td> 0.9371131</td><td>17</td><td>3.618238e-01</td><td>DM</td><td>1.5 </td><td></td></tr>
+	<tr><td>val        </td><td> -0.006542145</td><td>  0.02103408</td><td>0.95</td><td>  -0.05092018</td><td>  0.03783589</td><td>-0.3110259</td><td>17</td><td>7.595623e-01</td><td>DM</td><td>0.4 </td><td></td></tr>
+	<tr><td>cap        </td><td>  0.352518606</td><td>  0.06886049</td><td>0.95</td><td>   0.20723566</td><td>  0.49780155</td><td> 5.1193157</td><td>17</td><td>8.543506e-05</td><td>DM</td><td>13.5</td><td></td></tr>
+	<tr><td>(Intercept)</td><td>-97.359988436</td><td>110.40031946</td><td>0.95</td><td>-330.28430222</td><td>135.56432535</td><td>-0.8818814</td><td>17</td><td>3.901401e-01</td><td>US</td><td>1.4 </td><td></td></tr>
+	<tr><td>val        </td><td>  0.213114660</td><td>  0.05541765</td><td>0.95</td><td>   0.09619364</td><td>  0.33003568</td><td> 3.8456098</td><td>17</td><td>1.295969e-03</td><td>US</td><td>9.6 </td><td></td></tr>
+	<tr><td>cap        </td><td>  0.297129690</td><td>  0.13053611</td><td>0.95</td><td>   0.02172256</td><td>  0.57253682</td><td> 2.2762259</td><td>17</td><td>3.605550e-02</td><td>US</td><td>4.8 </td><td></td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The SUR standard errors are slightly tighter indicating small efficiency gains.</p>
+
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Takeaways:-SUR-GLS-vs.-OLS">Takeaways: SUR-GLS vs. OLS<a class="anchor-link" href="#Takeaways:-SUR-GLS-vs.-OLS">&#182;</a></h2><ul>
-<li><p>The result that $\mathbf{b}_{GLS}=\mathbf{b}_{OLS}$ when disturbances are not correlated between equations is intuitive</p>
-</li>
-<li><p>But the result that $\mathbf{b}_{GLS}=\mathbf{b}_{OLS}$ in the case of identical regressors, even though disturbances are correlated, is somewhat surprising.</p>
-</li>
-<li><p>It also has practical importance. Often, from theory, the regressors are the same for all equations. As a specific example, the system below might represent a set of demand functions for the population of families in a country:</p>
-</li>
-</ul>
-$$
-\begin{aligned}
-housing =&amp; \beta_{10}+\beta_{11} \text { houseprc }+\beta_{12} \text { foodprc }+\beta_{13} \text { clothprc }+\beta_{14} \text { income } +\beta_{15} \text { size }+\beta_{16} \text { age }+u_{1} \text {. }\\
-food=&amp; \beta_{20}+\beta_{21} \text { houseprc }+\beta_{22} \text { foodprc }+\beta_{23} \text { clothprc }+\beta_{24} \text { income } +\beta_{25} \text { size }+\beta_{26} \text { age }+u_{2} \text {. } \\
-clothing=&amp; \beta_{30}+\beta_{31} \text { houseprc }+\beta_{32} \text { foodprc }+\beta_{33} \text { clothprc }+\beta_{34} \text { income } +\beta_{35} \text { size }+\beta_{36} \text { age }+u_{3} \text {. }
-\end{aligned}
-$$<ul>
-<li><p>Because of its GLS interpretation, the SUR estimator (for known $\Omega$ ) is more efficient (lower variance) than OLS on individual equations. Such procedures increase the efficiency of coefficient estimates, which in turn increase the likelihood of rejecting the null hypothesis of no effect for explanatory variables.</p>
-</li>
-<li><p>The application of these methods enables the use of cross-equation hypothesis tests which are invalid when correlated equations are estimated separately.</p>
-</li>
-</ul>
+<h2 id="Testing-the-&quot;homogeneous-coefficients&quot;-hypothesis">Testing the "homogeneous coefficients" hypothesis<a class="anchor-link" href="#Testing-the-&quot;homogeneous-coefficients&quot;-hypothesis">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Finally, we may want to consider whether we can pool our data for the two firms and if parameters for the pooled dataset are significantly different from those estimated equation by equation.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">my.Pooled.model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">plm</span><span class="p">(</span><span class="n">inv</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">cap</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my.data</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;pooling&quot;</span><span class="p">)</span>
+<span class="nf">get_estimates</span><span class="p">(</span><span class="n">my.Pooled.model</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<table class="dataframe">
+<caption>A data.frame: 3 × 11</caption>
+<thead>
+	<tr><th scope=col>term</th><th scope=col>estimate</th><th scope=col>std.error</th><th scope=col>conf.level</th><th scope=col>conf.low</th><th scope=col>conf.high</th><th scope=col>statistic</th><th scope=col>df.error</th><th scope=col>p.value</th><th scope=col>s.value</th><th scope=col>group</th></tr>
+	<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>(Intercept)</td><td>-11.1476225</td><td>15.01820589</td><td>0.95</td><td>-41.5773981</td><td>19.2821530</td><td>-0.7422739</td><td>37</td><td>4.626078e-01</td><td>1.1 </td><td></td></tr>
+	<tr><td>val        </td><td>  0.1567845</td><td> 0.01773510</td><td>0.95</td><td>  0.1208498</td><td> 0.1927192</td><td> 8.8403488</td><td>37</td><td>1.180776e-10</td><td>33.0</td><td></td></tr>
+	<tr><td>cap        </td><td>  0.3842592</td><td> 0.09560581</td><td>0.95</td><td>  0.1905434</td><td> 0.5779750</td><td> 4.0192035</td><td>37</td><td>2.755406e-04</td><td>11.8</td><td></td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="nf">pooltest</span><span class="p">(</span><span class="n">my.Pooled.model</span><span class="p">,</span><span class="w"> </span><span class="n">myOLS.pvcm</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea ">
+<pre>
+	F statistic
+
+data:  inv ~ val + cap
+F = 0.047853, df1 = 3, df2 = 34, p-value = 0.9859
+alternative hypothesis: unstability
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The Chow test for the poolability of the data cannot reject the null hypothesis that the coefficients are homogeneous across equations.</p>
 
 </div>
 </div>
