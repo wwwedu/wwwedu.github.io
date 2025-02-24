@@ -14127,7 +14127,7 @@ These covariates are defined as follows:</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="n">models</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">OLS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fatalities_mod1</span><span class="p">,</span><span class="w"> </span><span class="n">State.FE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fatalities_mod2</span><span class="p">,</span><span class="w"> </span><span class="n">TWFE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fatalities_mod3</span><span class="p">,</span><span class="w"> </span>
@@ -14139,6 +14139,276 @@ These covariates are defined as follows:</p>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto;" class="table">
+<caption>Panel Regression Models of Traffic Fatalities due to Drunk Driving</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;">   </th>
+   <th style="text-align:center;"> OLS </th>
+   <th style="text-align:center;"> State.FE </th>
+   <th style="text-align:center;"> TWFE </th>
+   <th style="text-align:center;"> TWFE.Full </th>
+   <th style="text-align:center;"> TWFE.No.Econ </th>
+   <th style="text-align:center;">  TWFE.82.88 </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:center;"> 1.853*** </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.044) </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> beertax </td>
+   <td style="text-align:center;"> 0.365*** </td>
+   <td style="text-align:center;"> -0.656*** </td>
+   <td style="text-align:center;"> -0.640** </td>
+   <td style="text-align:center;"> -0.445** </td>
+   <td style="text-align:center;"> -0.690*** </td>
+   <td style="text-align:center;"> -0.926** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.062) </td>
+   <td style="text-align:center;"> (0.188) </td>
+   <td style="text-align:center;"> (0.197) </td>
+   <td style="text-align:center;"> (0.169) </td>
+   <td style="text-align:center;"> (0.200) </td>
+   <td style="text-align:center;"> (0.313) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> drinkagec[18,19) </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.028 </td>
+   <td style="text-align:center;"> -0.010 </td>
+   <td style="text-align:center;"> 0.037 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.066) </td>
+   <td style="text-align:center;"> (0.079) </td>
+   <td style="text-align:center;"> (0.138) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> drinkagec[19,20) </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> -0.018 </td>
+   <td style="text-align:center;"> -0.076 </td>
+   <td style="text-align:center;"> -0.065 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.040) </td>
+   <td style="text-align:center;"> (0.047) </td>
+   <td style="text-align:center;"> (0.102) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> drinkagec[20,21) </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.032 </td>
+   <td style="text-align:center;"> -0.100+ </td>
+   <td style="text-align:center;"> -0.113 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.045) </td>
+   <td style="text-align:center;"> (0.051) </td>
+   <td style="text-align:center;"> (0.147) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> punishyes </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.038 </td>
+   <td style="text-align:center;"> 0.085 </td>
+   <td style="text-align:center;"> 0.089 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.060) </td>
+   <td style="text-align:center;"> (0.072) </td>
+   <td style="text-align:center;"> (0.140) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> miles </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.000 </td>
+   <td style="text-align:center;"> 0.000 </td>
+   <td style="text-align:center;"> 0.000+ </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.000) </td>
+   <td style="text-align:center;"> (0.000) </td>
+   <td style="text-align:center;"> (0.000) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> unemp </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> -0.063*** </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> -0.091** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.011) </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.026) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> log(income) </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 1.816*** </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.996 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;box-shadow: 0px 1.5px">  </td>
+   <td style="text-align:center;box-shadow: 0px 1.5px">  </td>
+   <td style="text-align:center;box-shadow: 0px 1.5px">  </td>
+   <td style="text-align:center;box-shadow: 0px 1.5px">  </td>
+   <td style="text-align:center;box-shadow: 0px 1.5px"> (0.380) </td>
+   <td style="text-align:center;box-shadow: 0px 1.5px">  </td>
+   <td style="text-align:center;box-shadow: 0px 1.5px"> (0.715) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Num.Obs. </td>
+   <td style="text-align:center;"> 336 </td>
+   <td style="text-align:center;"> 336 </td>
+   <td style="text-align:center;"> 336 </td>
+   <td style="text-align:center;"> 335 </td>
+   <td style="text-align:center;"> 335 </td>
+   <td style="text-align:center;"> 95 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> R2 </td>
+   <td style="text-align:center;"> 0.093 </td>
+   <td style="text-align:center;"> 0.041 </td>
+   <td style="text-align:center;"> 0.036 </td>
+   <td style="text-align:center;"> 0.360 </td>
+   <td style="text-align:center;"> 0.066 </td>
+   <td style="text-align:center;"> 0.659 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> R2 Adj. </td>
+   <td style="text-align:center;"> 0.091 </td>
+   <td style="text-align:center;"> -0.120 </td>
+   <td style="text-align:center;"> -0.149 </td>
+   <td style="text-align:center;"> 0.217 </td>
+   <td style="text-align:center;"> -0.134 </td>
+   <td style="text-align:center;"> 0.157 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> AIC </td>
+   <td style="text-align:center;"> 548.1 </td>
+   <td style="text-align:center;"> -211.9 </td>
+   <td style="text-align:center;"> -226.1 </td>
+   <td style="text-align:center;"> -347.6 </td>
+   <td style="text-align:center;"> -225.1 </td>
+   <td style="text-align:center;"> -114.4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> BIC </td>
+   <td style="text-align:center;"> 559.5 </td>
+   <td style="text-align:center;"> -204.3 </td>
+   <td style="text-align:center;"> -218.4 </td>
+   <td style="text-align:center;"> -313.3 </td>
+   <td style="text-align:center;"> -198.4 </td>
+   <td style="text-align:center;"> -91.4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Log.Lik. </td>
+   <td style="text-align:center;"> -271.039 </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> F </td>
+   <td style="text-align:center;"> 34.394 </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> RMSE </td>
+   <td style="text-align:center;"> 0.54 </td>
+   <td style="text-align:center;"> 0.18 </td>
+   <td style="text-align:center;"> 0.17 </td>
+   <td style="text-align:center;"> 0.14 </td>
+   <td style="text-align:center;"> 0.17 </td>
+   <td style="text-align:center;"> 0.12 </td>
+  </tr>
+</tbody>
+<tfoot><tr><td style="padding: 0; " colspan="100%">
+<sup></sup> + p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td></tr></tfoot>
+</table>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -14166,7 +14436,7 @@ These covariates are defined as follows:</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="c1"># test if legal drinking age has no explanatory power</span>
@@ -14176,6 +14446,36 @@ These covariates are defined as follows:</p>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<table class="dataframe">
+<caption>A anova: 2 × 4</caption>
+<thead>
+	<tr><th></th><th scope=col>Res.Df</th><th scope=col>Df</th><th scope=col>F</th><th scope=col>Pr(&gt;F)</th></tr>
+	<tr><th></th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>1</th><td>276</td><td>NA</td><td>       NA</td><td>       NA</td></tr>
+	<tr><th scope=row>2</th><td>273</td><td> 3</td><td>0.4607377</td><td>0.7099366</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -14195,7 +14495,7 @@ These covariates are defined as follows:</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="nf">linearHypothesis</span><span class="p">(</span><span class="n">fatalities_mod4</span><span class="p">,</span><span class="w"> </span>
@@ -14204,6 +14504,36 @@ These covariates are defined as follows:</p>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<table class="dataframe">
+<caption>A anova: 2 × 4</caption>
+<thead>
+	<tr><th></th><th scope=col>Res.Df</th><th scope=col>Df</th><th scope=col>F</th><th scope=col>Pr(&gt;F)</th></tr>
+	<tr><th></th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>1</th><td>275</td><td>NA</td><td>      NA</td><td>          NA</td></tr>
+	<tr><th scope=row>2</th><td>273</td><td> 2</td><td>62.64829</td><td>4.055125e-23</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -14239,7 +14569,7 @@ These covariates are defined as follows:</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="nf">coeftest</span><span class="p">(</span><span class="n">fatalities_mod3</span><span class="p">,</span><span class="w"> </span><span class="n">vcov</span><span class="o">=</span><span class="nf">vcovHC</span><span class="p">(</span><span class="n">fatalities_mod3</span><span class="p">,</span><span class="n">type</span><span class="o">=</span><span class="s">&quot;HC0&quot;</span><span class="p">,</span><span class="n">cluster</span><span class="o">=</span><span class="s">&quot;group&quot;</span><span class="p">))</span><span class="w"> </span><span class="c1"># clustered by group/individual</span>
@@ -14248,6 +14578,73 @@ These covariates are defined as follows:</p>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea ">
+<pre>
+t test of coefficients:
+
+        Estimate Std. Error t value Pr(&gt;|t|)  
+beertax -0.63998    0.34963 -1.8305  0.06824 .
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea ">
+<pre>
+t test of coefficients:
+
+        Estimate Std. Error t value Pr(&gt;|t|)  
+beertax -0.63998    0.35015 -1.8277  0.06865 .
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea ">
+<pre>
+t test of coefficients:
+
+        Estimate Std. Error t value Pr(&gt;|t|)    
+beertax -0.63998    0.13979 -4.5782 7.05e-06 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -14262,7 +14659,7 @@ These covariates are defined as follows:</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">fixest</span><span class="p">)</span>
@@ -14276,6 +14673,143 @@ These covariates are defined as follows:</p>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>The variables &#39;stateaz&#39;, &#39;statear&#39; and fifty-one others have been removed because of collinearity (see $collin.var).
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto;" class="table">
+<caption>Panel Regression Models with Panel Robust Standard Errors</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;">   </th>
+   <th style="text-align:center;"> Classical </th>
+   <th style="text-align:center;"> By.State </th>
+   <th style="text-align:center;"> By.Year </th>
+   <th style="text-align:center;"> Both </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> beertax </td>
+   <td style="text-align:center;"> -0.640* </td>
+   <td style="text-align:center;"> -0.640+ </td>
+   <td style="text-align:center;"> -0.640*** </td>
+   <td style="text-align:center;"> -0.640+ </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;box-shadow: 0px 1.5px">  </td>
+   <td style="text-align:center;box-shadow: 0px 1.5px"> (0.255) </td>
+   <td style="text-align:center;box-shadow: 0px 1.5px"> (0.357) </td>
+   <td style="text-align:center;box-shadow: 0px 1.5px"> (0.163) </td>
+   <td style="text-align:center;box-shadow: 0px 1.5px"> (0.320) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Num.Obs. </td>
+   <td style="text-align:center;"> 336 </td>
+   <td style="text-align:center;"> 336 </td>
+   <td style="text-align:center;"> 336 </td>
+   <td style="text-align:center;"> 336 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> R2 </td>
+   <td style="text-align:center;"> 0.909 </td>
+   <td style="text-align:center;"> 0.909 </td>
+   <td style="text-align:center;"> 0.909 </td>
+   <td style="text-align:center;"> 0.909 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> R2 Adj. </td>
+   <td style="text-align:center;"> 0.891 </td>
+   <td style="text-align:center;"> 0.891 </td>
+   <td style="text-align:center;"> 0.891 </td>
+   <td style="text-align:center;"> 0.891 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> R2 Within </td>
+   <td style="text-align:center;"> 0.036 </td>
+   <td style="text-align:center;"> 0.036 </td>
+   <td style="text-align:center;"> 0.036 </td>
+   <td style="text-align:center;"> 0.036 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> R2 Within Adj. </td>
+   <td style="text-align:center;"> 0.033 </td>
+   <td style="text-align:center;"> 0.033 </td>
+   <td style="text-align:center;"> 0.033 </td>
+   <td style="text-align:center;"> 0.033 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> AIC </td>
+   <td style="text-align:center;"> -120.1 </td>
+   <td style="text-align:center;"> -120.1 </td>
+   <td style="text-align:center;"> -120.1 </td>
+   <td style="text-align:center;"> -120.1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> BIC </td>
+   <td style="text-align:center;"> 89.9 </td>
+   <td style="text-align:center;"> 89.9 </td>
+   <td style="text-align:center;"> 89.9 </td>
+   <td style="text-align:center;"> 89.9 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> RMSE </td>
+   <td style="text-align:center;"> 0.17 </td>
+   <td style="text-align:center;"> 0.17 </td>
+   <td style="text-align:center;"> 0.17 </td>
+   <td style="text-align:center;"> 0.17 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Std.Errors </td>
+   <td style="text-align:center;"> HC1 </td>
+   <td style="text-align:center;"> by: state </td>
+   <td style="text-align:center;"> by: year </td>
+   <td style="text-align:center;"> by: state &amp; year </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> FE: state </td>
+   <td style="text-align:center;"> X </td>
+   <td style="text-align:center;"> X </td>
+   <td style="text-align:center;"> X </td>
+   <td style="text-align:center;"> X </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> FE: year </td>
+   <td style="text-align:center;"> X </td>
+   <td style="text-align:center;"> X </td>
+   <td style="text-align:center;"> X </td>
+   <td style="text-align:center;"> X </td>
+  </tr>
+</tbody>
+<tfoot><tr><td style="padding: 0; " colspan="100%">
+<sup></sup> + p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td></tr></tfoot>
+</table>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -14313,7 +14847,7 @@ These covariates are defined as follows:</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="n">fixed</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">plm</span><span class="p">(</span><span class="n">fatal_rate</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">beertax</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;within&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Fatalities</span><span class="p">)</span>
@@ -14323,6 +14857,32 @@ These covariates are defined as follows:</p>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea ">
+<pre>
+	F test for individual effects
+
+data:  fatal_rate ~ beertax
+F = 52.179, df1 = 47, df2 = 287, p-value &lt; 2.2e-16
+alternative hypothesis: significant effects
+</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -14337,7 +14897,7 @@ These covariates are defined as follows:</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="n">fixed</span><span class="w">  </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">plm</span><span class="p">(</span><span class="n">fatal_rate</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">beertax</span><span class="p">,</span><span class="w">  </span><span class="n">model</span><span class="o">=</span><span class="s">&quot;within&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Fatalities</span><span class="p">)</span>
@@ -14349,16 +14909,91 @@ These covariates are defined as follows:</p>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea ">
+<pre>Oneway (individual) effect Random Effect Model 
+   (Swamy-Arora&#39;s transformation)
+
+Call:
+plm(formula = fatal_rate ~ beertax, data = Fatalities, model = &#34;random&#34;)
+
+Balanced Panel: n = 48, T = 7, N = 336
+
+Effects:
+                  var std.dev share
+idiosyncratic 0.03605 0.18986 0.119
+individual    0.26604 0.51579 0.881
+theta: 0.8622
+
+Residuals:
+     Min.   1st Qu.    Median   3rd Qu.      Max. 
+-0.471090 -0.120045 -0.021530  0.091011  0.964350 
+
+Coefficients:
+             Estimate Std. Error z-value Pr(&gt;|z|)    
+(Intercept)  2.067141   0.099971 20.6773   &lt;2e-16 ***
+beertax     -0.052016   0.124176 -0.4189   0.6753    
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Total Sum of Squares:    12.648
+Residual Sum of Squares: 12.642
+R-Squared:      0.00052508
+Adj. R-Squared: -0.0024674
+Chisq: 0.175467 on 1 DF, p-value: 0.6753</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="nf">phtest</span><span class="p">(</span><span class="n">fixed</span><span class="p">,</span><span class="w"> </span><span class="n">random</span><span class="p">)</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea ">
+<pre>
+	Hausman Test
+
+data:  fatal_rate ~ beertax
+chisq = 18.353, df = 1, p-value = 1.835e-05
+alternative hypothesis: one model is inconsistent
+</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -14388,7 +15023,7 @@ These covariates are defined as follows:</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="n">pooled</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">plm</span><span class="p">(</span><span class="n">fatal_rate</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">beertax</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="o">=</span><span class="s">&quot;pooling&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Fatalities</span><span class="p">)</span>
@@ -14397,6 +15032,32 @@ These covariates are defined as follows:</p>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea ">
+<pre>
+	Lagrange Multiplier Test - (Breusch-Pagan)
+
+data:  fatal_rate ~ beertax
+chisq = 754.57, df = 1, p-value &lt; 2.2e-16
+alternative hypothesis: significant effects
+</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
