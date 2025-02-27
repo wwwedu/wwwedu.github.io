@@ -13128,7 +13128,7 @@ div#notebook {
 <script>
 $( document ).ready(function(){
 
-            var cfg = {"base_numbering": 1, "nav_menu": {}, "number_sections": true, "sideBar": true, "skip_h1_title": true, "title_cell": "Table of Contents", "title_sidebar": "Contents", "toc_cell": false, "toc_position": {"height": "calc(100% - 180px)", "left": "10px", "top": "150px", "width": "279.025px"}, "toc_section_display": true, "toc_window_display": true};
+            var cfg = {"base_numbering": 1, "nav_menu": {}, "number_sections": true, "sideBar": true, "skip_h1_title": true, "title_cell": "Table of Contents", "title_sidebar": "Contents", "toc_cell": false, "toc_position": {"height": "calc(100% - 180px)", "left": "10px", "top": "150px", "width": "279.023px"}, "toc_section_display": true, "toc_window_display": true};
 
             // fire the main function with these parameters
             require(['nbextensions/toc2/toc2'], function (toc2) {
@@ -14663,12 +14663,12 @@ Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">fixest</span><span class="p">)</span>
-<span class="n">my.TWFE.FEOLS</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">feols</span><span class="p">(</span><span class="n">fatal_rate</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">beertax</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">year</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">state</span><span class="o">+</span><span class="n">year</span><span class="p">,</span>
+<span class="n">my.TWFE.FEOLS</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">feols</span><span class="p">(</span><span class="n">fatal_rate</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">beertax</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">state</span><span class="o">+</span><span class="n">year</span><span class="p">,</span>
 <span class="w">                       </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Fatalities</span><span class="p">)</span>
 <span class="c1"># modelsummary(models, vcov = c(&quot;classical&quot;, &quot;robust&quot;, &quot;bootstrap&quot;, &quot;stata&quot;, &quot;HC4&quot;))</span>
-<span class="nf">modelsummary</span><span class="p">(</span><span class="nf">list</span><span class="p">(</span><span class="n">Classical</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my.TWFE.FEOLS</span><span class="p">,</span><span class="n">By.State</span><span class="o">=</span><span class="n">my.TWFE.FEOLS</span><span class="p">,</span><span class="n">By.Year</span><span class="o">=</span><span class="n">my.TWFE.FEOLS</span><span class="p">,</span><span class="n">Both</span><span class="o">=</span><span class="n">my.TWFE.FEOLS</span><span class="p">),</span><span class="w"> </span>
+<span class="nf">modelsummary</span><span class="p">(</span><span class="nf">list</span><span class="p">(</span><span class="n">No.Clustering</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my.TWFE.FEOLS</span><span class="p">,</span><span class="n">By.State</span><span class="o">=</span><span class="n">my.TWFE.FEOLS</span><span class="p">,</span><span class="n">By.Year</span><span class="o">=</span><span class="n">my.TWFE.FEOLS</span><span class="p">,</span><span class="n">Both</span><span class="o">=</span><span class="n">my.TWFE.FEOLS</span><span class="p">),</span><span class="w"> </span>
 <span class="w">             </span><span class="n">stars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">vcov</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="s">&quot;robust&quot;</span><span class="w"> </span><span class="p">,</span><span class="o">~</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="n">year</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="n">state</span><span class="o">+</span><span class="n">year</span><span class="p">),</span>
-<span class="w">             </span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="s">&quot;Panel Regression Models with Panel Robust Standard Errors&quot;</span><span class="p">,</span>
+<span class="w">             </span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="s">&quot;TWFE Panel Regression Model Estimates with Panel Robust Standard Errors&quot;</span><span class="p">,</span>
 <span class="w">             </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;jupyter&quot;</span><span class="p">)</span>
 </pre></div>
 
@@ -14685,26 +14685,14 @@ Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&
     <div class="prompt"></div>
 
 
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>The variables &#39;stateaz&#39;, &#39;statear&#39; and fifty-one others have been removed because of collinearity (see $collin.var).
-
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
 
 <div class="output_html rendered_html output_subarea ">
 <table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto;" class="table">
-<caption>Panel Regression Models with Panel Robust Standard Errors</caption>
+<caption>TWFE Panel Regression Model Estimates with Panel Robust Standard Errors</caption>
  <thead>
   <tr>
    <th style="text-align:left;">   </th>
-   <th style="text-align:center;"> Classical </th>
+   <th style="text-align:center;"> No.Clustering </th>
    <th style="text-align:center;"> By.State </th>
    <th style="text-align:center;"> By.Year </th>
    <th style="text-align:center;"> Both </th>
