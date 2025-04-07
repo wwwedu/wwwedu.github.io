@@ -2,7 +2,7 @@
 <html>
 <head><meta charset="utf-8" />
 
-<title>Lecture08b</title>
+<title>Lecture09b</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -13128,7 +13128,7 @@ div#notebook {
 <script>
 $( document ).ready(function(){
 
-            var cfg = {"base_numbering": 1, "nav_menu": {}, "number_sections": true, "sideBar": true, "skip_h1_title": true, "title_cell": "Table of Contents", "title_sidebar": "Contents", "toc_cell": false, "toc_position": {"height": "calc(100% - 180px)", "left": "10px", "top": "150px", "width": "255.525px"}, "toc_section_display": true, "toc_window_display": true};
+            var cfg = {"base_numbering": 1, "nav_menu": {}, "number_sections": true, "sideBar": true, "skip_h1_title": true, "title_cell": "Table of Contents", "title_sidebar": "Contents", "toc_cell": false, "toc_position": {"height": "calc(100% - 180px)", "left": "10px", "top": "150px", "width": "409.6px"}, "toc_section_display": true, "toc_window_display": true};
 
             // fire the main function with these parameters
             require(['nbextensions/toc2/toc2'], function (toc2) {
@@ -13144,1093 +13144,42 @@ $( document ).ready(function(){
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Dragos Ailoae</strong></p>
-<h1 id="Binary-Response-Models"><center>Binary Response Models</center><a class="anchor-link" href="#Binary-Response-Models">&#182;</a></h1><h1 id="Interpreting-Coefficients"><center>Interpreting Coefficients</center><a class="anchor-link" href="#Interpreting-Coefficients">&#182;</a></h1>
+<h1 id="Discrete-Choice:-Ordered-and-Unordered-Multinomial-Models"><center>Discrete Choice: Ordered and Unordered Multinomial Models</center><a class="anchor-link" href="#Discrete-Choice:-Ordered-and-Unordered-Multinomial-Models">&#182;</a></h1><h1 id="-Examples"><center> Examples</center><a class="anchor-link" href="#-Examples">&#182;</a></h1>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Introduction">Introduction<a class="anchor-link" href="#Introduction">&#182;</a></h2><h3 id="Reference-dataset">Reference dataset<a class="anchor-link" href="#Reference-dataset">&#182;</a></h3>
+<h2 id="Ordered-choice-(ordered-probit)">Ordered choice (ordered probit)<a class="anchor-link" href="#Ordered-choice-(ordered-probit)">&#182;</a></h2>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We'll continue with the Mroz dataset.  Recall that we modeled women's labor participation decision using OLS, probit, and logistic regression.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="nf">rm</span><span class="p">(</span><span class="n">list</span><span class="o">=</span><span class="nf">ls</span><span class="p">())</span><span class="w">    </span><span class="c1"># Removes all items in Environment!</span>
-<span class="c1">#</span>
-<span class="c1"># OPTIONS:</span>
-<span class="nf">options</span><span class="p">(</span><span class="n">warn</span><span class="o">=</span><span class="m">-1</span><span class="p">)</span><span class="w"> </span><span class="c1"># Suppress warnings</span>
-<span class="c1">#</span>
-<span class="c1"># LOAD PACKAGES:</span>
-<span class="n">packages</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;tidyverse&quot;</span><span class="p">,</span><span class="s">&quot;modelsummary&quot;</span><span class="p">,</span><span class="s">&quot;mfx&quot;</span><span class="p">,</span><span class="s">&quot;marginaleffects&quot;</span><span class="p">)</span>
-<span class="n">zzz</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">lapply</span><span class="p">(</span><span class="n">packages</span><span class="p">,</span><span class="w"> </span><span class="nf">function</span><span class="p">(</span><span class="n">xxx</span><span class="p">)</span><span class="w"> </span><span class="nf">suppressMessages</span><span class="p">(</span><span class="nf">require</span><span class="p">(</span><span class="n">xxx</span><span class="p">,</span><span class="w"> </span>
-<span class="w">               </span><span class="n">character.only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">quietly</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">warn.conflicts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)))</span>
-<span class="c1">#</span>
-<span class="c1"># Load Data              </span>
-<span class="c1"># raw.data &lt;- read.dta(&quot;http://fmwww.bc.edu/ec-p/data/wooldridge/mroz.dta&quot;)</span>
-<span class="nf">data</span><span class="p">(</span><span class="s">&#39;mroz&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;wooldridge&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1"># Load mroz dataset</span>
-<span class="n">my.df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">data.frame</span><span class="p">(</span><span class="n">mroz</span><span class="p">)</span>
-<span class="c1">#</span>
-<span class="c1"># Evaluate 3 models</span>
-<span class="n">equation</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">inlf</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">nwifeinc</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">educ</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">exper</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">expersq</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">kidslt6</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">kidsge6</span>
-<span class="n">LPM</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">lm</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my.df</span><span class="p">)</span>
-<span class="n">probit_glm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">glm</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my.df</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">binomial</span><span class="p">(</span><span class="n">link</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;probit&quot;</span><span class="p">))</span>
-<span class="n">logit_glm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">glm</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my.df</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">binomial</span><span class="p">(</span><span class="n">link</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;logit&quot;</span><span class="p">))</span>
-<span class="c1">#</span>
-<span class="c1"># Output table</span>
-<span class="n">models</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">LPM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LPM</span><span class="p">,</span><span class="w"> </span><span class="n">Probit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">probit_glm</span><span class="p">,</span><span class="w"> </span><span class="n">Logit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">logit_glm</span><span class="p">)</span>
-<span class="nf">modelsummary</span><span class="p">(</span><span class="n">models</span><span class="p">,</span><span class="w"> </span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="s">&quot;Labor force participation models&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">             </span><span class="n">fmt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;%.4f&quot;</span><span class="p">,</span><span class="n">stars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">term</span><span class="p">,</span>
-<span class="w">             </span><span class="n">gof_omit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;.*&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;jupyter&quot;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-<table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto;" class="table">
-<caption>Labor force participation models</caption>
- <thead>
-  <tr>
-   <th style="text-align:left;">   </th>
-   <th style="text-align:center;">  (Intercept) </th>
-   <th style="text-align:center;"> nwifeinc </th>
-   <th style="text-align:center;"> educ </th>
-   <th style="text-align:center;"> exper </th>
-   <th style="text-align:center;"> expersq </th>
-   <th style="text-align:center;"> age </th>
-   <th style="text-align:center;">  kidslt6 </th>
-   <th style="text-align:center;">  kidsge6 </th>
-  </tr>
- </thead>
-<tbody>
-  <tr>
-   <td style="text-align:left;"> LPM </td>
-   <td style="text-align:center;"> 0.5855*** </td>
-   <td style="text-align:center;"> -0.0034* </td>
-   <td style="text-align:center;"> 0.0380*** </td>
-   <td style="text-align:center;"> 0.0395*** </td>
-   <td style="text-align:center;"> -0.0006** </td>
-   <td style="text-align:center;"> -0.0161*** </td>
-   <td style="text-align:center;"> -0.2618*** </td>
-   <td style="text-align:center;"> 0.0130 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:center;"> (0.1542) </td>
-   <td style="text-align:center;"> (0.0014) </td>
-   <td style="text-align:center;"> (0.0074) </td>
-   <td style="text-align:center;"> (0.0057) </td>
-   <td style="text-align:center;"> (0.0002) </td>
-   <td style="text-align:center;"> (0.0025) </td>
-   <td style="text-align:center;"> (0.0335) </td>
-   <td style="text-align:center;"> (0.0132) </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> Probit </td>
-   <td style="text-align:center;"> 0.2701 </td>
-   <td style="text-align:center;"> -0.0120* </td>
-   <td style="text-align:center;"> 0.1309*** </td>
-   <td style="text-align:center;"> 0.1233*** </td>
-   <td style="text-align:center;"> -0.0019** </td>
-   <td style="text-align:center;"> -0.0529*** </td>
-   <td style="text-align:center;"> -0.8683*** </td>
-   <td style="text-align:center;"> 0.0360 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:center;"> (0.5081) </td>
-   <td style="text-align:center;"> (0.0049) </td>
-   <td style="text-align:center;"> (0.0254) </td>
-   <td style="text-align:center;"> (0.0188) </td>
-   <td style="text-align:center;"> (0.0006) </td>
-   <td style="text-align:center;"> (0.0085) </td>
-   <td style="text-align:center;"> (0.1184) </td>
-   <td style="text-align:center;"> (0.0440) </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> Logit </td>
-   <td style="text-align:center;"> 0.4255 </td>
-   <td style="text-align:center;"> -0.0213* </td>
-   <td style="text-align:center;"> 0.2212*** </td>
-   <td style="text-align:center;"> 0.2059*** </td>
-   <td style="text-align:center;"> -0.0032** </td>
-   <td style="text-align:center;"> -0.0880*** </td>
-   <td style="text-align:center;"> -1.4434*** </td>
-   <td style="text-align:center;"> 0.0601 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:center;"> (0.8604) </td>
-   <td style="text-align:center;"> (0.0084) </td>
-   <td style="text-align:center;"> (0.0434) </td>
-   <td style="text-align:center;"> (0.0321) </td>
-   <td style="text-align:center;"> (0.0010) </td>
-   <td style="text-align:center;"> (0.0146) </td>
-   <td style="text-align:center;"> (0.2036) </td>
-   <td style="text-align:center;"> (0.0748) </td>
-  </tr>
-</tbody>
-<tfoot><tr><td style="padding: 0; " colspan="100%">
-<sup></sup> + p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td></tr></tfoot>
-</table>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="n">equation</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">inlf</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">nwifeinc</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">educ</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">exper</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">expersq</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">kidslt6</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">kidsge6</span>
-<span class="n">probit_glm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">glm</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my.df</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">binomial</span><span class="p">(</span><span class="n">link</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;probit&quot;</span><span class="p">))</span>
-<span class="nf">summary</span><span class="p">(</span><span class="n">probit_glm</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_text output_subarea ">
-<pre>
-Call:
-glm(formula = equation, family = binomial(link = &#34;probit&#34;), data = my.df)
-
-Deviance Residuals: 
-    Min       1Q   Median       3Q      Max  
--2.2156  -0.9151   0.4315   0.8653   2.4553  
-
-Coefficients:
-              Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)  0.2700736  0.5080782   0.532  0.59503    
-nwifeinc    -0.0120236  0.0049392  -2.434  0.01492 *  
-educ         0.1309040  0.0253987   5.154 2.55e-07 ***
-exper        0.1233472  0.0187587   6.575 4.85e-11 ***
-expersq     -0.0018871  0.0005999  -3.145  0.00166 ** 
-age         -0.0528524  0.0084624  -6.246 4.22e-10 ***
-kidslt6     -0.8683247  0.1183773  -7.335 2.21e-13 ***
-kidsge6      0.0360056  0.0440303   0.818  0.41350    
----
-Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-
-(Dispersion parameter for binomial family taken to be 1)
-
-    Null deviance: 1029.7  on 752  degrees of freedom
-Residual deviance:  802.6  on 745  degrees of freedom
-AIC: 818.6
-
-Number of Fisher Scoring iterations: 4
-</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>On first inspection, the three regressions seem to point to very different magnitudes of effects. While we intuitively understand the OLS coefficients, how should we interpret the Probit and Logit coefficients?</p>
-<p>To understand this we'll need a bit of theory:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Interpreting-Logit-and-Probit-coefficients">Interpreting Logit and Probit coefficients<a class="anchor-link" href="#Interpreting-Logit-and-Probit-coefficients">&#182;</a></h2><h3 id="The-LPM-problem">The LPM problem<a class="anchor-link" href="#The-LPM-problem">&#182;</a></h3><p>The linear probability model assumes the conditional probability function to be linear. This does not restrict $P\left(Y=1 \mid X_{1}, \ldots, X_{k}\right)$ to lie between 0 and 1.</p>
-<center> <img src="image1b.png" width="600" /> </center>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Solution:-Index-(link)-functions">Solution: Index (link) functions<a class="anchor-link" href="#Solution:-Index-(link)-functions">&#182;</a></h3><p>Function that maps the linear relationship ranging from negative infinity to positive infinity to nonlinear probability ranging between 0 and 1.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Probit-link-function">Probit link function<a class="anchor-link" href="#Probit-link-function">&#182;</a></h3><p>The link function used in probit regression is the standard normal distribution CDF so the link function $F\left(\boldsymbol{X}_t \boldsymbol{\beta}\right)=\Phi\left(\boldsymbol{X}_t \boldsymbol{\beta}\right)$ where</p>
-$$
-\Phi(x) \equiv \frac{1}{\sqrt{2 \pi}} \int_{-\infty}^x \exp \left(-\frac{1}{2} X^2\right) d X
-$$<p>which has as first derivative the standard normal PDF:</p>
-$$
-\phi(x)=(2 \pi)^{-1 / 2} \exp \left(-\frac{1}{2} x^2\right)
-$$<p>Graphically:</p>
-<center> <img src="image1.png" width="300" /> </center>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Translating-Probit-coefficients-to-probability">Translating Probit coefficients to probability<a class="anchor-link" href="#Translating-Probit-coefficients-to-probability">&#182;</a></h4>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Probit regression coefficients therefore tell us the change in the outcome Z-score for a 1 unit change in X evaluated at the data sample means.</p>
-<p>As a refresher let's look at the statistical table for the <a href="https://drive.google.com/file/d/156O9oqugH8P5VzIHQ6hHaB6vjUQzzW9f/view?usp=sharing">standard normal</a>.  Now let's look at the <em>educ</em> coefficient estimated at 0.1309.  We can convert the coefficient to probability using the standard normal table or, using R:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="n">equation</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">inlf</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">nwifeinc</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">educ</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">exper</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">expersq</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">kidslt6</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">kidsge6</span>
-<span class="n">probit_glm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">glm</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my.df</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">binomial</span><span class="p">(</span><span class="n">link</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;probit&quot;</span><span class="p">))</span>
-<span class="nf">summary</span><span class="p">(</span><span class="n">probit_glm</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_text output_subarea ">
-<pre>
-Call:
-glm(formula = equation, family = binomial(link = &#34;probit&#34;), data = my.df)
-
-Deviance Residuals: 
-    Min       1Q   Median       3Q      Max  
--2.2156  -0.9151   0.4315   0.8653   2.4553  
-
-Coefficients:
-              Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)  0.2700736  0.5080782   0.532  0.59503    
-nwifeinc    -0.0120236  0.0049392  -2.434  0.01492 *  
-educ         0.1309040  0.0253987   5.154 2.55e-07 ***
-exper        0.1233472  0.0187587   6.575 4.85e-11 ***
-expersq     -0.0018871  0.0005999  -3.145  0.00166 ** 
-age         -0.0528524  0.0084624  -6.246 4.22e-10 ***
-kidslt6     -0.8683247  0.1183773  -7.335 2.21e-13 ***
-kidsge6      0.0360056  0.0440303   0.818  0.41350    
----
-Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-
-(Dispersion parameter for binomial family taken to be 1)
-
-    Null deviance: 1029.7  on 752  degrees of freedom
-Residual deviance:  802.6  on 745  degrees of freedom
-AIC: 818.6
-
-Number of Fisher Scoring iterations: 4
-</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="nf">pnorm</span><span class="p">(</span><span class="m">0.1309</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nf">pnorm</span><span class="p">(</span><span class="m">0</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-0.0520727926584955
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Or, based on lecture derivations:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="nf">dnorm</span><span class="p">(</span><span class="m">0</span><span class="p">)</span><span class="o">*</span><span class="m">0.1309</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-0.0522215445045475
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>The 'mfx' package in R allows us to compute exact marginal effects for nonlinear regressions:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="nf">probitmfx</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span><span class="w"> </span><span class="n">atmean</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">my.df</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_text output_subarea ">
-<pre>Call:
-probitmfx(formula = equation, data = my.df, atmean = TRUE)
-
-Marginal Effects:
-               dF/dx   Std. Err.       z     P&gt;|z|    
-nwifeinc -0.00469619  0.00192965 -2.4337  0.014945 *  
-educ      0.05112843  0.00992310  5.1525 2.571e-07 ***
-exper     0.04817690  0.00734505  6.5591 5.413e-11 ***
-expersq  -0.00073705  0.00023464 -3.1412  0.001683 ** 
-age      -0.02064309  0.00330485 -6.2463 4.203e-10 ***
-kidslt6  -0.33914996  0.04634765 -7.3175 2.526e-13 ***
-kidsge6   0.01406306  0.01719895  0.8177  0.413546    
----
-Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Alternately, we can use the slopes() function in the 'marginaleffects' package:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="nf">slopes</span><span class="p">(</span><span class="n">probit_glm</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;mean&quot;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-<table class="dataframe">
-<caption>A slopes: 7 × 19</caption>
-<thead>
-	<tr><th scope=col>rowid</th><th scope=col>term</th><th scope=col>estimate</th><th scope=col>std.error</th><th scope=col>statistic</th><th scope=col>p.value</th><th scope=col>conf.low</th><th scope=col>conf.high</th><th scope=col>predicted</th><th scope=col>predicted_hi</th><th scope=col>predicted_lo</th><th scope=col>inlf</th><th scope=col>nwifeinc</th><th scope=col>educ</th><th scope=col>exper</th><th scope=col>expersq</th><th scope=col>age</th><th scope=col>kidslt6</th><th scope=col>kidsge6</th></tr>
-	<tr><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
-</thead>
-<tbody>
-	<tr><td>1</td><td>age     </td><td>-0.0195932749</td><td>0.003043262</td><td>-6.4382469</td><td>1.208613e-10</td><td>-0.025557960</td><td>-0.0136285901</td><td>0.6492029</td><td>0.6491441</td><td>0.6492029</td><td>0.5683931</td><td>20.12896</td><td>12</td><td>11</td><td>178</td><td>43</td><td>0</td><td>1</td></tr>
-	<tr><td>1</td><td>educ    </td><td> 0.0485253335</td><td>0.009557342</td><td> 5.0772832</td><td>3.828701e-07</td><td> 0.029793287</td><td> 0.0672573804</td><td>0.6492029</td><td>0.6492611</td><td>0.6492029</td><td>0.5683931</td><td>20.12896</td><td>12</td><td>11</td><td>178</td><td>43</td><td>0</td><td>1</td></tr>
-	<tr><td>1</td><td>exper   </td><td> 0.0457205832</td><td>0.006935399</td><td> 6.5923513</td><td>4.329148e-11</td><td> 0.032127452</td><td> 0.0593137145</td><td>0.6492029</td><td>0.6494086</td><td>0.6492029</td><td>0.5683931</td><td>20.12896</td><td>12</td><td>11</td><td>178</td><td>43</td><td>0</td><td>1</td></tr>
-	<tr><td>1</td><td>expersq </td><td>-0.0006995971</td><td>0.000221649</td><td>-3.1563287</td><td>1.597687e-03</td><td>-0.001134021</td><td>-0.0002651730</td><td>0.6492029</td><td>0.6490612</td><td>0.6492029</td><td>0.5683931</td><td>20.12896</td><td>12</td><td>11</td><td>178</td><td>43</td><td>0</td><td>1</td></tr>
-	<tr><td>1</td><td>kidsge6 </td><td> 0.0133473967</td><td>0.016418807</td><td> 0.8129334</td><td>4.162563e-01</td><td>-0.018832874</td><td> 0.0455276679</td><td>0.6492029</td><td>0.6492136</td><td>0.6492029</td><td>0.5683931</td><td>20.12896</td><td>12</td><td>11</td><td>178</td><td>43</td><td>0</td><td>1</td></tr>
-	<tr><td>1</td><td>kidslt6 </td><td>-0.3219086156</td><td>0.041007132</td><td>-7.8500641</td><td>4.158247e-15</td><td>-0.402281118</td><td>-0.2415361136</td><td>0.6492029</td><td>0.6491063</td><td>0.6492029</td><td>0.5683931</td><td>20.12896</td><td>12</td><td>11</td><td>178</td><td>43</td><td>0</td><td>1</td></tr>
-	<tr><td>1</td><td>nwifeinc</td><td>-0.0044573244</td><td>0.001836632</td><td>-2.4269014</td><td>1.522839e-02</td><td>-0.008057057</td><td>-0.0008575921</td><td>0.6492029</td><td>0.6491601</td><td>0.6492029</td><td>0.5683931</td><td>20.12896</td><td>12</td><td>11</td><td>178</td><td>43</td><td>0</td><td>1</td></tr>
-</tbody>
-</table>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>These marginal effects are more in line with the LPM estimates.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Logit-link-function">Logit link function<a class="anchor-link" href="#Logit-link-function">&#182;</a></h3><p>The link function used in logit is based on the binomial distribution and is known as the logistic function:</p>
-$$
-\Lambda(x) \equiv \frac{1}{1+e^{-x}}=\frac{e^x}{1+e^x}
-$$<p>which has first derivative
-$$
-\lambda(x) \equiv \frac{e^x}{\left(1+e^x\right)^2}=\Lambda(x) \Lambda(-x) .
-$$
-This first derivative is evidently symmetric around zero, which implies that $\Lambda(-x)=1-\Lambda(x)$.</p>
-<p>The logit model is most easily derived by assuming that
-$$
-\log \left(\frac{P_t}{1-P_t}\right)=\boldsymbol{X}_t \boldsymbol{\beta}
-$$
-which says that the logarithm of the odds (that is, the ratio of the two probabilities) is equal to $\boldsymbol{X}_t \boldsymbol{\beta}$. Solving for $P_t$, we find that
-$$
-P_t=\frac{\exp \left(\boldsymbol{X}_t \boldsymbol{\beta}\right)}{1+\exp \left(\boldsymbol{X}_t \boldsymbol{\beta}\right)}=\frac{1}{1+\exp \left(-\boldsymbol{X}_t \boldsymbol{\beta}\right)}=\Lambda\left(\boldsymbol{X}_t \boldsymbol{\beta}\right) .
-$$
-This result is what we would get by letting $\Lambda\left(\boldsymbol{X}_t \boldsymbol{\beta}\right)$ play the role of the transformation function $F\left(\boldsymbol{X}_t \boldsymbol{\beta}\right)$ .</p>
-<p>To understand how to interpret logit coefficients we need to first understand odds (odds ratios).</p>
-<h4 id="Probability-vs-odds-vs-log-of-odds">Probability vs odds vs log of odds<a class="anchor-link" href="#Probability-vs-odds-vs-log-of-odds">&#182;</a></h4><p>Everything starts with the concept of probability.  Let’s say that the probability of success of some event is .8.  Then the probability of failure is 1 – .8 = .2.  The odds of success are defined as the ratio of the probability of success over the probability of failure.  In our example, the odds of success are .8/.2 = 4.  That is to say that the odds of success are  4 to 1.  If the probability of success is .5, i.e., 50-50 percent chance, then the odds of success is 1 to 1.</p>
-<p>For another example, consider dice: the probability of rolling a 3 is 1/6. But the odds of rolling a 3 is 1 to 5 or 1/5.</p>
-<p>The table below shows the relationship between probability, odds and log of odds.</p>
-<center> <img src="image2.png" width="200" /> </center><p>Note how we've achieved our goal of mapping probability, ranging between 0 and 1, to log-odds, ranging from negative infinity to infinity.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Translating-Logit-coefficients">Translating Logit coefficients<a class="anchor-link" href="#Translating-Logit-coefficients">&#182;</a></h4>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="n">equation</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">inlf</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">nwifeinc</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">educ</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">exper</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">expersq</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">kidslt6</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">kidsge6</span>
-<span class="n">logit_glm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">glm</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my.df</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">binomial</span><span class="p">(</span><span class="n">link</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;logit&quot;</span><span class="p">))</span>
-<span class="nf">summary</span><span class="p">(</span><span class="n">logit_glm</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_text output_subarea ">
-<pre>
-Call:
-glm(formula = equation, family = binomial(link = &#34;logit&#34;), data = my.df)
-
-Deviance Residuals: 
-    Min       1Q   Median       3Q      Max  
--2.1770  -0.9063   0.4473   0.8561   2.4032  
-
-Coefficients:
-             Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)  0.425452   0.860365   0.495  0.62095    
-nwifeinc    -0.021345   0.008421  -2.535  0.01126 *  
-educ         0.221170   0.043439   5.091 3.55e-07 ***
-exper        0.205870   0.032057   6.422 1.34e-10 ***
-expersq     -0.003154   0.001016  -3.104  0.00191 ** 
-age         -0.088024   0.014573  -6.040 1.54e-09 ***
-kidslt6     -1.443354   0.203583  -7.090 1.34e-12 ***
-kidsge6      0.060112   0.074789   0.804  0.42154    
----
-Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-
-(Dispersion parameter for binomial family taken to be 1)
-
-    Null deviance: 1029.75  on 752  degrees of freedom
-Residual deviance:  803.53  on 745  degrees of freedom
-AIC: 819.53
-
-Number of Fisher Scoring iterations: 4
-</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>To convert the logit glm output to probability we need to:</p>
-<ol>
-<li><p>Take glm output coefficient (logit)</p>
+<p>In 1969, the popular magazine Psychology Today published a 101-question survey on sex and asked its readers to mail in their answers. The results of the survey were discussed in the July 1970 issue. From the approximately 2,000 replies that were collected in electronic form (of about 20,000 received), Professor Ray Fair (1978) extracted a sample of 601 observations on men and women then currently married for the first time and analyzed their responses to a question about extramarital affairs.</p>
+<p>The outcome in the analysis is affairs, a variable that records the self-reported frequency of extramarital sexual encounters in the past year: 0,1,2,3,4-10 or &gt;10.</p>
+<ul>
+<li>y = number of affairs in the past year, 0,1,2,3,(4-10)=7, (monthly, weekly, or daily )=12.</li>
+</ul>
+<p>Covariates:</p>
+<ul>
+<li><p>gender = factor indicating gender.</p>
 </li>
-<li><p>Exponentiate (or "de-logarithimize")</p>
+<li><p>age = numeric variable coding age in years: 17.5= under 20,22=20-24,27=25-29,32=30-34,37=35-39,42=40-44,47=45-49,52=50-54,57=55 or over.</p>
 </li>
-<li><p>Convert odds to probability using this formula prob = odds / (1 + odds)</p>
+<li><p>yearsmarried = numeric variable coding number of years married: 0.125=3 months or less, 0.417=4-6 months, 0.75=6 months -1 year, 1.5=1-2 years, 4=3-5 years, 7=6-8 years, 10=9-11 years, 15=12 or more years.</p>
 </li>
-</ol>
+<li><p>children = factor. Are there children in the marriage?</p>
+</li>
+<li><p>religiousness = numeric variable coding religiousness: 1= anti, 2= not at all, 3= slightly, 4= somewhat, 5= very.
+education occupation = numeric variable coding occupation according to Hollingshead classification (reverse numbering).</p>
+</li>
+<li><p>rating = numeric variable coding self rating of marriage: 1= very unhappy, 2= somewhat unhappy, 3= average, 4= happier than average, 5= very happy.</p>
+</li>
+</ul>
 
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>The "modelsummary" package can report exponentiated logit coefficients (i.e. in odds terms rather than log-odds). Note however that it does not adjust standard errors so best to just report the t-values:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="nf">modelsummary</span><span class="p">(</span><span class="n">logit_glm</span><span class="w"> </span><span class="p">,</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="s">&quot;Logit (LogOdds)&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fmt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;%.3f&quot;</span><span class="p">,</span><span class="n">stars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span>
-<span class="w">             </span><span class="n">exponentiate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">term</span><span class="p">,</span><span class="w"> </span>
-<span class="w">             </span><span class="n">gof_omit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;.*&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;jupyter&quot;</span><span class="p">)</span>
-
-<span class="nf">modelsummary</span><span class="p">(</span><span class="n">logit_glm</span><span class="w"> </span><span class="p">,</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="s">&quot;Exponentiated Logit (Odds)&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fmt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;%.3f&quot;</span><span class="p">,</span><span class="n">stars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span>
-<span class="w">             </span><span class="n">exponentiate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">term</span><span class="p">,</span><span class="w"> </span>
-<span class="w">             </span><span class="n">gof_omit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;.*&quot;</span><span class="p">,</span><span class="n">statistic</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;t = {statistic}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;jupyter&quot;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<caption>Logit (LogOdds)</caption>
- <thead>
-  <tr>
-   <th style="text-align:left;">   </th>
-   <th style="text-align:center;">  (Intercept) </th>
-   <th style="text-align:center;"> nwifeinc </th>
-   <th style="text-align:center;"> educ </th>
-   <th style="text-align:center;"> exper </th>
-   <th style="text-align:center;"> expersq </th>
-   <th style="text-align:center;"> age </th>
-   <th style="text-align:center;">  kidslt6 </th>
-   <th style="text-align:center;">  kidsge6 </th>
-  </tr>
- </thead>
-<tbody>
-  <tr>
-   <td style="text-align:left;">  (1) </td>
-   <td style="text-align:center;"> 0.425 </td>
-   <td style="text-align:center;"> -0.021 </td>
-   <td style="text-align:center;"> 0.221 </td>
-   <td style="text-align:center;"> 0.206 </td>
-   <td style="text-align:center;"> -0.003 </td>
-   <td style="text-align:center;"> -0.088 </td>
-   <td style="text-align:center;"> -1.443 </td>
-   <td style="text-align:center;"> 0.060 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:center;"> (0.860) </td>
-   <td style="text-align:center;"> (0.008) </td>
-   <td style="text-align:center;"> (0.043) </td>
-   <td style="text-align:center;"> (0.032) </td>
-   <td style="text-align:center;"> (0.001) </td>
-   <td style="text-align:center;"> (0.015) </td>
-   <td style="text-align:center;"> (0.204) </td>
-   <td style="text-align:center;"> (0.075) </td>
-  </tr>
-</tbody>
-</table>
-</div>
-
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<caption>Exponentiated Logit (Odds)</caption>
- <thead>
-  <tr>
-   <th style="text-align:left;">   </th>
-   <th style="text-align:center;">  (Intercept) </th>
-   <th style="text-align:center;"> nwifeinc </th>
-   <th style="text-align:center;"> educ </th>
-   <th style="text-align:center;"> exper </th>
-   <th style="text-align:center;"> expersq </th>
-   <th style="text-align:center;"> age </th>
-   <th style="text-align:center;">  kidslt6 </th>
-   <th style="text-align:center;">  kidsge6 </th>
-  </tr>
- </thead>
-<tbody>
-  <tr>
-   <td style="text-align:left;">  (1) </td>
-   <td style="text-align:center;"> 1.530 </td>
-   <td style="text-align:center;"> 0.979 </td>
-   <td style="text-align:center;"> 1.248 </td>
-   <td style="text-align:center;"> 1.229 </td>
-   <td style="text-align:center;"> 0.997 </td>
-   <td style="text-align:center;"> 0.916 </td>
-   <td style="text-align:center;"> 0.236 </td>
-   <td style="text-align:center;"> 1.062 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:center;"> t = 0.495 </td>
-   <td style="text-align:center;"> t = -2.535 </td>
-   <td style="text-align:center;"> t = 5.091 </td>
-   <td style="text-align:center;"> t = 6.422 </td>
-   <td style="text-align:center;"> t = -3.104 </td>
-   <td style="text-align:center;"> t = -6.040 </td>
-   <td style="text-align:center;"> t = -7.090 </td>
-   <td style="text-align:center;"> t = 0.804 </td>
-  </tr>
-</tbody>
-</table>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Looking at the <em>educ</em> coefficient, this tells us that an increase of 1 in the independent variable is associated with odds changing by a factor of 1.248.  If we evaluate at the mean, i.e. prob = 0.5 this means a change in probability of:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="m">1.248</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="m">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1.248</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="m">0.5</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-0.0551601423487544
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>This value is more in line with the LPM estimates.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Alternately we can compute marginal effects at midpoint by dividing the logit coefficient by 4 (see lecture notes on derivation based on the derivate of logistic function). For the educ coefficient:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="m">0.221170</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="m">4</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-0.0552925
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>As with probit, the 'mfx' package allows us to compute marginal effects:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="nf">logitmfx</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span><span class="w"> </span><span class="n">atmean</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">my.df</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_text output_subarea ">
-<pre>Call:
-logitmfx(formula = equation, data = my.df, atmean = TRUE)
-
-Marginal Effects:
-               dF/dx   Std. Err.       z     P&gt;|z|    
-nwifeinc -0.00519005  0.00204820 -2.5340  0.011278 *  
-educ      0.05377731  0.01056074  5.0922 3.539e-07 ***
-exper     0.05005693  0.00782462  6.3974 1.581e-10 ***
-expersq  -0.00076692  0.00024768 -3.0965  0.001959 ** 
-age      -0.02140302  0.00353973 -6.0465 1.480e-09 ***
-kidslt6  -0.35094982  0.04963897 -7.0700 1.549e-12 ***
-kidsge6   0.01461621  0.01818832  0.8036  0.421625    
----
-Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Or, using the 'marginaleffects' package:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="nf">slopes</span><span class="p">(</span><span class="n">logit_glm</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;mean&quot;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-<table class="dataframe">
-<caption>A slopes: 7 × 19</caption>
-<thead>
-	<tr><th scope=col>rowid</th><th scope=col>term</th><th scope=col>estimate</th><th scope=col>std.error</th><th scope=col>statistic</th><th scope=col>p.value</th><th scope=col>conf.low</th><th scope=col>conf.high</th><th scope=col>predicted</th><th scope=col>predicted_hi</th><th scope=col>predicted_lo</th><th scope=col>inlf</th><th scope=col>nwifeinc</th><th scope=col>educ</th><th scope=col>exper</th><th scope=col>expersq</th><th scope=col>age</th><th scope=col>kidslt6</th><th scope=col>kidsge6</th></tr>
-	<tr><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
-</thead>
-<tbody>
-	<tr><td>1</td><td>age     </td><td>-0.0199719845</td><td>0.0031710124</td><td>-6.2982991</td><td>3.009294e-10</td><td>-0.026187055</td><td>-0.0137569144</td><td>0.6520447</td><td>0.6519848</td><td>0.6520447</td><td>0.5683931</td><td>20.12896</td><td>12</td><td>11</td><td>178</td><td>43</td><td>0</td><td>1</td></tr>
-	<tr><td>1</td><td>educ    </td><td> 0.0501776425</td><td>0.0100407682</td><td> 4.9973908</td><td>5.811124e-07</td><td> 0.030498098</td><td> 0.0698571866</td><td>0.6520447</td><td>0.6521049</td><td>0.6520447</td><td>0.5683931</td><td>20.12896</td><td>12</td><td>11</td><td>178</td><td>43</td><td>0</td><td>1</td></tr>
-	<tr><td>1</td><td>exper   </td><td> 0.0467015948</td><td>0.0072544552</td><td> 6.4376433</td><td>1.213427e-10</td><td> 0.032483124</td><td> 0.0609200656</td><td>0.6520447</td><td>0.6522548</td><td>0.6520447</td><td>0.5683931</td><td>20.12896</td><td>12</td><td>11</td><td>178</td><td>43</td><td>0</td><td>1</td></tr>
-	<tr><td>1</td><td>expersq </td><td>-0.0007156802</td><td>0.0002297005</td><td>-3.1157102</td><td>1.835025e-03</td><td>-0.001165885</td><td>-0.0002654755</td><td>0.6520447</td><td>0.6518998</td><td>0.6520447</td><td>0.5683931</td><td>20.12896</td><td>12</td><td>11</td><td>178</td><td>43</td><td>0</td><td>1</td></tr>
-	<tr><td>1</td><td>kidsge6 </td><td> 0.0136383063</td><td>0.0171057120</td><td> 0.7972954</td><td>4.252795e-01</td><td>-0.019888273</td><td> 0.0471648857</td><td>0.6520447</td><td>0.6520556</td><td>0.6520447</td><td>0.5683931</td><td>20.12896</td><td>12</td><td>11</td><td>178</td><td>43</td><td>0</td><td>1</td></tr>
-	<tr><td>1</td><td>kidslt6 </td><td>-0.3274932291</td><td>0.0422650136</td><td>-7.7485656</td><td>9.293638e-15</td><td>-0.410331134</td><td>-0.2446553247</td><td>0.6520447</td><td>0.6519464</td><td>0.6520447</td><td>0.5683931</td><td>20.12896</td><td>12</td><td>11</td><td>178</td><td>43</td><td>0</td><td>1</td></tr>
-	<tr><td>1</td><td>nwifeinc</td><td>-0.0048429956</td><td>0.0019179727</td><td>-2.5250597</td><td>1.156786e-02</td><td>-0.008602153</td><td>-0.0010838382</td><td>0.6520447</td><td>0.6519982</td><td>0.6520447</td><td>0.5683931</td><td>20.12896</td><td>12</td><td>11</td><td>178</td><td>43</td><td>0</td><td>1</td></tr>
-</tbody>
-</table>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Comparing-marginal-effects:-LPM-vs.-Probit-vs.-Logit">Comparing marginal effects: LPM vs. Probit vs. Logit<a class="anchor-link" href="#Comparing-marginal-effects:-LPM-vs.-Probit-vs.-Logit">&#182;</a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="n">all.mfx</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">data.frame</span><span class="p">(</span><span class="n">term</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">slopes</span><span class="p">(</span><span class="n">LPM</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;mean&quot;</span><span class="p">)</span><span class="o">$</span><span class="n">term</span><span class="p">,</span><span class="w"> </span><span class="n">LPM.mfx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="nf">slopes</span><span class="p">(</span><span class="n">LPM</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;mean&quot;</span><span class="p">)</span><span class="o">$</span><span class="n">estimate</span><span class="p">,</span><span class="m">3</span><span class="p">),</span>
-<span class="w">                     </span><span class="n">Probit.mfx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="nf">slopes</span><span class="p">(</span><span class="n">probit_glm</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;mean&quot;</span><span class="p">)</span><span class="o">$</span><span class="n">estimate</span><span class="p">,</span><span class="m">3</span><span class="p">),</span>
-<span class="w">                     </span><span class="n">Logit.mfx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="nf">slopes</span><span class="p">(</span><span class="n">logit_glm</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;mean&quot;</span><span class="p">)</span><span class="o">$</span><span class="n">estimate</span><span class="p">,</span><span class="m">3</span><span class="p">))</span>
-<span class="n">all.mfx</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-<table class="dataframe">
-<caption>A data.frame: 7 × 4</caption>
-<thead>
-	<tr><th scope=col>term</th><th scope=col>LPM.mfx</th><th scope=col>Probit.mfx</th><th scope=col>Logit.mfx</th></tr>
-	<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
-</thead>
-<tbody>
-	<tr><td>age     </td><td>-0.016</td><td>-0.020</td><td>-0.020</td></tr>
-	<tr><td>educ    </td><td> 0.038</td><td> 0.049</td><td> 0.050</td></tr>
-	<tr><td>exper   </td><td> 0.039</td><td> 0.046</td><td> 0.047</td></tr>
-	<tr><td>expersq </td><td>-0.001</td><td>-0.001</td><td>-0.001</td></tr>
-	<tr><td>kidsge6 </td><td> 0.013</td><td> 0.013</td><td> 0.014</td></tr>
-	<tr><td>kidslt6 </td><td>-0.262</td><td>-0.322</td><td>-0.327</td></tr>
-	<tr><td>nwifeinc</td><td>-0.003</td><td>-0.004</td><td>-0.005</td></tr>
-</tbody>
-</table>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>We can see that the three models estimate similar marginal effects.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Partial-Effects-at-the-Average-vs.-Average-Partial-Effects">Partial Effects at the Average vs. Average Partial Effects<a class="anchor-link" href="#Partial-Effects-at-the-Average-vs.-Average-Partial-Effects">&#182;</a></h2><p>The most important thing to remember is that the marginal impact of changing a variable is not constant.
-Another way of saying the same thing is that in the linear model
-$$
-\begin{aligned}
-Y &amp; =\beta_0+\beta_1 x_1+\beta_2 x_2+\ldots+\beta_n x_n, \text { so } \\
-\frac{\partial Y}{\partial x_i} &amp; =\beta_i
-\end{aligned}
-$$
-In the probit model for instance
-$$
-\begin{aligned}
-Y &amp; =\Phi\left(\beta_0+\beta_1 x_1+\beta_2 x_2+\ldots+\beta_n x_n\right), \text { so } \\
-\frac{\partial Y}{\partial x_i} &amp; =\beta_i \phi\left(\beta_0+\beta_1 x_1+\beta_2 x_2+\ldots+\beta_n x_n\right)
-\end{aligned}
-$$</p>
-<p>Or, with logit:
-$$
-\begin{aligned}
-Y &amp; =\Lambda\left(\beta_0+\beta_1 x_1+\beta_2 x_2+\ldots+\beta_n x_n\right), \text { so } \\
-\frac{\partial Y}{\partial x_i} &amp; =\beta_i \Lambda\left(\beta_0+\beta_1 x_1+\beta_2 x_2+\ldots+\beta_n x_n\right) \left[1 - \Lambda\left(\beta_0+\beta_1 x_1+\beta_2 x_2+\ldots+\beta_n x_n\right) \right]
-\end{aligned}
-$$</p>
-<p>The Probit and Logit expressions depend on not just $\beta_i$, but on the value of $x_i$ and all other variables in the equation So to even calculate the impact of $x_i$ on $Y$ you have to choose values for all other variables $x_j$.
-Typical options are:</p>
-<ol>
-<li>to set all variables to their means (PEA = Partial Effects at the Average).  This is typically what's reported in regression tables (see above)</li>
-<li>to fix the $x_j$ and let $x_i$ vary from its minimum to maximum values.  Then you can average over the distribution (APE = Average Partial Effects) or plot how the marginal effect of $x_i$ changes across its observed range of values.</li>
-</ol>
-<p>The 'mfx' package computes both by specifying <em>atmean</em> as either TRUE or FALSE. Note that these estimates can be quite different, especially with dummy variables.  Greene goes into some detail on this topic with Example 17.3:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<center> <img src="image3.png" width="600" /> </center>
 </div>
 </div>
 </div>
@@ -14239,10 +13188,19 @@ Typical options are:</p>
 <div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="c1"># mydata &lt;- read.csv(&quot;spector.csv&quot;)</span>
-<span class="n">mydata</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">read.csv</span><span class="p">(</span><span class="s">&quot;http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF14-1.csv&quot;</span><span class="p">)</span>
-<span class="n">mydata</span><span class="o">$</span><span class="n">PSI</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">factor</span><span class="p">(</span><span class="n">mydata</span><span class="o">$</span><span class="n">PSI</span><span class="p">)</span>
-<span class="nf">datasummary_skim</span><span class="p">(</span><span class="n">mydata</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;jupyter&quot;</span><span class="p">)</span>
+<div class=" highlight hl-r"><pre><span></span><span class="nf">rm</span><span class="p">(</span><span class="n">list</span><span class="o">=</span><span class="nf">ls</span><span class="p">())</span><span class="w">    </span><span class="c1"># Removes all items in Environment!</span>
+<span class="c1">#</span>
+<span class="c1"># OPTIONS:</span>
+<span class="nf">options</span><span class="p">(</span><span class="n">warn</span><span class="o">=</span><span class="m">-1</span><span class="p">)</span><span class="w"> </span><span class="c1"># Suppress warnings</span>
+<span class="c1">#</span>
+<span class="c1"># LOAD PACKAGES:</span>
+<span class="n">packages</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;MASS&quot;</span><span class="p">,</span><span class="s">&quot;ggplot2&quot;</span><span class="p">,</span><span class="s">&quot;marginaleffects&quot;</span><span class="p">)</span>
+<span class="n">zzz</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">lapply</span><span class="p">(</span><span class="n">packages</span><span class="p">,</span><span class="w"> </span><span class="nf">function</span><span class="p">(</span><span class="n">xxx</span><span class="p">)</span><span class="w"> </span><span class="nf">suppressMessages</span><span class="p">(</span><span class="nf">require</span><span class="p">(</span><span class="n">xxx</span><span class="p">,</span><span class="w"> </span>
+<span class="w">               </span><span class="n">character.only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">quietly</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">warn.conflicts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)))</span>
+<span class="c1">#</span>
+<span class="c1"># Load Data</span>
+<span class="n">dat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">read.csv</span><span class="p">(</span><span class="s">&#39;https://vincentarelbundock.github.io/Rdatasets/csv/AER/Affairs.csv&#39;</span><span class="p">)</span>
+<span class="nf">barplot</span><span class="p">(</span><span class="nf">table</span><span class="p">(</span><span class="n">dat</span><span class="o">$</span><span class="n">affairs</span><span class="p">),</span><span class="w"> </span><span class="n">ylab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;N&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">xlab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Affairs&quot;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -14259,120 +13217,12 @@ Typical options are:</p>
 
 
 
-<div class="output_html rendered_html output_subarea ">
-<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:left;">   </th>
-   <th style="text-align:right;"> Unique (#) </th>
-   <th style="text-align:right;"> Missing (%) </th>
-   <th style="text-align:right;"> Mean </th>
-   <th style="text-align:right;"> SD </th>
-   <th style="text-align:right;"> Min </th>
-   <th style="text-align:right;"> Median </th>
-   <th style="text-align:right;"> Max </th>
-   <th style="text-align:right;">    </th>
-  </tr>
- </thead>
-<tbody>
-  <tr>
-   <td style="text-align:left;"> OBS </td>
-   <td style="text-align:right;"> 32 </td>
-   <td style="text-align:right;"> 0 </td>
-   <td style="text-align:right;"> 16.5 </td>
-   <td style="text-align:right;"> 9.4 </td>
-   <td style="text-align:right;"> 1.0 </td>
-   <td style="text-align:right;"> 16.5 </td>
-   <td style="text-align:right;"> 32.0 </td>
-   <td style="text-align:right;">  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="svglite" width="48.00pt" height="12.00pt" viewBox="0 0 48.00 12.00"><defs><style type="text/css">
-    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
-      fill: none;
-      stroke: #000000;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      stroke-miterlimit: 10.00;
-    }
-    .svglite text {
-      white-space: pre;
-    }
-  </style></defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs><clipPath id="cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw"><rect x="0.00" y="0.00" width="48.00" height="12.00"></rect></clipPath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw)">
-</g><defs><clipPath id="cpMC4wMHw0OC4wMHwyLjg4fDEyLjAw"><rect x="0.00" y="2.88" width="48.00" height="9.12"></rect></clipPath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwyLjg4fDEyLjAw)"><rect x="0.34" y="3.22" width="7.17" height="8.44" style="stroke-width: 0.38; fill: #000000;"></rect><rect x="7.51" y="3.22" width="7.17" height="8.44" style="stroke-width: 0.38; fill: #000000;"></rect><rect x="14.68" y="3.22" width="7.17" height="8.44" style="stroke-width: 0.38; fill: #000000;"></rect><rect x="21.85" y="3.22" width="7.17" height="8.44" style="stroke-width: 0.38; fill: #000000;"></rect><rect x="29.02" y="3.22" width="7.17" height="8.44" style="stroke-width: 0.38; fill: #000000;"></rect><rect x="36.19" y="3.22" width="7.17" height="8.44" style="stroke-width: 0.38; fill: #000000;"></rect><rect x="43.35" y="8.28" width="7.17" height="3.38" style="stroke-width: 0.38; fill: #000000;"></rect></g></svg>
-</td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> GPA </td>
-   <td style="text-align:right;"> 29 </td>
-   <td style="text-align:right;"> 0 </td>
-   <td style="text-align:right;"> 3.1 </td>
-   <td style="text-align:right;"> 0.5 </td>
-   <td style="text-align:right;"> 2.1 </td>
-   <td style="text-align:right;"> 3.1 </td>
-   <td style="text-align:right;"> 4.0 </td>
-   <td style="text-align:right;">  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="svglite" width="48.00pt" height="12.00pt" viewBox="0 0 48.00 12.00"><defs><style type="text/css">
-    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
-      fill: none;
-      stroke: #000000;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      stroke-miterlimit: 10.00;
-    }
-    .svglite text {
-      white-space: pre;
-    }
-  </style></defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs><clipPath id="cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw"><rect x="0.00" y="0.00" width="48.00" height="12.00"></rect></clipPath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw)">
-</g><defs><clipPath id="cpMC4wMHw0OC4wMHwyLjg4fDEyLjAw"><rect x="0.00" y="2.88" width="48.00" height="9.12"></rect></clipPath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwyLjg4fDEyLjAw)"><rect x="0.40" y="10.36" width="11.45" height="1.30" style="stroke-width: 0.38; fill: #000000;"></rect><rect x="11.86" y="3.22" width="11.45" height="8.44" style="stroke-width: 0.38; fill: #000000;"></rect><rect x="23.31" y="6.47" width="11.45" height="5.20" style="stroke-width: 0.38; fill: #000000;"></rect><rect x="34.77" y="5.82" width="11.45" height="5.85" style="stroke-width: 0.38; fill: #000000;"></rect></g></svg>
-</td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> TUCE </td>
-   <td style="text-align:right;"> 14 </td>
-   <td style="text-align:right;"> 0 </td>
-   <td style="text-align:right;"> 21.9 </td>
-   <td style="text-align:right;"> 3.9 </td>
-   <td style="text-align:right;"> 12.0 </td>
-   <td style="text-align:right;"> 22.5 </td>
-   <td style="text-align:right;"> 29.0 </td>
-   <td style="text-align:right;">  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="svglite" width="48.00pt" height="12.00pt" viewBox="0 0 48.00 12.00"><defs><style type="text/css">
-    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
-      fill: none;
-      stroke: #000000;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      stroke-miterlimit: 10.00;
-    }
-    .svglite text {
-      white-space: pre;
-    }
-  </style></defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs><clipPath id="cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw"><rect x="0.00" y="0.00" width="48.00" height="12.00"></rect></clipPath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw)">
-</g><defs><clipPath id="cpMC4wMHw0OC4wMHwyLjg4fDEyLjAw"><rect x="0.00" y="2.88" width="48.00" height="9.12"></rect></clipPath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwyLjg4fDEyLjAw)"><rect x="-3.45" y="10.67" width="13.07" height="0.99" style="stroke-width: 0.38; fill: #000000;"></rect><rect x="9.62" y="7.69" width="13.07" height="3.97" style="stroke-width: 0.38; fill: #000000;"></rect><rect x="22.69" y="3.22" width="13.07" height="8.44" style="stroke-width: 0.38; fill: #000000;"></rect><rect x="35.76" y="9.18" width="13.07" height="2.48" style="stroke-width: 0.38; fill: #000000;"></rect></g></svg>
-</td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> GRADE </td>
-   <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0 </td>
-   <td style="text-align:right;"> 0.3 </td>
-   <td style="text-align:right;"> 0.5 </td>
-   <td style="text-align:right;"> 0.0 </td>
-   <td style="text-align:right;"> 0.0 </td>
-   <td style="text-align:right;"> 1.0 </td>
-   <td style="text-align:right;">  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="svglite" width="48.00pt" height="12.00pt" viewBox="0 0 48.00 12.00"><defs><style type="text/css">
-    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
-      fill: none;
-      stroke: #000000;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      stroke-miterlimit: 10.00;
-    }
-    .svglite text {
-      white-space: pre;
-    }
-  </style></defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs><clipPath id="cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw"><rect x="0.00" y="0.00" width="48.00" height="12.00"></rect></clipPath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw)">
-</g><defs><clipPath id="cpMC4wMHw0OC4wMHwyLjg4fDEyLjAw"><rect x="0.00" y="2.88" width="48.00" height="9.12"></rect></clipPath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwyLjg4fDEyLjAw)"><rect x="1.78" y="3.22" width="8.89" height="8.44" style="stroke-width: 0.38; fill: #000000;"></rect><rect x="10.67" y="11.66" width="8.89" height="0.00" style="stroke-width: 0.38; fill: #000000;"></rect><rect x="19.56" y="11.66" width="8.89" height="0.00" style="stroke-width: 0.38; fill: #000000;"></rect><rect x="28.44" y="11.66" width="8.89" height="0.00" style="stroke-width: 0.38; fill: #000000;"></rect><rect x="37.33" y="7.24" width="8.89" height="4.42" style="stroke-width: 0.38; fill: #000000;"></rect></g></svg>
-</td>
-  </tr>
-</tbody>
-</table>
+
+<div class="output_png output_subarea ">
+<img src="Lecture09b_files/Lecture09b_3_0.png"
+width=420
+height=420
+>
 </div>
 
 </div>
@@ -14386,114 +13236,10 @@ Typical options are:</p>
 <div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="n">equation</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">GRADE</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">GPA</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">TUCE</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">PSI</span>
-
-<span class="n">LPM</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">lm</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">mydata</span><span class="p">)</span>
-<span class="n">logit_glm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">glm</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mydata</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">binomial</span><span class="p">(</span><span class="n">link</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">logit</span><span class="p">))</span>
-<span class="n">probit_glm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">glm</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mydata</span><span class="p">,</span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">binomial</span><span class="p">(</span><span class="n">link</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">probit</span><span class="p">))</span>
-
-<span class="c1"># Output table</span>
-<span class="n">models</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">LPM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LPM</span><span class="p">,</span><span class="w"> </span><span class="n">Logit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">logit_glm</span><span class="p">,</span><span class="n">Probit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">probit_glm</span><span class="p">)</span>
-<span class="nf">modelsummary</span><span class="p">(</span><span class="n">models</span><span class="p">,</span><span class="w"> </span><span class="n">fmt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;%.3f&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">gof_omit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;.*&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;jupyter&quot;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:left;">   </th>
-   <th style="text-align:center;"> LPM </th>
-   <th style="text-align:center;"> Logit </th>
-   <th style="text-align:center;"> Probit </th>
-  </tr>
- </thead>
-<tbody>
-  <tr>
-   <td style="text-align:left;"> (Intercept) </td>
-   <td style="text-align:center;"> -1.498 </td>
-   <td style="text-align:center;"> -13.021 </td>
-   <td style="text-align:center;"> -7.452 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:center;"> (0.524) </td>
-   <td style="text-align:center;"> (4.931) </td>
-   <td style="text-align:center;"> (2.572) </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> GPA </td>
-   <td style="text-align:center;"> 0.464 </td>
-   <td style="text-align:center;"> 2.826 </td>
-   <td style="text-align:center;"> 1.626 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:center;"> (0.162) </td>
-   <td style="text-align:center;"> (1.263) </td>
-   <td style="text-align:center;"> (0.690) </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> TUCE </td>
-   <td style="text-align:center;"> 0.010 </td>
-   <td style="text-align:center;"> 0.095 </td>
-   <td style="text-align:center;"> 0.052 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:center;"> (0.019) </td>
-   <td style="text-align:center;"> (0.142) </td>
-   <td style="text-align:center;"> (0.081) </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> PSI1 </td>
-   <td style="text-align:center;"> 0.379 </td>
-   <td style="text-align:center;"> 2.379 </td>
-   <td style="text-align:center;"> 1.426 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:center;"> (0.139) </td>
-   <td style="text-align:center;"> (1.065) </td>
-   <td style="text-align:center;"> (0.587) </td>
-  </tr>
-</tbody>
-</table>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Let's focus on the logit model. For the PSI variable, the PEAs are reported by mfx as:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="nf">logitmfx</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span><span class="w"> </span><span class="n">atmean</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">mydata</span><span class="p">)</span>
+<div class=" highlight hl-r"><pre><span></span><span class="n">mod</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">polr</span><span class="p">(</span>
+<span class="w">  </span><span class="nf">factor</span><span class="p">(</span><span class="n">affairs</span><span class="p">)</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">children</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">yearsmarried</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">gender</span><span class="p">,</span>
+<span class="w">  </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;probit&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dat</span><span class="p">,</span><span class="w"> </span><span class="n">Hess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span>
+<span class="nf">summary</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -14513,19 +13259,25 @@ Typical options are:</p>
 
 <div class="output_text output_subarea ">
 <pre>Call:
-logitmfx(formula = equation, data = mydata, atmean = TRUE)
+polr(formula = factor(affairs) ~ children + yearsmarried + gender, 
+    data = dat, Hess = TRUE, method = &#34;probit&#34;)
 
-Marginal Effects:
-        dF/dx Std. Err.      z   P&gt;|z|  
-GPA  0.533859  0.237037 2.2522 0.02431 *
-TUCE 0.017975  0.026237 0.6851 0.49326  
-PSI1 0.456498  0.181053 2.5214 0.01169 *
----
-Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+Coefficients:
+               Value Std. Error t value
+childrenyes  0.17290     0.1506  1.1477
+yearsmarried 0.03457     0.0116  2.9793
+gendermale   0.08852     0.1075  0.8234
 
-dF/dx is for discrete change for the following variables:
+Intercepts:
+     Value   Std. Error t value
+0|1   1.1438  0.1313     8.7115
+1|2   1.3409  0.1336    10.0358
+2|3   1.4532  0.1352    10.7500
+3|7   1.5942  0.1373    11.6074
+7|12  2.0248  0.1472    13.7524
 
-[1] &#34;PSI1&#34;</pre>
+Residual Deviance: 1119.868 
+AIC: 1135.868 </pre>
 </div>
 
 </div>
@@ -14537,17 +13289,249 @@ dF/dx is for discrete change for the following variables:
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>While the APEs:</p>
+<p>See <a href="https://marginaleffects.com/chapters/categorical.html">https://marginaleffects.com/chapters/categorical.html</a>  for more examples on predictions, marginal effects.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Unordered-choice-(multinomial-logit)">Unordered choice (multinomial logit)<a class="anchor-link" href="#Unordered-choice-(multinomial-logit)">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Application">Application<a class="anchor-link" href="#Application">&#182;</a></h3><p>The <em>ModeCanada</em> dataset was assembled in 1989 by VIA Rail (the Canadian national rail carrier) to estimate the
+demand for high-speed rail in the Toronto-Montreal corridor. The main information source was a
+Passenger Review administered to business travelers augmented by information about each trip. It presents the choice of individuals for a transport mode:</p>
+<ul>
+<li>air</li>
+<li>train</li>
+<li>bus</li>
+<li>car</li>
+</ul>
+<p>Most of the variables are alternative specific.</p>
+<ul>
+<li>cost = monetary cost</li>
+<li>ivt = in vehicle time</li>
+<li>ovt = out of vehicle time</li>
+<li>freq = frequency</li>
+</ul>
+<p>The only choice-situation specific variables are</p>
+<ul>
+<li>dist = the distance of the trip</li>
+<li>income = household income</li>
+<li>urban = a dummy for trips which have a large city at the origin or the destination</li>
+<li>noalt = the number of available alternatives.</li>
+</ul>
+<p>We'll use only a subset of the choice situations, namely those for which the 4 alternatives are available and add a "total transport time" variable computed as the sum of the in vehicle and the out of vehicle time variables.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="nf">logitmfx</span><span class="p">(</span><span class="n">equation</span><span class="p">,</span><span class="w"> </span><span class="n">atmean</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">mydata</span><span class="p">)</span>
+<div class=" highlight hl-r"><pre><span></span><span class="nf">rm</span><span class="p">(</span><span class="n">list</span><span class="o">=</span><span class="nf">ls</span><span class="p">())</span><span class="w">    </span><span class="c1"># Removes all items in Environment!</span>
+<span class="c1">#</span>
+<span class="c1"># OPTIONS:</span>
+<span class="nf">options</span><span class="p">(</span><span class="n">warn</span><span class="o">=</span><span class="m">-1</span><span class="p">)</span><span class="w"> </span><span class="c1"># Suppress warnings</span>
+<span class="nf">options</span><span class="p">(</span><span class="n">repr.plot.width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6</span><span class="p">,</span><span class="w"> </span><span class="n">repr.plot.height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="c1"># LOAD PACKAGES:</span>
+<span class="n">packages</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;foreign&quot;</span><span class="p">,</span><span class="s">&quot;tidyverse&quot;</span><span class="p">,</span><span class="s">&quot;mlogit&quot;</span><span class="p">)</span>
+<span class="n">zzz</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">lapply</span><span class="p">(</span><span class="n">packages</span><span class="p">,</span><span class="w"> </span><span class="nf">function</span><span class="p">(</span><span class="n">xxx</span><span class="p">)</span><span class="w"> </span><span class="nf">suppressMessages</span><span class="p">(</span><span class="nf">require</span><span class="p">(</span><span class="n">xxx</span><span class="p">,</span><span class="w"> </span>
+<span class="w">               </span><span class="n">character.only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">quietly</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">warn.conflicts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)))</span>
+
+<span class="c1"># Load data</span>
+<span class="nf">data</span><span class="p">(</span><span class="n">ModeCanada</span><span class="p">)</span>
+<span class="n">my.df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">data.frame</span><span class="p">(</span><span class="n">ModeCanada</span><span class="p">)</span><span class="w">  </span>
+<span class="n">my.df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">subset</span><span class="p">(</span><span class="n">my.df</span><span class="p">,</span><span class="w"> </span><span class="n">noalt</span><span class="o">==</span><span class="m">4</span><span class="p">)</span><span class="w">  </span><span class="c1"># select only cases with 4 alternatives</span>
+<span class="n">my.df</span><span class="o">$</span><span class="n">time</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">with</span><span class="p">(</span><span class="n">my.df</span><span class="p">,</span><span class="w"> </span><span class="n">ivt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ovt</span><span class="p">)</span>
+<span class="nf">rownames</span><span class="p">(</span><span class="n">my.df</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="nf">nrow</span><span class="p">(</span><span class="n">my.df</span><span class="p">)</span><span class="w">  </span><span class="c1"># reset index numbers</span>
+
+<span class="c1"># Display data header / tail</span>
+<span class="nf">head</span><span class="p">(</span><span class="n">my.df</span><span class="p">,</span><span class="m">8</span><span class="p">)</span>
+<span class="nf">tail</span><span class="p">(</span><span class="n">my.df</span><span class="p">,</span><span class="m">8</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<table class="dataframe">
+<caption>A data.frame: 8 × 12</caption>
+<thead>
+	<tr><th></th><th scope=col>case</th><th scope=col>alt</th><th scope=col>choice</th><th scope=col>dist</th><th scope=col>cost</th><th scope=col>ivt</th><th scope=col>ovt</th><th scope=col>freq</th><th scope=col>income</th><th scope=col>urban</th><th scope=col>noalt</th><th scope=col>time</th></tr>
+	<tr><th></th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>1</th><td>109</td><td>train</td><td>0</td><td>377</td><td> 58.25</td><td>215</td><td>74</td><td>4</td><td>45</td><td>0</td><td>4</td><td>289</td></tr>
+	<tr><th scope=row>2</th><td>109</td><td>air  </td><td>1</td><td>377</td><td>142.80</td><td> 56</td><td>85</td><td>9</td><td>45</td><td>0</td><td>4</td><td>141</td></tr>
+	<tr><th scope=row>3</th><td>109</td><td>bus  </td><td>0</td><td>377</td><td> 27.52</td><td>301</td><td>63</td><td>8</td><td>45</td><td>0</td><td>4</td><td>364</td></tr>
+	<tr><th scope=row>4</th><td>109</td><td>car  </td><td>0</td><td>377</td><td> 71.63</td><td>262</td><td> 0</td><td>0</td><td>45</td><td>0</td><td>4</td><td>262</td></tr>
+	<tr><th scope=row>5</th><td>110</td><td>train</td><td>0</td><td>377</td><td> 58.25</td><td>215</td><td>74</td><td>4</td><td>70</td><td>0</td><td>4</td><td>289</td></tr>
+	<tr><th scope=row>6</th><td>110</td><td>air  </td><td>1</td><td>377</td><td>142.80</td><td> 56</td><td>85</td><td>9</td><td>70</td><td>0</td><td>4</td><td>141</td></tr>
+	<tr><th scope=row>7</th><td>110</td><td>bus  </td><td>0</td><td>377</td><td> 27.52</td><td>301</td><td>63</td><td>8</td><td>70</td><td>0</td><td>4</td><td>364</td></tr>
+	<tr><th scope=row>8</th><td>110</td><td>car  </td><td>0</td><td>377</td><td> 71.63</td><td>262</td><td> 0</td><td>0</td><td>70</td><td>0</td><td>4</td><td>262</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<table class="dataframe">
+<caption>A data.frame: 8 × 12</caption>
+<thead>
+	<tr><th></th><th scope=col>case</th><th scope=col>alt</th><th scope=col>choice</th><th scope=col>dist</th><th scope=col>cost</th><th scope=col>ivt</th><th scope=col>ovt</th><th scope=col>freq</th><th scope=col>income</th><th scope=col>urban</th><th scope=col>noalt</th><th scope=col>time</th></tr>
+	<tr><th></th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>11109</th><td>4320</td><td>train</td><td>0</td><td>342</td><td> 58.10</td><td>193</td><td>135</td><td> 3</td><td>35</td><td>0</td><td>4</td><td>328</td></tr>
+	<tr><th scope=row>11110</th><td>4320</td><td>air  </td><td>0</td><td>342</td><td>155.30</td><td> 46</td><td>135</td><td>16</td><td>35</td><td>0</td><td>4</td><td>181</td></tr>
+	<tr><th scope=row>11111</th><td>4320</td><td>bus  </td><td>0</td><td>342</td><td> 27.96</td><td>186</td><td>130</td><td>24</td><td>35</td><td>0</td><td>4</td><td>316</td></tr>
+	<tr><th scope=row>11112</th><td>4320</td><td>car  </td><td>1</td><td>342</td><td> 64.98</td><td>245</td><td>  0</td><td> 0</td><td>35</td><td>0</td><td>4</td><td>245</td></tr>
+	<tr><th scope=row>11113</th><td>4321</td><td>train</td><td>0</td><td>388</td><td> 58.60</td><td>193</td><td>145</td><td> 3</td><td>45</td><td>0</td><td>4</td><td>338</td></tr>
+	<tr><th scope=row>11114</th><td>4321</td><td>air  </td><td>0</td><td>388</td><td>155.30</td><td> 46</td><td>115</td><td>16</td><td>45</td><td>0</td><td>4</td><td>161</td></tr>
+	<tr><th scope=row>11115</th><td>4321</td><td>bus  </td><td>0</td><td>388</td><td> 27.96</td><td>186</td><td>140</td><td>24</td><td>45</td><td>0</td><td>4</td><td>326</td></tr>
+	<tr><th scope=row>11116</th><td>4321</td><td>car  </td><td>1</td><td>388</td><td> 73.72</td><td>297</td><td>  0</td><td> 0</td><td>45</td><td>0</td><td>4</td><td>297</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In R, random utility models can be fitted using the <em>mlogit()</em> function. To use the function with this dataset we will first need to provide some information about the structure of the dataset, similar to what we did with the panel data earlier in the semester where we specified the entity and time index columns.</p>
+<p>In this case, the information about the structure of choice data can be explicitly indicated using choice situations and alternative indexes (respectively <em>case</em> and <em>alt</em> in this data set) or, in part, guessed by the <em>dfidx()</em> function.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">my.df.idx</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">dfidx</span><span class="p">(</span><span class="n">my.df</span><span class="p">,</span><span class="w"> </span><span class="n">idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;case&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;alt&quot;</span><span class="p">))</span><span class="w"> </span><span class="c1"># specify structure</span>
+<span class="c1"># my.df.idx &lt;- dfidx(my.df)   # let the function guess the structure</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">my.df.idx</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>~~~~~~~
+ first 10 observations out of 11116 
+~~~~~~~
+   choice dist   cost ivt ovt freq income urban noalt time      idx
+1       0  377  58.25 215  74    4     45     0     4  289 109:rain
+2       1  377 142.80  56  85    9     45     0     4  141  109:air
+3       0  377  27.52 301  63    8     45     0     4  364  109:bus
+4       0  377  71.63 262   0    0     45     0     4  262  109:car
+5       0  377  58.25 215  74    4     70     0     4  289 110:rain
+6       1  377 142.80  56  85    9     70     0     4  141  110:air
+7       0  377  27.52 301  63    8     70     0     4  364  110:bus
+8       0  377  71.63 262   0    0     70     0     4  262  110:car
+9       0  377  58.25 215  74    4     35     0     4  289 111:rain
+10      1  377 142.80  56  85    9     35     0     4  141  111:air
+
+~~~ indexes ~~~~
+   case   alt
+1   109 train
+2   109   air
+3   109   bus
+4   109   car
+5   110 train
+6   110   air
+7   110   bus
+8   110   car
+9   111 train
+10  111   air
+indexes:  1, 2 
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The <em>mlogit()</em> function provides estimation by maximum likelihood of the multinomial logit model. The  function allows the right-hand side of formulas to be specified in three parts, separated by a vertical bar, which we can represent
+symbolically as H1 ~ part1 | part2 | part3 where part1 includes choice-specific variables, part2 includes individual-specific variables, and part3 specifies variables describing characteristics of the alternatives with coefficients that differ across alternatives.</p>
+<p>It also provides two further useful arguments:</p>
+<ul>
+<li><p><em>reflevel</em> indicates which alternative is the "reference" alternative, i.e., the one for which the coefficients of choice situation specific covariates are set to 0,</p>
+</li>
+<li><p><em>alt.subset</em> indicates a subset of alternatives on which the estimation has to be performed; in this case, only the lines that correspond to the selected alternatives are used and all the choice situations where not selected alternatives has been chosen are removed.</p>
+</li>
+</ul>
+<p>We estimate the model on the subset of three alternatives (we exclude "bus" whose market share is negligible in our sample) and also set "car" as the reference alternative.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Note that the standard specification, with time included in the part1 variables, would result in a specification $\cdots+\beta_{t}$ time $+\ldots$, that is, with all modes' times having the same weight $\left(\beta_{t}\right)$. On the other hand, if you include time among the part3 variables, it will result in a specification $\cdots+\beta_{1}\left(\right.$ time $\left.\times \mathrm{M}_{1}\right)+\beta_{2}\left(\right.$ time $\left.\times \mathrm{M}_{2}\right)+\ldots$ where $\mathrm{M}_{i}$ is a mode-$i$ dummy. Thus, time gets one weight $\left(\beta_{1}\right)$ in the utility function for mode 1 , and another $\left(\beta_{2}\right)$ for mode 2 , etc. In other words, each mode's travel time has a different weight.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">my.model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">mlogit</span><span class="p">(</span><span class="n">choice</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">cost</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">freq</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">income</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">time</span><span class="p">,</span><span class="w"> </span><span class="n">my.df.idx</span><span class="p">,</span><span class="w"> </span>
+<span class="w">                 </span><span class="n">alt.subset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;car&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;train&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;air&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">reflevel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;car&quot;</span><span class="p">)</span>
+<span class="nf">summary</span><span class="p">(</span><span class="n">my.model</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -14566,20 +13550,38 @@ dF/dx is for discrete change for the following variables:
 
 
 <div class="output_text output_subarea ">
-<pre>Call:
-logitmfx(formula = equation, data = mydata, atmean = FALSE)
+<pre>
+Call:
+mlogit(formula = choice ~ cost + freq | income | time, data = my.df.idx, 
+    alt.subset = c(&#34;car&#34;, &#34;train&#34;, &#34;air&#34;), reflevel = &#34;car&#34;, 
+    method = &#34;nr&#34;)
 
-Marginal Effects:
-        dF/dx Std. Err.      z   P&gt;|z|  
-GPA  0.362581  0.240049 1.5104 0.13093  
-TUCE 0.012208  0.019036 0.6413 0.52131  
-PSI1 0.357515  0.142003 2.5177 0.01181 *
+Frequencies of alternatives:choice
+    car   train     air 
+0.45757 0.16721 0.37523 
+
+nr method
+6 iterations, 0h:0m:0s 
+g&#39;(-H)^-1g = 6.94E-06 
+successive function values within tolerance limits 
+
+Coefficients :
+                     Estimate  Std. Error  z-value  Pr(&gt;|z|)    
+(Intercept):train -0.97034440  0.26513065  -3.6599 0.0002523 ***
+(Intercept):air   -1.89856552  0.68414300  -2.7751 0.0055185 ** 
+cost              -0.02849715  0.00655909  -4.3447 1.395e-05 ***
+freq               0.07402902  0.00473270  15.6420 &lt; 2.2e-16 ***
+income:train      -0.00646892  0.00310366  -2.0843 0.0371342 *  
+income:air         0.02824632  0.00365435   7.7295 1.088e-14 ***
+time:car          -0.01402405  0.00138047 -10.1589 &lt; 2.2e-16 ***
+time:train        -0.01096877  0.00081834 -13.4036 &lt; 2.2e-16 ***
+time:air          -0.01755120  0.00399181  -4.3968 1.099e-05 ***
 ---
 Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 
-dF/dx is for discrete change for the following variables:
-
-[1] &#34;PSI1&#34;</pre>
+Log-Likelihood: -1951.3
+McFadden R^2:  0.31221 
+Likelihood ratio test : chisq = 1771.6 (p.value = &lt; 2.22e-16)</pre>
 </div>
 
 </div>
@@ -14591,17 +13593,106 @@ dF/dx is for discrete change for the following variables:
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Alternately we can use the avg_slopes() function in the 'marginaleffects' package:</p>
+<p>The output includes:</p>
+<ol>
+<li><p>The frequencies of the different alternatives in the sample are first indicated.</p>
+</li>
+<li><p>Some information about the optimization: the Newton-Ralphson method (with analytic gradient and Hessian) is used, as it is the most efficient method for this simple model for which the log-likelihood function is concave. Note that very few iterations and computing time are required to estimate this model.</p>
+</li>
+<li><p>The usual table of coefficients</p>
+</li>
+<li><p>Some goodness of fit measures: the value of the log-likelihood function, which is compared to the value when only intercepts are introduced</p>
+</li>
+</ol>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Interpretation">Interpretation<a class="anchor-link" href="#Interpretation">&#182;</a></h3><p>In a linear model, the coefficients are the marginal effects of the explanatory variables on the explained variable. This is not the case for the multinomial logit model. However, meaningful results can be obtained using relevant transformations of the coefficients.</p>
+<h4 id="Marginal-effects">Marginal effects<a class="anchor-link" href="#Marginal-effects">&#182;</a></h4><p>The marginal effects are the derivatives of the probabilities with respect to the covariates, which can be be choice situation-specific $\left(z_{i}\right)$ or alternative specific $\left(x_{i j}\right)$ :
+$$
+\begin{aligned}
+\frac{\partial P_{i l}}{\partial z_{i}} &amp;=P_{i l}\left(\beta_{l}-\sum_{j} P_{i j}\right).\\
+\frac{\partial P_{i l}}{\partial x_{i l}} &amp;=\gamma P_{i l}\left(1-P_{i l}\right) \\
+\frac{\partial P_{i l}}{\partial x_{i k}} &amp;=-\gamma P_{i l} P_{i k}
+\end{aligned}
+$$</p>
+<p>For a choice situation specific variable, the sign of the marginal effect is not necessarily the sign of the coefficient. Actually, the sign of the marginal effect is given by $\left(\beta_{l}-\sum_{j} P_{i j} \beta_{j}\right)$, which is positive if the coefficient for alternative $l$ is greater than a weighted average of the coefficients for all the alternatives, the weights being the probabilities of choosing the alternatives. In this case, the sign of the marginal effect can be established with no ambiguity only for the alternatives with the lowest and the greatest coefficients.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>With the <em>mlogit</em> package, marginal effects can be computed using the <em>effects()</em> method. By default, they are computed at the sample mean, or a data argument can be provided. The variation of the probability and of the covariate can be either absolute or relative. This is indicated with the type argument which is a combination of two options: <em>a</em> = absolute and <em>r</em> = relative. For example, type = "ar" means that what is measured is an absolute variation of the probability for a relative variation of the covariate.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="nf">avg_slopes</span><span class="p">(</span><span class="n">logit_glm</span><span class="p">,</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span>
+<div class=" highlight hl-r"><pre><span></span><span class="nf">round</span><span class="p">(</span><span class="nf">effects</span><span class="p">(</span><span class="n">my.model</span><span class="p">,</span><span class="w"> </span><span class="n">covariate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;income&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ar&quot;</span><span class="p">),</span><span class="w"> </span><span class="m">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<style>
+.dl-inline {width: auto; margin:0; padding: 0}
+.dl-inline>dt, .dl-inline>dd {float: none; width: auto; display: inline-block}
+.dl-inline>dt::after {content: ":\0020"; padding-right: .5ex}
+.dl-inline>dt:not(:first-of-type) {padding-left: .5ex}
+</style><dl class=dl-inline><dt>car</dt><dd>-0.18</dd><dt>train</dt><dd>-0.15</dd><dt>air</dt><dd>0.33</dd></dl>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The results indicate that, for a 100% increase of income, the probability of choosing air increases by 33 points of percentage, as the probabilities of choosing car and train decrease by 18 and 15 points of percentage.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>For an alternative specific covariate, a matrix of marginal effects is displayed:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="nf">round</span><span class="p">(</span><span class="nf">effects</span><span class="p">(</span><span class="n">my.model</span><span class="p">,</span><span class="w"> </span><span class="n">covariate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;cost&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;rr&quot;</span><span class="p">),</span><span class="w"> </span><span class="m">2</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -14620,15 +13711,14 @@ dF/dx is for discrete change for the following variables:
 
 <div class="output_html rendered_html output_subarea ">
 <table class="dataframe">
-<caption>A slopes: 3 × 8</caption>
+<caption>A matrix: 3 × 3 of type dbl</caption>
 <thead>
-	<tr><th scope=col>term</th><th scope=col>contrast</th><th scope=col>estimate</th><th scope=col>std.error</th><th scope=col>statistic</th><th scope=col>p.value</th><th scope=col>conf.low</th><th scope=col>conf.high</th></tr>
-	<tr><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+	<tr><th></th><th scope=col>car</th><th scope=col>train</th><th scope=col>air</th></tr>
 </thead>
 <tbody>
-	<tr><td>GPA </td><td>dY/dX</td><td>0.36259170</td><td>0.10945025</td><td>3.3128449</td><td>0.0009235218</td><td> 0.14807315</td><td>0.57711024</td></tr>
-	<tr><td>PSI </td><td>1 - 0</td><td>0.35751516</td><td>0.14200468</td><td>2.5176294</td><td>0.0118147560</td><td> 0.07919110</td><td>0.63583923</td></tr>
-	<tr><td>TUCE</td><td>dY/dX</td><td>0.01220852</td><td>0.01779432</td><td>0.6860907</td><td>0.4926559318</td><td>-0.02266771</td><td>0.04708475</td></tr>
+	<tr><th scope=row>car</th><td>-0.91</td><td> 0.94</td><td> 0.94</td></tr>
+	<tr><th scope=row>train</th><td> 0.34</td><td>-1.25</td><td> 0.34</td></tr>
+	<tr><th scope=row>air</th><td> 1.23</td><td> 1.23</td><td>-3.14</td></tr>
 </tbody>
 </table>
 
@@ -14643,29 +13733,63 @@ dF/dx is for discrete change for the following variables:
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Note the big PEA-APE difference in the marginal effects for PSI and GPA.</p>
-<h3 id="Graphing-the-partial-effects">Graphing the partial effects<a class="anchor-link" href="#Graphing-the-partial-effects">&#182;</a></h3><p>To understand why, let's plot the response function (GRADE) as a function of PSI and GPA while keeping TUCE constant (at the mean):</p>
+<p>The cell in the $l^{\text {th }}$ row and the $c^{\text {th }}$ column indicates the change of the probability of choosing alternative $c$ when the cost of alternative $l$ changes. As type $=$ "rr", elasticities are computed. For example, a $10 \%$ change of train cost increases the probabilities of choosing car and air by $3.4 \%$. Note that the relative changes of the probabilities of choosing one of these two modes are equal, which is a consequence of the IIA property.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Fitted-and-predicted-values">Fitted and predicted values<a class="anchor-link" href="#Fitted-and-predicted-values">&#182;</a></h3><p>The <em>fitted()</em> method can be used either to obtain the probability of actual choices (type $=$ "outcome") or the probabilities for all the alternatives (type = "probabilities").</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="n">plot.data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">with</span><span class="p">(</span><span class="n">mydata</span><span class="p">,</span><span class="w"> </span><span class="nf">data.frame</span><span class="p">(</span><span class="n">GPA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">rep</span><span class="p">(</span><span class="nf">seq</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="n">length.out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="p">),</span>
-<span class="w">    </span><span class="m">4</span><span class="p">),</span><span class="w"> </span><span class="n">TUCE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">TUCE</span><span class="p">),</span><span class="w"> </span><span class="n">PSI</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">factor</span><span class="p">(</span><span class="nf">rep</span><span class="p">(</span><span class="m">0</span><span class="o">:</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">each</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="p">))))</span>
+<div class=" highlight hl-r"><pre><span></span><span class="nf">round</span><span class="p">(</span><span class="nf">head</span><span class="p">(</span><span class="nf">fitted</span><span class="p">(</span><span class="n">my.model</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;outcome&quot;</span><span class="p">)),</span><span class="m">2</span><span class="p">)</span>
+</pre></div>
 
-<span class="n">plot.data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cbind</span><span class="p">(</span><span class="n">plot.data</span><span class="p">,</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="n">logit_glm</span><span class="p">,</span><span class="w"> </span><span class="n">plot.data</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;link&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">se</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span>
+    </div>
+</div>
+</div>
 
-<span class="n">plot.data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">within</span><span class="p">(</span><span class="n">plot.data</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">PredictedProb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">plogis</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
-<span class="w">    </span><span class="n">LL</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">plogis</span><span class="p">(</span><span class="n">fit</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">(</span><span class="m">1.96</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">se.fit</span><span class="p">))</span>
-<span class="w">    </span><span class="n">UL</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">plogis</span><span class="p">(</span><span class="n">fit</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="m">1.96</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">se.fit</span><span class="p">))</span>
-<span class="p">})</span>
+<div class="output_wrapper">
+<div class="output">
 
-<span class="nf">head</span><span class="p">(</span><span class="n">plot.data</span><span class="p">)</span>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<style>
+.dl-inline {width: auto; margin:0; padding: 0}
+.dl-inline>dt, .dl-inline>dd {float: none; width: auto; display: inline-block}
+.dl-inline>dt::after {content: ":\0020"; padding-right: .5ex}
+.dl-inline>dt:not(:first-of-type) {padding-left: .5ex}
+</style><dl class=dl-inline><dt>109</dt><dd>0.19</dd><dt>110</dt><dd>0.34</dd><dt>111</dt><dd>0.15</dd><dt>112</dt><dd>0.34</dd><dt>113</dt><dd>0.34</dd><dt>114</dt><dd>0.24</dd></dl>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="nf">round</span><span class="p">(</span><span class="nf">head</span><span class="p">(</span><span class="nf">fitted</span><span class="p">(</span><span class="n">my.model</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;probabilities&quot;</span><span class="p">)),</span><span class="m">2</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -14684,18 +13808,17 @@ dF/dx is for discrete change for the following variables:
 
 <div class="output_html rendered_html output_subarea ">
 <table class="dataframe">
-<caption>A data.frame: 6 × 9</caption>
+<caption>A matrix: 6 × 3 of type dbl</caption>
 <thead>
-	<tr><th></th><th scope=col>GPA</th><th scope=col>TUCE</th><th scope=col>PSI</th><th scope=col>fit</th><th scope=col>se.fit</th><th scope=col>residual.scale</th><th scope=col>UL</th><th scope=col>LL</th><th scope=col>PredictedProb</th></tr>
-	<tr><th></th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+	<tr><th></th><th scope=col>car</th><th scope=col>train</th><th scope=col>air</th></tr>
 </thead>
 <tbody>
-	<tr><th scope=row>1</th><td>2.000000</td><td>21.9375</td><td>0</td><td>-5.281600</td><td>1.901440</td><td>1</td><td>0.1743972</td><td>0.0001223597</td><td>0.005058568</td></tr>
-	<tr><th scope=row>2</th><td>2.020202</td><td>21.9375</td><td>0</td><td>-5.224507</td><td>1.878165</td><td>1</td><td>0.1760556</td><td>0.0001355938</td><td>0.005354190</td></tr>
-	<tr><th scope=row>3</th><td>2.040404</td><td>21.9375</td><td>0</td><td>-5.167414</td><td>1.854950</td><td>1</td><td>0.1777432</td><td>0.0001502417</td><td>0.005666990</td></tr>
-	<tr><th scope=row>4</th><td>2.060606</td><td>21.9375</td><td>0</td><td>-5.110321</td><td>1.831795</td><td>1</td><td>0.1794611</td><td>0.0001664517</td><td>0.005997954</td></tr>
-	<tr><th scope=row>5</th><td>2.080808</td><td>21.9375</td><td>0</td><td>-5.053228</td><td>1.808704</td><td>1</td><td>0.1812104</td><td>0.0001843874</td><td>0.006348123</td></tr>
-	<tr><th scope=row>6</th><td>2.101010</td><td>21.9375</td><td>0</td><td>-4.996135</td><td>1.785679</td><td>1</td><td>0.1829923</td><td>0.0002042290</td><td>0.006718598</td></tr>
+	<tr><th scope=row>109</th><td>0.42</td><td>0.39</td><td>0.19</td></tr>
+	<tr><th scope=row>110</th><td>0.37</td><td>0.29</td><td>0.34</td></tr>
+	<tr><th scope=row>111</th><td>0.43</td><td>0.42</td><td>0.15</td></tr>
+	<tr><th scope=row>112</th><td>0.37</td><td>0.29</td><td>0.34</td></tr>
+	<tr><th scope=row>113</th><td>0.37</td><td>0.29</td><td>0.34</td></tr>
+	<tr><th scope=row>114</th><td>0.41</td><td>0.35</td><td>0.24</td></tr>
 </tbody>
 </table>
 
@@ -14707,13 +13830,20 @@ dF/dx is for discrete change for the following variables:
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Predictions can be made using the predict method. If no data is provided, predictions are made for the sample mean values of the covariates.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="nf">options</span><span class="p">(</span><span class="n">repr.plot.width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6</span><span class="p">,</span><span class="w"> </span><span class="n">repr.plot.height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6</span><span class="p">,</span><span class="n">repr.plot.res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">200</span><span class="p">)</span>
-<span class="nf">ggplot</span><span class="p">(</span><span class="n">plot.data</span><span class="p">,</span><span class="w"> </span><span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GPA</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PredictedProb</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nf">geom_line</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PSI</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span>
+<div class=" highlight hl-r"><pre><span></span><span class="nf">round</span><span class="p">(</span><span class="nf">predict</span><span class="p">(</span><span class="n">my.model</span><span class="p">),</span><span class="m">3</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -14730,12 +13860,14 @@ dF/dx is for discrete change for the following variables:
 
 
 
+<div class="output_html rendered_html output_subarea ">
+<style>
+.dl-inline {width: auto; margin:0; padding: 0}
+.dl-inline>dt, .dl-inline>dd {float: none; width: auto; display: inline-block}
+.dl-inline>dt::after {content: ":\0020"; padding-right: .5ex}
+.dl-inline>dt:not(:first-of-type) {padding-left: .5ex}
+</style><dl class=dl-inline><dt>car</dt><dd>0.507</dd><dt>train</dt><dd>0.212</dd><dt>air</dt><dd>0.282</dd></dl>
 
-<div class="output_png output_subarea ">
-<img src="Lecture08b_files/Lecture08b_50_0.png"
-width=600
-height=600
->
 </div>
 
 </div>
@@ -14747,26 +13879,24 @@ height=600
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The simple estimate of the partial effect at the mean is 0.456. But of course, this calculation does not show the wide range of differences displayed visible in the plot above. The APE averages over the entire distribution, and equals 0.358. This latter
-figure is probably more representative of the desired effect.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Alternately, we can use the <em>'marginaleffects'</em> package plotting functions to visualize the nonlinear partial effects:</p>
+<p>Assume, for example, that we wish to predict the effect of a reduction of train transport time of 20%. We first create a new data.frame simply by multiplying train transport time by 0.8 and then using the predict method with this new data.frame.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="nf">plot_slopes</span><span class="p">(</span><span class="n">logit_glm</span><span class="p">,</span><span class="w"> </span><span class="n">variables</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;PSI&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">condition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;GPA&quot;</span><span class="p">)</span>
+<div class=" highlight hl-r"><pre><span></span><span class="n">NMC</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">my.df</span>
+<span class="nf">for</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="nf">nrow</span><span class="p">(</span><span class="n">NMC</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nf">if </span><span class="p">(</span><span class="n">NMC</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="m">2</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="s">&quot;train&quot;</span><span class="p">)</span><span class="w"> </span><span class="n">NMC</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="m">12</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">0.8</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">NMC</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="m">12</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">Old.prob</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">fitted</span><span class="p">(</span><span class="n">my.model</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;probabilities&quot;</span><span class="p">)</span>
+<span class="n">New.prob</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="n">my.model</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">dfidx</span><span class="p">(</span><span class="n">NMC</span><span class="p">))</span>
+<span class="nf">rbind</span><span class="p">(</span><span class="n">old</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">Old.prob</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">mean</span><span class="p">),</span><span class="w"> </span><span class="n">new</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">New.prob</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">mean</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -14783,12 +13913,18 @@ figure is probably more representative of the desired effect.</p>
 
 
 
+<div class="output_html rendered_html output_subarea ">
+<table class="dataframe">
+<caption>A matrix: 2 × 3 of type dbl</caption>
+<thead>
+	<tr><th></th><th scope=col>car</th><th scope=col>train</th><th scope=col>air</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>old</th><td>0.4575659</td><td>0.1672084</td><td>0.3752257</td></tr>
+	<tr><th scope=row>new</th><td>0.4044736</td><td>0.2635801</td><td>0.3319462</td></tr>
+</tbody>
+</table>
 
-<div class="output_png output_subarea ">
-<img src="Lecture08b_files/Lecture08b_53_0.png"
-width=600
-height=600
->
 </div>
 
 </div>
@@ -14800,7 +13936,182 @@ height=600
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>See more on this powerful package <a href="https://marginaleffects.com/vignettes/slopes.html">here</a>.</p>
+<h3 id="Marginal-rates-of-substitution">Marginal rates of substitution<a class="anchor-link" href="#Marginal-rates-of-substitution">&#182;</a></h3><p>Coefficients are marginal utilities, which cannot be interpreted. However, ratios of coefficients are marginal rates of substitution. For example, if the observable part of utility is: $V=\beta_{o}+\beta_{1} x_{1}+\beta x_{2}+\beta x_{3}$, join variations of $x_{1}$ and $x_{2}$ which ensure the same level of utility are such that: $d V=\beta_{1} d x_{1}+\beta_{2} d x_{2}=0$ so that:</p>
+$$
+-\left.\frac{d x_{2}}{d x_{1}}\right|_{d V=0}=\frac{\beta_{1}}{\beta_{2}}
+$$<p>For example, if $x_{2}$ is transport cost (in dollars ), $x_{1}$ transport time (in hours), $\beta_{1}=1.5$ and $\beta_{2}=0.2, \frac{\beta_{1}}{\beta_{2}}=30$ is the marginal rate of substitution of time in terms of dollars and the value of 30 means that to reduce the travel time of one hour, the individual is willing to pay at most 30 dollars more. Stated more simply, time value is 30 dollars per hour.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In order to compute travel time valuation for our estimated model, we divide the coefficients of travel times (in minutes) by the coefficient of monetary cost (in $):</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="nf">round</span><span class="p">(</span><span class="nf">coef</span><span class="p">(</span><span class="n">my.model</span><span class="p">)[</span><span class="nf">grep</span><span class="p">(</span><span class="s">&quot;time&quot;</span><span class="p">,</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="nf">coef</span><span class="p">(</span><span class="n">my.model</span><span class="p">)))]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nf">coef</span><span class="p">(</span><span class="n">my.model</span><span class="p">)[</span><span class="s">&quot;cost&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">60</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<style>
+.dl-inline {width: auto; margin:0; padding: 0}
+.dl-inline>dt, .dl-inline>dd {float: none; width: auto; display: inline-block}
+.dl-inline>dt::after {content: ":\0020"; padding-right: .5ex}
+.dl-inline>dt:not(:first-of-type) {padding-left: .5ex}
+</style><dl class=dl-inline><dt>time:car</dt><dd>29.53</dd><dt>time:train</dt><dd>23.09</dd><dt>time:air</dt><dd>36.95</dd></dl>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The value of travel time ranges from 23 for train to 37 Canadian $ per hour for plane.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>If, for the first individuals in the sample, we compute the ratio of the probabilities of the air and the car mode, we obtain:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="nf">paste0</span><span class="p">(</span><span class="s">&#39;new i.e. faster trains&#39;</span><span class="p">)</span>
+<span class="nf">round</span><span class="p">(</span><span class="nf">head</span><span class="p">(</span><span class="n">New.prob</span><span class="p">[,</span><span class="w"> </span><span class="s">&quot;air&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">New.prob</span><span class="p">[,</span><span class="w"> </span><span class="s">&quot;car&quot;</span><span class="p">]),</span><span class="m">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+'new i.e. faster trains'
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<style>
+.dl-inline {width: auto; margin:0; padding: 0}
+.dl-inline>dt, .dl-inline>dd {float: none; width: auto; display: inline-block}
+.dl-inline>dt::after {content: ":\0020"; padding-right: .5ex}
+.dl-inline>dt:not(:first-of-type) {padding-left: .5ex}
+</style><dl class=dl-inline><dt>109</dt><dd>0.45</dd><dt>110</dt><dd>0.92</dd><dt>111</dt><dd>0.34</dd><dt>112</dt><dd>0.92</dd><dt>113</dt><dd>0.92</dd><dt>114</dt><dd>0.6</dd></dl>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="nf">paste0</span><span class="p">(</span><span class="s">&#39;old i.e. regular trains&#39;</span><span class="p">)</span>
+<span class="nf">round</span><span class="p">(</span><span class="nf">head</span><span class="p">(</span><span class="n">Old.prob</span><span class="p">[,</span><span class="w"> </span><span class="s">&quot;air&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">Old.prob</span><span class="p">[,</span><span class="w"> </span><span class="s">&quot;car&quot;</span><span class="p">]),</span><span class="m">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+'old i.e. regular trains'
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<style>
+.dl-inline {width: auto; margin:0; padding: 0}
+.dl-inline>dt, .dl-inline>dd {float: none; width: auto; display: inline-block}
+.dl-inline>dt::after {content: ":\0020"; padding-right: .5ex}
+.dl-inline>dt:not(:first-of-type) {padding-left: .5ex}
+</style><dl class=dl-inline><dt>109</dt><dd>0.45</dd><dt>110</dt><dd>0.92</dd><dt>111</dt><dd>0.34</dd><dt>112</dt><dd>0.92</dd><dt>113</dt><dd>0.92</dd><dt>114</dt><dd>0.6</dd></dl>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>which is an illustration of the IIA property: if train time changes, it changes the probabilities of choosing air and car, but not their ratio.</p>
 
 </div>
 </div>
