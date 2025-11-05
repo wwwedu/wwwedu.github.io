@@ -2,7 +2,7 @@
 <html>
 <head><meta charset="utf-8" />
 
-<title>reg_diagnostics_part_1</title>
+<title>reg_diagnostics_part_2</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -13090,7 +13090,7 @@ div#notebook {
 <script>
 $( document ).ready(function(){
 
-            var cfg = {"base_numbering": 1, "nav_menu": {}, "number_sections": true, "sideBar": true, "skip_h1_title": true, "title_cell": "Table of Contents", "title_sidebar": "Contents", "toc_cell": false, "toc_position": {"height": "1091px", "left": "59px", "top": "111.12px", "width": "550.672px"}, "toc_section_display": true, "toc_window_display": true};
+            var cfg = {"base_numbering": "3", "nav_menu": {}, "number_sections": true, "sideBar": true, "skip_h1_title": true, "title_cell": "Table of Contents", "title_sidebar": "Contents", "toc_cell": false, "toc_position": {"height": "1091px", "left": "25px", "top": "111.12px", "width": "359.672px"}, "toc_section_display": true, "toc_window_display": true};
 
             // fire the main function with these parameters
             require(['nbextensions/toc2/toc2'], function (toc2) {
@@ -13106,60 +13106,39 @@ $( document ).ready(function(){
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Dragos Ailoae</p>
-<h1 id="Regression-Diagnostics"><center>Regression Diagnostics</center><a class="anchor-link" href="#Regression-Diagnostics">&#182;</a></h1><h1 id="Part-1"><center>Part 1</center><a class="anchor-link" href="#Part-1">&#182;</a></h1>
+<h1 id="Regression-Diagnostics"><center>Regression Diagnostics</center><a class="anchor-link" href="#Regression-Diagnostics">&#182;</a></h1><h1 id="Part-2"><center>Part 2</center><a class="anchor-link" href="#Part-2">&#182;</a></h1>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>In our first lecture we looked at a typical econometric research workflow indicating that after model estimation we can proceed to hypothesis testing.</p>
-<center> <img src="img1.png" width="900" > </center><p>However, before we start performing statistical hypotheses tests intended to draw economic meaning out of the model, our first tests should concern the question: is this a good model?</p>
-<p>It would be nice if there was a nice statistical test along the lines of:</p>
-$$\left\{\begin{array}{l}H_{o}: \text{My model is awesome.}\\ H_{a}: \text {My model is not so awesome.} \end{array}\right.$$<p>Unfortunately, troubleshooting a regression is not that simple and requires assessing a number of different factors.</p>
-
+<p>Part 1 <a href="https://www747.github.io/NYU_1101/Diagnostics/reg_diagnostics_part_1.html">here</a></p>
+<h2 id="Examination-of-the-statistical-assumptions-needed-for-correct-interpretation-of-the-output">Examination of the statistical assumptions needed for correct interpretation of the output<a class="anchor-link" href="#Examination-of-the-statistical-assumptions-needed-for-correct-interpretation-of-the-output">&#182;</a></h2><p>If we collect all of the various problems that can arise - we can rank them in terms of severity roughly as:</p>
+$$\text { outliers }&gt;\text { non }-\text { linearity }&gt; \text { heteroskedasticity }&gt;\text { autocorrelation } &gt;\text { non }-\text { normality }$$<p>In terms of impact on OLS estimation:</p>
+\begin{array}{lcccc}
+\hline \text { Problem } &amp; \text { Biased } \hat\beta &amp; \text { Biased } S E &amp; \text { Invalid } t / F &amp; \text { Hi Var } \\
+\hline \text { Non-linear } &amp; \text { Yes } &amp; \text { Yes } &amp; \text { Yes } &amp; - \\
+\text { Heteroscedasticity } &amp; \text { No } &amp; \text { Yes } &amp; \text { Yes } &amp; \text { Yes } \\
+\text { Autocorrealtion } &amp; \text { No } &amp; \text { Yes } &amp; \text { Yes } &amp; \text { Yes } \\
+\text { Non-normal error } &amp; \text { No } &amp; \text { No } &amp; \text { Yes } &amp; \text { Yes } \\
+\text { Multicollinearity } &amp; \text { No } &amp; \text { No } &amp; \text { No } &amp; \text { Yes } \\
+\text { Omit relevant } X &amp; \text { Yes } &amp; \text { Yes } &amp; \text { Yes } &amp; - \\
+\text { Irrelevant } X &amp; \text { No } &amp; \text { No } &amp; \text { No } &amp; \text { Yes } \\
+X \text { measurement Error } &amp; \text { Yes } &amp; \text { Yes } &amp; \text { Yes } &amp; - \\
+\hline
+\end{array}
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="The-Art-of-Regression-Diagnostics">The Art of Regression Diagnostics<a class="anchor-link" href="#The-Art-of-Regression-Diagnostics">&#182;</a></h1><p>Regression diagnosis is an iterative process, but there is a natural order:</p>
-<ol>
-<li>You have to worry first about conditions that cause outright <strong>numerical errors</strong>. Multicollinearity is one of those, because it can produce unstable systems of equations potentially resulting in outright incorrect answers. Any problem here usually means you cannot proceed until it is fixed. Multicollinearity is usually diagnosed using Variance Inflation Factors and similar examination of the "hat matrix" (projection matrix) and fitted values ($\hat Y$). Additional checks at this stage can include assessing the influence of any missing values in the dataset and verifying the identifiability of important parameters. (Missing combinations of discrete independent variables can sometimes cause trouble here.)<br>
-<br>  </li>
-<li>Next you need to be concerned whether the output reflects most of the data or is <strong>sensitive to a small subset</strong>. In the latter case, everything else you subsequently do may be misleading, so it is to be avoided. Procedures include examination of outliers and of leverage. (A high-leverage datum might not be an outlier but even so it may unduly influence all the results.) If a robust alternative to the regression procedure exists (i.e. weighted least squares), this is a good time to apply it: check that it is producing similar results and use it to detect outlying values.<br>
-<br>  </li>
-<li>Finally, having achieved a situation that is numerically stable (so you can trust the computations) and which reflects the full dataset, you turn to an examination of the <strong>statistical assumptions</strong> needed for correct interpretation of the output. Primarily these concerns focus--in rough order of importance--on distributions of the residuals (including heteroscedasticity, but also extending to symmetry, distributional shape, possible correlation with predicted values or other variables, and autocorrelation), goodness of fit (including the possible need for interaction terms), whether to re-express the dependent variable, and whether to re-express the independent variables.
-<br>  </li>
-</ol>
-<p>At any stage, if something needs to be corrected then it's wise to return to the beginning. Repeat as many times as necessary.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Conditions-that-cause-outright-numerical-errors">Conditions that cause outright numerical errors<a class="anchor-link" href="#Conditions-that-cause-outright-numerical-errors">&#182;</a></h2><h3 id="Missing-values">Missing values<a class="anchor-link" href="#Missing-values">&#182;</a></h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>To understand the troublshooting process in a somewhat practical setting we will look at a multiple regression model that predicts:</p>
-<ul>
-<li>Y - survey respondents’ perceived levels of climate change risk (higher numbers = more concerned) </li>
-</ul>
-<p>using as independent variables (Xs):</p>
-<ul>
-<li>political ideology (higher numbers = more conservative)</li>
-<li>age</li>
-<li>household income </li>
-<li>educational achievement (1 = less than high school, 8 = PhD/JD/MD). </li>
-</ul>
-<p>See <a href="https://journals.ametsoc.org/view/journals/atot/34/11/jtech-d-17-0088.1.xml">Paper</a>, <a href="https://web.archive.org/web/20240824124231/http://crcm.ou.edu/epscordata/">Data source</a>, <a href="https://web.archive.org/web/20240703013610/http://crcm.ou.edu/epscor/codebooks/codebook-wave19.pdf">Codebook</a></p>
+<h3 id="Non-linearity">Non-linearity<a class="anchor-link" href="#Non-linearity">&#182;</a></h3><p>One of the most critical assumptions of OLS is that the relationships between variables are linear in their functional form.</p>
+<p>To motivate the upcomming test procedure, consider the following example - assume that the true model is quadratic:
+$$
+Y_{i}=\beta_{0}+\beta_{1} X_{i}^{2}+\epsilon_{i}, \text { where } X_{i} \sim \mathcal{N}(1,1), \epsilon_{i} \sim \mathcal{N}\left(0,0.5^{2}\right)
+$$</p>
 
 </div>
 </div>
@@ -13174,16 +13153,16 @@ $$\left\{\begin{array}{l}H_{o}: \text{My model is awesome.}\\ H_{a}: \text {My m
 <span class="c1">#options(repr.plot.width = 7, repr.plot.height = 7)  # plot size</span>
 <span class="n">qui</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">suppressPackageStartupMessages</span><span class="w"> </span><span class="c1"># quiet! - suppress library load messages</span>
 
-<span class="c1"># install (if not already installed) and load package</span>
-<span class="nf">qui</span><span class="p">(</span><span class="nf">if</span><span class="p">(</span><span class="o">!</span><span class="nf">require</span><span class="p">(</span><span class="n">knitr</span><span class="p">)){</span><span class="nf">install.packages</span><span class="p">(</span><span class="s">&#39;knitr&#39;</span><span class="p">)})</span><span class="w">         </span><span class="c1"># for kable() - table formatting</span>
-<span class="nf">qui</span><span class="p">(</span><span class="nf">if</span><span class="p">(</span><span class="o">!</span><span class="nf">require</span><span class="p">(</span><span class="n">tidyverse</span><span class="p">)){</span><span class="nf">install.packages</span><span class="p">(</span><span class="s">&#39;tidyverse&#39;</span><span class="p">)})</span><span class="w"> </span><span class="c1"># for pipes</span>
-<span class="nf">qui</span><span class="p">(</span><span class="nf">if</span><span class="p">(</span><span class="o">!</span><span class="nf">require</span><span class="p">(</span><span class="n">modelsummary</span><span class="p">)){</span><span class="nf">install.packages</span><span class="p">(</span><span class="s">&#39;modelsummary&#39;</span><span class="p">)})</span><span class="w">  </span><span class="c1">#datasummary_skim(), modelsummary(), datasummary_correlation()</span>
+<span class="nf">set.seed</span><span class="p">(</span><span class="m">123</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="n">N</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span>
+<span class="n">beta_vec</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="n">x</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">rnorm</span><span class="p">(</span><span class="n">mean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">sd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">N</span><span class="p">)</span>
+<span class="n">e</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">rnorm</span><span class="p">(</span><span class="n">mean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">sd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">N</span><span class="p">)</span>
+<span class="n">y</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cbind</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">^</span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="o">%*%</span><span class="w"> </span><span class="n">beta_vec</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">e</span>
 
-<span class="n">ds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">read.csv</span><span class="p">(</span><span class="s">&quot;https://wwwedu.github.io/NYU_1101/Diagnostics/MSISNetWave12.csv&quot;</span><span class="p">)</span>
-
-<span class="c1"># View(ds)  # Rstudio</span>
-<span class="nf">head</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
-<span class="nf">tail</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13200,50 +13179,12 @@ $$\left\{\begin{array}{l}H_{o}: \text{My model is awesome.}\\ H_{a}: \text {My m
 
 
 
-<div class="output_html rendered_html output_subarea ">
-<table class="dataframe">
-<caption>A data.frame: 6 × 207</caption>
-<thead>
-	<tr><th></th><th scope=col>X.1</th><th scope=col>X</th><th scope=col>userid</th><th scope=col>wave_id</th><th scope=col>agescreen</th><th scope=col>age</th><th scope=col>gender</th><th scope=col>education</th><th scope=col>adults</th><th scope=col>children</th><th scope=col>⋯</th><th scope=col>r.white</th><th scope=col>f.white</th><th scope=col>r.AfricanAmer</th><th scope=col>f.AfricanAmer</th><th scope=col>r.age</th><th scope=col>f.age</th><th scope=col>f.age.2</th><th scope=col>r.ideology</th><th scope=col>f.ideology</th><th scope=col>f.glbwrm_ok</th></tr>
-	<tr><th></th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>⋯</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
-</thead>
-<tbody>
-	<tr><th scope=row>1</th><td>1</td><td>12</td><td>Nm-W100208</td><td>Wave 12 (Fall 2016)</td><td>1</td><td>50</td><td>1</td><td>4</td><td>2</td><td> 1</td><td>⋯</td><td>1</td><td>White    </td><td>0</td><td>Non AfricanAmer</td><td>3</td><td>41-50</td><td>(17.9,58.5]</td><td> 3</td><td>Conservative</td><td>No </td></tr>
-	<tr><th scope=row>2</th><td>2</td><td>25</td><td>Nm-W100227</td><td>Wave 12 (Fall 2016)</td><td>1</td><td>58</td><td>1</td><td>4</td><td>1</td><td> 0</td><td>⋯</td><td>0</td><td>Non White</td><td>0</td><td>Non AfricanAmer</td><td>4</td><td>51-60</td><td>(17.9,58.5]</td><td> 2</td><td>Moderate    </td><td>Yes</td></tr>
-	<tr><th scope=row>3</th><td>3</td><td>41</td><td>Nm-W100639</td><td>Wave 12 (Fall 2016)</td><td>1</td><td>52</td><td>0</td><td>6</td><td>2</td><td> 0</td><td>⋯</td><td>1</td><td>White    </td><td>0</td><td>Non AfricanAmer</td><td>4</td><td>51-60</td><td>(17.9,58.5]</td><td> 3</td><td>Conservative</td><td>No </td></tr>
-	<tr><th scope=row>4</th><td>4</td><td>54</td><td>Nm-W100680</td><td>Wave 12 (Fall 2016)</td><td>1</td><td>58</td><td>1</td><td>6</td><td>2</td><td>NA</td><td>⋯</td><td>1</td><td>White    </td><td>0</td><td>Non AfricanAmer</td><td>4</td><td>51-60</td><td>(17.9,58.5]</td><td>NA</td><td>NA          </td><td>No </td></tr>
-	<tr><th scope=row>5</th><td>5</td><td>69</td><td>Nm-W101178</td><td>Wave 12 (Fall 2016)</td><td>1</td><td>40</td><td>0</td><td>4</td><td>2</td><td> 2</td><td>⋯</td><td>1</td><td>White    </td><td>0</td><td>Non AfricanAmer</td><td>2</td><td>31-40</td><td>(17.9,58.5]</td><td> 2</td><td>Moderate    </td><td>NA </td></tr>
-	<tr><th scope=row>6</th><td>6</td><td>85</td><td>Nm-W101198</td><td>Wave 12 (Fall 2016)</td><td>1</td><td>44</td><td>0</td><td>4</td><td>2</td><td> 0</td><td>⋯</td><td>1</td><td>White    </td><td>0</td><td>Non AfricanAmer</td><td>3</td><td>41-50</td><td>(17.9,58.5]</td><td> 2</td><td>Moderate    </td><td>Yes</td></tr>
-</tbody>
-</table>
 
-</div>
-
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-<table class="dataframe">
-<caption>A data.frame: 6 × 207</caption>
-<thead>
-	<tr><th></th><th scope=col>X.1</th><th scope=col>X</th><th scope=col>userid</th><th scope=col>wave_id</th><th scope=col>agescreen</th><th scope=col>age</th><th scope=col>gender</th><th scope=col>education</th><th scope=col>adults</th><th scope=col>children</th><th scope=col>⋯</th><th scope=col>r.white</th><th scope=col>f.white</th><th scope=col>r.AfricanAmer</th><th scope=col>f.AfricanAmer</th><th scope=col>r.age</th><th scope=col>f.age</th><th scope=col>f.age.2</th><th scope=col>r.ideology</th><th scope=col>f.ideology</th><th scope=col>f.glbwrm_ok</th></tr>
-	<tr><th></th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>⋯</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;chr&gt;</th><th scope=col>&lt;chr&gt;</th></tr>
-</thead>
-<tbody>
-	<tr><th scope=row>2542</th><td>2542</td><td>29832</td><td>SSWNM2814</td><td>Wave 12 (Fall 2016)</td><td>1</td><td>50</td><td>0</td><td>6</td><td>1</td><td>0</td><td>⋯</td><td> 1</td><td>White</td><td> 0</td><td>Non AfricanAmer</td><td>3</td><td>41-50</td><td>(17.9,58.5]</td><td>3</td><td>Conservative</td><td>Yes</td></tr>
-	<tr><th scope=row>2543</th><td>2543</td><td>29834</td><td>STU3496  </td><td>Wave 12 (Fall 2016)</td><td>1</td><td>55</td><td>1</td><td>2</td><td>1</td><td>0</td><td>⋯</td><td> 1</td><td>White</td><td> 0</td><td>Non AfricanAmer</td><td>4</td><td>51-60</td><td>(17.9,58.5]</td><td>2</td><td>Moderate    </td><td>Yes</td></tr>
-	<tr><th scope=row>2544</th><td>2544</td><td>29835</td><td>STUNM3179</td><td>Wave 12 (Fall 2016)</td><td>1</td><td>54</td><td>0</td><td>2</td><td>2</td><td>0</td><td>⋯</td><td> 1</td><td>White</td><td> 0</td><td>Non AfricanAmer</td><td>4</td><td>51-60</td><td>(17.9,58.5]</td><td>3</td><td>Conservative</td><td>Yes</td></tr>
-	<tr><th scope=row>2545</th><td>2545</td><td>29837</td><td>STUNM3230</td><td>Wave 12 (Fall 2016)</td><td>1</td><td>26</td><td>1</td><td>4</td><td>2</td><td>0</td><td>⋯</td><td> 1</td><td>White</td><td> 0</td><td>Non AfricanAmer</td><td>1</td><td>18-30</td><td>(17.9,58.5]</td><td>2</td><td>Moderate    </td><td>Yes</td></tr>
-	<tr><th scope=row>2546</th><td>2546</td><td>29838</td><td>STUNM3253</td><td>Wave 12 (Fall 2016)</td><td>1</td><td>37</td><td>1</td><td>5</td><td>2</td><td>1</td><td>⋯</td><td> 1</td><td>White</td><td> 0</td><td>Non AfricanAmer</td><td>2</td><td>31-40</td><td>(17.9,58.5]</td><td>3</td><td>Conservative</td><td>No </td></tr>
-	<tr><th scope=row>2547</th><td>2547</td><td>29840</td><td>STUNM3394</td><td>Wave 12 (Fall 2016)</td><td>1</td><td>57</td><td>0</td><td>6</td><td>3</td><td>0</td><td>⋯</td><td>NA</td><td>NA   </td><td>NA</td><td>NA             </td><td>4</td><td>51-60</td><td>(17.9,58.5]</td><td>2</td><td>Moderate    </td><td>Yes</td></tr>
-</tbody>
-</table>
-
+<div class="output_png output_subarea ">
+<img src="output_3_0.png"
+width=420
+height=420
+>
 </div>
 
 </div>
@@ -13251,26 +13192,16 @@ $$\left\{\begin{array}{l}H_{o}: \text{My model is awesome.}\\ H_{a}: \text {My m
 </div>
 </div>
 
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Since the dataset is rather large we'll just grab the first 500 observations of the variables of interest.</p>
-
-</div>
-</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="n">ds.small</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span>
-<span class="w">  </span><span class="n">dplyr</span><span class="o">::</span><span class="nf">select</span><span class="p">(</span><span class="s">&quot;glbcc_risk&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;age&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;education&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;income&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;ideol&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span>
-<span class="w">  </span><span class="nf">slice</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">500</span><span class="p">)</span>
+<div class=" highlight hl-r"><pre><span></span><span class="n">mdl_quad</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">lm</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">x</span><span class="p">)</span>
 
-<span class="nf">head</span><span class="p">(</span><span class="n">ds.small</span><span class="p">)</span>
-<span class="nf">tail</span><span class="p">(</span><span class="n">ds.small</span><span class="p">)</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">paste0</span><span class="p">(</span><span class="s">&quot;R^2 = &quot;</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="nf">summary</span><span class="p">(</span><span class="n">mdl_quad</span><span class="p">)</span><span class="o">$</span><span class="n">r.squared</span><span class="p">,</span><span class="w"> </span><span class="m">4</span><span class="p">)))</span>
+<span class="nf">lines</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="nf">order</span><span class="p">(</span><span class="n">x</span><span class="p">)],</span><span class="w"> </span><span class="n">mdl_quad</span><span class="o">$</span><span class="n">fitted.values</span><span class="p">[</span><span class="nf">order</span><span class="p">(</span><span class="n">x</span><span class="p">)])</span>
 </pre></div>
 
     </div>
@@ -13287,50 +13218,12 @@ $$\left\{\begin{array}{l}H_{o}: \text{My model is awesome.}\\ H_{a}: \text {My m
 
 
 
-<div class="output_html rendered_html output_subarea ">
-<table class="dataframe">
-<caption>A data.frame: 6 × 5</caption>
-<thead>
-	<tr><th></th><th scope=col>glbcc_risk</th><th scope=col>age</th><th scope=col>education</th><th scope=col>income</th><th scope=col>ideol</th></tr>
-	<tr><th></th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;int&gt;</th></tr>
-</thead>
-<tbody>
-	<tr><th scope=row>1</th><td> 4</td><td>50</td><td>4</td><td>160000</td><td> 6</td></tr>
-	<tr><th scope=row>2</th><td>10</td><td>58</td><td>4</td><td> 45000</td><td> 3</td></tr>
-	<tr><th scope=row>3</th><td> 3</td><td>52</td><td>6</td><td> 40000</td><td> 6</td></tr>
-	<tr><th scope=row>4</th><td> 0</td><td>58</td><td>6</td><td>130000</td><td>NA</td></tr>
-	<tr><th scope=row>5</th><td> 5</td><td>40</td><td>4</td><td> 55000</td><td> 4</td></tr>
-	<tr><th scope=row>6</th><td>NA</td><td>44</td><td>4</td><td> 33000</td><td> 4</td></tr>
-</tbody>
-</table>
 
-</div>
-
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-<table class="dataframe">
-<caption>A data.frame: 6 × 5</caption>
-<thead>
-	<tr><th></th><th scope=col>glbcc_risk</th><th scope=col>age</th><th scope=col>education</th><th scope=col>income</th><th scope=col>ideol</th></tr>
-	<tr><th></th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;int&gt;</th></tr>
-</thead>
-<tbody>
-	<tr><th scope=row>495</th><td> 8</td><td>44</td><td>2</td><td>10000</td><td>4</td></tr>
-	<tr><th scope=row>496</th><td> 5</td><td>65</td><td>5</td><td>25000</td><td>5</td></tr>
-	<tr><th scope=row>497</th><td>10</td><td>55</td><td>4</td><td>30000</td><td>3</td></tr>
-	<tr><th scope=row>498</th><td> 6</td><td>53</td><td>6</td><td>60000</td><td>4</td></tr>
-	<tr><th scope=row>499</th><td> 5</td><td>66</td><td>6</td><td>   NA</td><td>3</td></tr>
-	<tr><th scope=row>500</th><td> 3</td><td>41</td><td>6</td><td>42000</td><td>4</td></tr>
-</tbody>
-</table>
-
+<div class="output_png output_subarea ">
+<img src="output_4_0.png"
+width=420
+height=420
+>
 </div>
 
 </div>
@@ -13338,22 +13231,13 @@ $$\left\{\begin{array}{l}H_{o}: \text{My model is awesome.}\\ H_{a}: \text {My m
 </div>
 </div>
 
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>The results of the regression model are as follows:</p>
-
-</div>
-</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="n">ols1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="nf">lm</span><span class="p">(</span><span class="n">glbcc_risk</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">education</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ideol</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ds.small</span><span class="p">)</span>
-<span class="nf">summary</span><span class="p">(</span><span class="n">ols1</span><span class="p">)</span>
+<div class=" highlight hl-r"><pre><span></span><span class="nf">plot</span><span class="p">(</span><span class="n">mdl_quad</span><span class="o">$</span><span class="n">fitted</span><span class="p">,</span><span class="w"> </span><span class="n">mdl_quad</span><span class="o">$</span><span class="n">res</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13371,30 +13255,11 @@ $$\left\{\begin{array}{l}H_{o}: \text{My model is awesome.}\\ H_{a}: \text {My m
 
 
 
-<div class="output_text output_subarea ">
-<pre>
-Call:
-lm(formula = glbcc_risk ~ age + education + income + ideol, data = ds.small)
-
-Residuals:
-    Min      1Q  Median      3Q     Max 
--7.1617 -1.7131 -0.0584  1.7216  6.8981 
-
-Coefficients:
-              Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)  1.208e+01  7.247e-01  16.676   &lt;2e-16 ***
-age         -5.559e-03  8.407e-03  -0.661    0.509    
-education   -1.861e-02  6.979e-02  -0.267    0.790    
-income       1.923e-07  2.227e-06   0.086    0.931    
-ideol       -1.224e+00  6.630e-02 -18.454   &lt;2e-16 ***
----
-Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-
-Residual standard error: 2.353 on 445 degrees of freedom
-  (50 observations deleted due to missingness)
-Multiple R-squared:  0.4365,	Adjusted R-squared:  0.4315 
-F-statistic: 86.19 on 4 and 445 DF,  p-value: &lt; 2.2e-16
-</pre>
+<div class="output_png output_subarea ">
+<img src="output_5_0.png"
+width=420
+height=420
+>
 </div>
 
 </div>
@@ -13406,9 +13271,11 @@ F-statistic: 86.19 on 4 and 445 DF,  p-value: &lt; 2.2e-16
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The ideology coefficient is highly significant and negative indicating that concern for climate change risk declines as we move towards the conservative end of the ideology spectrum. Note however that the regression summary function reports "50 observations deleted due to missingness."</p>
-<p>Prepackaged econometrics functions deal with missing data in different ways. It's best to be on top of it and handle it as you see appropriate.</p>
-<p>Many data summary tables report missing values, for example:</p>
+<p>One solution to the non-linearity problem is polinomial regression. We can think of the polynomial model as the Taylor series expansion of the unknown function. 
+<a href="https://en.wikipedia.org/wiki/Taylor_series">https://en.wikipedia.org/wiki/Taylor_series</a>.</p>
+<p>Polynomial models are useful:<br>
+• in situations where the analyst knows that curvilinear effects are present in the true response function<br>
+• as approximating functions to unknown and possibly very complex nonlinear relationships.</p>
 
 </div>
 </div>
@@ -13418,499 +13285,9 @@ F-statistic: 86.19 on 4 and 445 DF,  p-value: &lt; 2.2e-16
 <div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="c1"># datasummary_skim(ds.small)    # Rstudio</span>
-<span class="nf">datasummary_skim</span><span class="p">(</span><span class="n">ds.small</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;jupyter&quot;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-<!-- preamble start -->
-<!DOCTYPE html> 
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>tinytable_53gon1jp5e6lz85ap5qq</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  </head>
-  <body>
-<!-- preamble end -->
-
-    <script>
-
-      function styleCell_53gon1jp5e6lz85ap5qq(i, j, css_id) {
-          var table = document.getElementById("tinytable_53gon1jp5e6lz85ap5qq");
-          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
-          if (cell) {
-              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
-              cell.classList.add(css_id);
-          } else {
-              console.warn(`Cell at (${i}, ${j}) not found.`);
-          }
-      }
-      function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_53gon1jp5e6lz85ap5qq');
-        var newRow = table.insertRow(i);
-        var newCell = newRow.insertCell(0);
-        newCell.setAttribute("colspan", colspan);
-        // newCell.innerText = content;
-        // this may be unsafe, but innerText does not interpret <br>
-        newCell.innerHTML = content;
-      }
-      function spanCell_53gon1jp5e6lz85ap5qq(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_53gon1jp5e6lz85ap5qq");
-        const targetRow = table.rows[i];
-        const targetCell = targetRow.cells[j];
-        for (let r = 0; r < rowspan; r++) {
-          // Only start deleting cells to the right for the first row (r == 0)
-          if (r === 0) {
-            // Delete cells to the right of the target cell in the first row
-            for (let c = colspan - 1; c > 0; c--) {
-              if (table.rows[i + r].cells[j + c]) {
-                table.rows[i + r].deleteCell(j + c);
-              }
-            }
-          }
-          // For rows below the first, delete starting from the target column
-          if (r > 0) {
-            for (let c = colspan - 1; c >= 0; c--) {
-              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
-                table.rows[i + r].deleteCell(j);
-              }
-            }
-          }
-        }
-        // Set rowspan and colspan of the target cell
-        targetCell.rowSpan = rowspan;
-        targetCell.colSpan = colspan;
-      }
-      // tinytable span after
-      window.addEventListener('load', function () {
-          var cellsToStyle = [
-            // tinytable style arrays after
-          { positions: [ { i: 5, j: 6 }, { i: 5, j: 4 }, { i: 5, j: 2 }, { i: 5, j: 0 }, { i: 5, j: 3 }, { i: 5, j: 1 }, { i: 5, j: 7 }, { i: 5, j: 5 }, { i: 5, j: 8 },  ], css_id: 'tinytable_css_p3vr9wz80v2pqv0cmg4t',}, 
-          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 1, j: 5 }, { i: 1, j: 3 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 1, j: 6 }, { i: 1, j: 4 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 4, j: 4 }, { i: 4, j: 2 }, { i: 1, j: 7 }, { i: 2, j: 7 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 4, j: 5 }, { i: 4, j: 3 }, { i: 1, j: 8 }, { i: 2, j: 8 }, { i: 2, j: 6 }, { i: 3, j: 6 }, { i: 4, j: 6 }, { i: 3, j: 7 }, { i: 4, j: 7 }, { i: 3, j: 8 }, { i: 4, j: 8 },  ], css_id: 'tinytable_css_xzznyao2h6u0ujvfxmvq',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 1 }, { i: 0, j: 7 }, { i: 0, j: 5 }, { i: 0, j: 8 }, { i: 0, j: 6 }, { i: 0, j: 4 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_0akadpyrihitfxhhppbm',}, 
-          ];
-
-          // Loop over the arrays to style the cells
-          cellsToStyle.forEach(function (group) {
-              group.positions.forEach(function (cell) {
-                  styleCell_53gon1jp5e6lz85ap5qq(cell.i, cell.j, group.css_id);
-              });
-          });
-      });
-    </script>
-
-    <style>
-      /* tinytable css entries after */
-      .table td.tinytable_css_p3vr9wz80v2pqv0cmg4t, .table th.tinytable_css_p3vr9wz80v2pqv0cmg4t { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_xzznyao2h6u0ujvfxmvq, .table th.tinytable_css_xzznyao2h6u0ujvfxmvq { text-align: left; }
-      .table td.tinytable_css_0akadpyrihitfxhhppbm, .table th.tinytable_css_0akadpyrihitfxhhppbm { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-    </style>
-    <div class="container">
-      <table class="table table-borderless" id="tinytable_53gon1jp5e6lz85ap5qq" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing='true'>
-        <thead>
-
-              <tr>
-                <th scope="col"> </th>
-                <th scope="col">Unique</th>
-                <th scope="col">Missing Pct.</th>
-                <th scope="col">Mean</th>
-                <th scope="col">SD</th>
-                <th scope="col">Min</th>
-                <th scope="col">Median</th>
-                <th scope="col">Max</th>
-                <th scope="col">Histogram</th>
-              </tr>
-        </thead>
-
-        <tbody>
-                <tr>
-                  <td>glbcc_risk</td>
-                  <td>12</td>
-                  <td>0</td>
-                  <td>5.8</td>
-                  <td>3.1</td>
-                  <td>0.0</td>
-                  <td>6.0</td>
-                  <td>10.0</td>
-                  <td><img src="./tinytable_assets/id2um9olk07df64480s8b6.png" style="height: 1em;"></td>
-                </tr>
-                <tr>
-                  <td>age</td>
-                  <td>64</td>
-                  <td>0</td>
-                  <td>60.3</td>
-                  <td>13.4</td>
-                  <td>23.0</td>
-                  <td>62.0</td>
-                  <td>96.0</td>
-                  <td><img src="./tinytable_assets/idzs9tuujutuvq5lz3kohz.png" style="height: 1em;"></td>
-                </tr>
-                <tr>
-                  <td>education</td>
-                  <td>8</td>
-                  <td>0</td>
-                  <td>5.2</td>
-                  <td>1.7</td>
-                  <td>1.0</td>
-                  <td>6.0</td>
-                  <td>8.0</td>
-                  <td><img src="./tinytable_assets/idzw14jbvx5rh9qdkmynyn.png" style="height: 1em;"></td>
-                </tr>
-                <tr>
-                  <td>income</td>
-                  <td>114</td>
-                  <td>9</td>
-                  <td>74696.6</td>
-                  <td>52298.7</td>
-                  <td>10000.0</td>
-                  <td>60000.0</td>
-                  <td>400000.0</td>
-                  <td><img src="./tinytable_assets/idkdxsbl3tondzohybk34v.png" style="height: 1em;"></td>
-                </tr>
-                <tr>
-                  <td>ideol</td>
-                  <td>8</td>
-                  <td>1</td>
-                  <td>4.7</td>
-                  <td>1.7</td>
-                  <td>1.0</td>
-                  <td>5.0</td>
-                  <td>7.0</td>
-                  <td><img src="./tinytable_assets/idk19mdc59d7nv36jxwz1k.png" style="height: 1em;"></td>
-                </tr>
-        </tbody>
-      </table>
-    </div>
-<!-- postamble start -->
-  </body>
-
-</html>
-<!-- postamble end -->
-<!-- hack to avoid NA insertion in last line -->
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>If you have a small dataset try using an imputation process rather than removing the observation. R has a number of <a href="https://www.analyticsvidhya.com/blog/2016/03/tutorial-powerful-packages-imputing-missing-values/">powerful packages</a> for imputing missing values.</p>
-<p>In our case however, since we have a large dataset, we'll just drop any rows with missing values:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="n">ds.small</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ds.small</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="nf">drop_na</span><span class="p">()</span><span class="w">   </span><span class="c1"># filter out N/As</span>
-<span class="nf">rownames</span><span class="p">(</span><span class="n">ds.small</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="nf">nrow</span><span class="p">(</span><span class="n">ds.small</span><span class="p">)</span><span class="w"> </span><span class="c1"># reindex dataframe without the missing values</span>
-
-<span class="nf">head</span><span class="p">(</span><span class="n">ds.small</span><span class="p">)</span>
-<span class="nf">tail</span><span class="p">(</span><span class="n">ds.small</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-<table class="dataframe">
-<caption>A data.frame: 6 × 5</caption>
-<thead>
-	<tr><th></th><th scope=col>glbcc_risk</th><th scope=col>age</th><th scope=col>education</th><th scope=col>income</th><th scope=col>ideol</th></tr>
-	<tr><th></th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;int&gt;</th></tr>
-</thead>
-<tbody>
-	<tr><th scope=row>1</th><td> 4</td><td>50</td><td>4</td><td>160000</td><td>6</td></tr>
-	<tr><th scope=row>2</th><td>10</td><td>58</td><td>4</td><td> 45000</td><td>3</td></tr>
-	<tr><th scope=row>3</th><td> 3</td><td>52</td><td>6</td><td> 40000</td><td>6</td></tr>
-	<tr><th scope=row>4</th><td> 5</td><td>40</td><td>4</td><td> 55000</td><td>4</td></tr>
-	<tr><th scope=row>5</th><td> 5</td><td>60</td><td>6</td><td> 40000</td><td>2</td></tr>
-	<tr><th scope=row>6</th><td> 5</td><td>67</td><td>6</td><td> 50000</td><td>4</td></tr>
-</tbody>
-</table>
-
-</div>
-
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-<table class="dataframe">
-<caption>A data.frame: 6 × 5</caption>
-<thead>
-	<tr><th></th><th scope=col>glbcc_risk</th><th scope=col>age</th><th scope=col>education</th><th scope=col>income</th><th scope=col>ideol</th></tr>
-	<tr><th></th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;int&gt;</th></tr>
-</thead>
-<tbody>
-	<tr><th scope=row>445</th><td>10</td><td>46</td><td>8</td><td>400000</td><td>4</td></tr>
-	<tr><th scope=row>446</th><td> 8</td><td>44</td><td>2</td><td> 10000</td><td>4</td></tr>
-	<tr><th scope=row>447</th><td> 5</td><td>65</td><td>5</td><td> 25000</td><td>5</td></tr>
-	<tr><th scope=row>448</th><td>10</td><td>55</td><td>4</td><td> 30000</td><td>3</td></tr>
-	<tr><th scope=row>449</th><td> 6</td><td>53</td><td>6</td><td> 60000</td><td>4</td></tr>
-	<tr><th scope=row>450</th><td> 3</td><td>41</td><td>6</td><td> 42000</td><td>4</td></tr>
-</tbody>
-</table>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="c1"># datasummary_skim(ds.small)    # Rstudio</span>
-<span class="nf">datasummary_skim</span><span class="p">(</span><span class="n">ds.small</span><span class="p">,</span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;jupyter&quot;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-<!-- preamble start -->
-<!DOCTYPE html> 
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>tinytable_oltsl56myxrga01geyjo</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  </head>
-  <body>
-<!-- preamble end -->
-
-    <script>
-
-      function styleCell_oltsl56myxrga01geyjo(i, j, css_id) {
-          var table = document.getElementById("tinytable_oltsl56myxrga01geyjo");
-          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
-          if (cell) {
-              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
-              cell.classList.add(css_id);
-          } else {
-              console.warn(`Cell at (${i}, ${j}) not found.`);
-          }
-      }
-      function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_oltsl56myxrga01geyjo');
-        var newRow = table.insertRow(i);
-        var newCell = newRow.insertCell(0);
-        newCell.setAttribute("colspan", colspan);
-        // newCell.innerText = content;
-        // this may be unsafe, but innerText does not interpret <br>
-        newCell.innerHTML = content;
-      }
-      function spanCell_oltsl56myxrga01geyjo(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_oltsl56myxrga01geyjo");
-        const targetRow = table.rows[i];
-        const targetCell = targetRow.cells[j];
-        for (let r = 0; r < rowspan; r++) {
-          // Only start deleting cells to the right for the first row (r == 0)
-          if (r === 0) {
-            // Delete cells to the right of the target cell in the first row
-            for (let c = colspan - 1; c > 0; c--) {
-              if (table.rows[i + r].cells[j + c]) {
-                table.rows[i + r].deleteCell(j + c);
-              }
-            }
-          }
-          // For rows below the first, delete starting from the target column
-          if (r > 0) {
-            for (let c = colspan - 1; c >= 0; c--) {
-              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
-                table.rows[i + r].deleteCell(j);
-              }
-            }
-          }
-        }
-        // Set rowspan and colspan of the target cell
-        targetCell.rowSpan = rowspan;
-        targetCell.colSpan = colspan;
-      }
-      // tinytable span after
-      window.addEventListener('load', function () {
-          var cellsToStyle = [
-            // tinytable style arrays after
-          { positions: [ { i: 5, j: 6 }, { i: 5, j: 4 }, { i: 5, j: 2 }, { i: 5, j: 0 }, { i: 5, j: 3 }, { i: 5, j: 1 }, { i: 5, j: 7 }, { i: 5, j: 5 }, { i: 5, j: 8 },  ], css_id: 'tinytable_css_uvgn6amokg7u4rubfwst',}, 
-          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 1, j: 5 }, { i: 1, j: 3 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 1, j: 6 }, { i: 1, j: 4 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 4, j: 4 }, { i: 4, j: 2 }, { i: 1, j: 7 }, { i: 2, j: 7 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 4, j: 5 }, { i: 4, j: 3 }, { i: 1, j: 8 }, { i: 2, j: 8 }, { i: 2, j: 6 }, { i: 3, j: 6 }, { i: 4, j: 6 }, { i: 3, j: 7 }, { i: 4, j: 7 }, { i: 3, j: 8 }, { i: 4, j: 8 },  ], css_id: 'tinytable_css_vwng2pc9ay8yzap2fkxv',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 1 }, { i: 0, j: 7 }, { i: 0, j: 5 }, { i: 0, j: 8 }, { i: 0, j: 6 }, { i: 0, j: 4 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_2oacbyb4lrzjv4a4gy35',}, 
-          ];
-
-          // Loop over the arrays to style the cells
-          cellsToStyle.forEach(function (group) {
-              group.positions.forEach(function (cell) {
-                  styleCell_oltsl56myxrga01geyjo(cell.i, cell.j, group.css_id);
-              });
-          });
-      });
-    </script>
-
-    <style>
-      /* tinytable css entries after */
-      .table td.tinytable_css_uvgn6amokg7u4rubfwst, .table th.tinytable_css_uvgn6amokg7u4rubfwst { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_vwng2pc9ay8yzap2fkxv, .table th.tinytable_css_vwng2pc9ay8yzap2fkxv { text-align: left; }
-      .table td.tinytable_css_2oacbyb4lrzjv4a4gy35, .table th.tinytable_css_2oacbyb4lrzjv4a4gy35 { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-    </style>
-    <div class="container">
-      <table class="table table-borderless" id="tinytable_oltsl56myxrga01geyjo" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing='true'>
-        <thead>
-
-              <tr>
-                <th scope="col"> </th>
-                <th scope="col">Unique</th>
-                <th scope="col">Missing Pct.</th>
-                <th scope="col">Mean</th>
-                <th scope="col">SD</th>
-                <th scope="col">Min</th>
-                <th scope="col">Median</th>
-                <th scope="col">Max</th>
-                <th scope="col">Histogram</th>
-              </tr>
-        </thead>
-
-        <tbody>
-                <tr>
-                  <td>glbcc_risk</td>
-                  <td>11</td>
-                  <td>0</td>
-                  <td>5.9</td>
-                  <td>3.1</td>
-                  <td>0.0</td>
-                  <td>6.0</td>
-                  <td>10.0</td>
-                  <td><img src="./tinytable_assets/id3tse3j2vhetrgv769dgy.png" style="height: 1em;"></td>
-                </tr>
-                <tr>
-                  <td>age</td>
-                  <td>63</td>
-                  <td>0</td>
-                  <td>59.8</td>
-                  <td>13.4</td>
-                  <td>23.0</td>
-                  <td>61.0</td>
-                  <td>88.0</td>
-                  <td><img src="./tinytable_assets/idaueni0ltr0cz33el60qp.png" style="height: 1em;"></td>
-                </tr>
-                <tr>
-                  <td>education</td>
-                  <td>8</td>
-                  <td>0</td>
-                  <td>5.2</td>
-                  <td>1.7</td>
-                  <td>1.0</td>
-                  <td>6.0</td>
-                  <td>8.0</td>
-                  <td><img src="./tinytable_assets/ide2o3ef5ajj6ixrrzayhk.png" style="height: 1em;"></td>
-                </tr>
-                <tr>
-                  <td>income</td>
-                  <td>113</td>
-                  <td>0</td>
-                  <td>74587.9</td>
-                  <td>52344.6</td>
-                  <td>10000.0</td>
-                  <td>60000.0</td>
-                  <td>400000.0</td>
-                  <td><img src="./tinytable_assets/idwydx4dpw078r87p3ikv7.png" style="height: 1em;"></td>
-                </tr>
-                <tr>
-                  <td>ideol</td>
-                  <td>7</td>
-                  <td>0</td>
-                  <td>4.7</td>
-                  <td>1.7</td>
-                  <td>1.0</td>
-                  <td>5.0</td>
-                  <td>7.0</td>
-                  <td><img src="./tinytable_assets/idocmygm4hkvyn12s35x8i.png" style="height: 1em;"></td>
-                </tr>
-        </tbody>
-      </table>
-    </div>
-<!-- postamble start -->
-  </body>
-
-</html>
-<!-- postamble end -->
-<!-- hack to avoid NA insertion in last line -->
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>We've confirmed there is no missing data so we'll re-estimate the model:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="n">ols1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="nf">lm</span><span class="p">(</span><span class="n">glbcc_risk</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">education</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ideol</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ds.small</span><span class="p">)</span>
-<span class="nf">summary</span><span class="p">(</span><span class="n">ols1</span><span class="p">)</span>
+<div class=" highlight hl-r"><pre><span></span><span class="n">mdl_quad2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">lm</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nf">I</span><span class="p">(</span><span class="n">x</span><span class="o">^</span><span class="m">2</span><span class="p">))</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">mdl_quad2</span><span class="o">$</span><span class="n">fitted</span><span class="p">,</span><span class="w"> </span><span class="n">mdl_quad2</span><span class="o">$</span><span class="n">res</span><span class="p">)</span>
+<span class="nf">summary</span><span class="p">(</span><span class="n">mdl_quad2</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13931,25 +13308,191 @@ F-statistic: 86.19 on 4 and 445 DF,  p-value: &lt; 2.2e-16
 <div class="output_text output_subarea ">
 <pre>
 Call:
-lm(formula = glbcc_risk ~ age + education + income + ideol, data = ds.small)
+lm(formula = y ~ x + I(x^2))
 
 Residuals:
-    Min      1Q  Median      3Q     Max 
--7.1617 -1.7131 -0.0584  1.7216  6.8981 
+     Min       1Q   Median       3Q      Max 
+-0.96841 -0.36457 -0.05954  0.32720  1.66598 
 
 Coefficients:
-              Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)  1.208e+01  7.247e-01  16.676   &lt;2e-16 ***
-age         -5.559e-03  8.407e-03  -0.661    0.509    
-education   -1.861e-02  6.979e-02  -0.267    0.790    
-income       1.923e-07  2.227e-06   0.086    0.931    
-ideol       -1.224e+00  6.630e-02 -18.454   &lt;2e-16 ***
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  0.45592    0.07802   5.844 6.83e-08 ***
+x            0.07348    0.11081   0.663    0.509    
+I(x^2)       1.95540    0.04342  45.035  &lt; 2e-16 ***
 ---
 Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 
-Residual standard error: 2.353 on 445 degrees of freedom
-Multiple R-squared:  0.4365,	Adjusted R-squared:  0.4315 
-F-statistic: 86.19 on 4 and 445 DF,  p-value: &lt; 2.2e-16
+Residual standard error: 0.4852 on 97 degrees of freedom
+Multiple R-squared:  0.9893,	Adjusted R-squared:  0.9891 
+F-statistic:  4476 on 2 and 97 DF,  p-value: &lt; 2.2e-16
+</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="output_7_1.png"
+width=420
+height=420
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>After including polynomical term the residuals look more like white noise.</p>
+<p>In a multiple regression it is more difficult to identify the nonlinear response variable and it's best to plot the residuals against each dependent variable.  Getting back to our climate change perceptions model:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="c1"># install (if not already installed) and load package</span>
+<span class="nf">qui</span><span class="p">(</span><span class="nf">if</span><span class="p">(</span><span class="o">!</span><span class="nf">require</span><span class="p">(</span><span class="n">knitr</span><span class="p">)){</span><span class="nf">install.packages</span><span class="p">(</span><span class="s">&#39;knitr&#39;</span><span class="p">)})</span><span class="w">         </span><span class="c1"># for kable() - table formatting</span>
+<span class="nf">qui</span><span class="p">(</span><span class="nf">if</span><span class="p">(</span><span class="o">!</span><span class="nf">require</span><span class="p">(</span><span class="n">tidyverse</span><span class="p">)){</span><span class="nf">install.packages</span><span class="p">(</span><span class="s">&#39;tidyverse&#39;</span><span class="p">)})</span><span class="w"> </span><span class="c1"># for pipes</span>
+<span class="nf">qui</span><span class="p">(</span><span class="nf">if</span><span class="p">(</span><span class="o">!</span><span class="nf">require</span><span class="p">(</span><span class="n">modelsummary</span><span class="p">)){</span><span class="nf">install.packages</span><span class="p">(</span><span class="s">&#39;modelsummary&#39;</span><span class="p">)})</span><span class="w">  </span><span class="c1">#datasummary_skim(), modelsummary(), datasummary_correlation()</span>
+<span class="nf">qui</span><span class="p">(</span><span class="nf">if</span><span class="p">(</span><span class="o">!</span><span class="nf">require</span><span class="p">(</span><span class="n">reshape2</span><span class="p">)){</span><span class="nf">install.packages</span><span class="p">(</span><span class="s">&#39;reshape2&#39;</span><span class="p">)})</span><span class="w"> </span><span class="c1"># for melt()</span>
+
+<span class="n">ds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">read.csv</span><span class="p">(</span><span class="s">&quot;https://wwwedu.github.io/NYU_1101/Diagnostics/MSISNetWave12.csv&quot;</span><span class="p">)</span>
+
+<span class="n">ds.small</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">  </span><span class="n">dplyr</span><span class="o">::</span><span class="nf">select</span><span class="p">(</span><span class="s">&quot;glbcc_risk&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;age&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;education&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;income&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;ideol&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">  </span><span class="nf">slice</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">500</span><span class="p">)</span>
+<span class="n">ds.small</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ds.small</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="nf">drop_na</span><span class="p">()</span><span class="w">   </span><span class="c1"># filter out N/As</span>
+<span class="nf">rownames</span><span class="p">(</span><span class="n">ds.small</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="nf">nrow</span><span class="p">(</span><span class="n">ds.small</span><span class="p">)</span><span class="w"> </span><span class="c1"># reindex dataframe without the missing values</span>
+<span class="n">ols1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="nf">lm</span><span class="p">(</span><span class="n">glbcc_risk</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">education</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ideol</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ds.small</span><span class="p">)</span>
+
+<span class="n">ds.small</span><span class="o">$</span><span class="n">fit.r</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ols1</span><span class="o">$</span><span class="n">residuals</span>
+<span class="n">ds.small</span><span class="o">$</span><span class="n">fit.p</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ols1</span><span class="o">$</span><span class="n">fitted.values</span>
+
+<span class="n">ds.small</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">  </span><span class="nf">melt</span><span class="p">(</span><span class="n">measure.vars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;age&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;education&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;income&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;ideol&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;fit.p&quot;</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">  </span><span class="nf">ggplot</span><span class="p">(</span><span class="nf">aes</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">fit.r</span><span class="p">,</span><span class="w"> </span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">variable</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_point</span><span class="p">(</span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_smooth</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loess</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">geom_hline</span><span class="p">(</span><span class="n">yintercept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">  </span><span class="nf">facet_wrap</span><span class="p">(</span><span class="o">~</span><span class="w"> </span><span class="n">variable</span><span class="p">,</span><span class="w"> </span><span class="n">scales</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;free&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>`geom_smooth()` using formula = &#39;y ~ x&#39;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="output_9_1.png"
+width=420
+height=420
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>As we can see, the plots of residuals by both income and ideology seem to indicate non-linear relationships. We can check this visual analysis by squaring each term and using the ANOVA function for an F-test to compare model fit.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">ds.small</span><span class="o">$</span><span class="n">age2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ds.small</span><span class="o">$</span><span class="n">age</span><span class="o">^</span><span class="m">2</span>
+<span class="n">ds.small</span><span class="o">$</span><span class="n">edu2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ds.small</span><span class="o">$</span><span class="n">education</span><span class="o">^</span><span class="m">2</span>
+<span class="n">ds.small</span><span class="o">$</span><span class="n">inc2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ds.small</span><span class="o">$</span><span class="n">income</span><span class="o">^</span><span class="m">2</span>
+<span class="n">ds.small</span><span class="o">$</span><span class="n">ideology2</span><span class="o">&lt;-</span><span class="n">ds.small</span><span class="o">$</span><span class="n">ideol</span><span class="o">^</span><span class="m">2</span>
+<span class="n">ols2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">lm</span><span class="p">(</span><span class="n">glbcc_risk</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="o">+</span><span class="n">age2</span><span class="o">+</span><span class="n">education</span><span class="o">+</span><span class="n">edu2</span><span class="o">+</span><span class="n">income</span><span class="o">+</span><span class="n">inc2</span><span class="o">+</span><span class="n">ideol</span><span class="o">+</span><span class="n">ideology2</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">ds.small</span><span class="p">)</span>
+<span class="nf">summary</span><span class="p">(</span><span class="n">ols2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea ">
+<pre>
+Call:
+lm(formula = glbcc_risk ~ age + age2 + education + edu2 + income + 
+    inc2 + ideol + ideology2, data = ds.small)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-7.1563 -1.5894  0.0389  1.4898  7.3417 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  9.661e+00  1.931e+00   5.004 8.12e-07 ***
+age          2.973e-02  5.735e-02   0.518 0.604385    
+age2        -2.891e-04  5.010e-04  -0.577 0.564175    
+education   -4.814e-01  3.589e-01  -1.341 0.180499    
+edu2         5.132e-02  3.722e-02   1.379 0.168723    
+income       2.853e-06  5.341e-06   0.534 0.593564    
+inc2        -1.131e-11  1.839e-11  -0.615 0.538966    
+ideol       -5.726e-02  3.532e-01  -0.162 0.871279    
+ideology2   -1.327e-01  3.965e-02  -3.347 0.000886 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 2.33 on 441 degrees of freedom
+Multiple R-squared:  0.4528,	Adjusted R-squared:  0.4429 
+F-statistic: 45.61 on 8 and 441 DF,  p-value: &lt; 2.2e-16
 </pre>
 </div>
 
@@ -13962,26 +13505,17 @@ F-statistic: 86.19 on 4 and 445 DF,  p-value: &lt; 2.2e-16
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>On the basis of the  R output, the model appears to be quite reasonable, with a statistically significant estimated partial regression coefficient for political ideology. But let's take a closer look.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Multicollinearity">Multicollinearity<a class="anchor-link" href="#Multicollinearity">&#182;</a></h3><p>In practical terms, detecting multicollinearity can begin by examining pairwise correlations of our independent variables.</p>
+<p>The model output indicates that ideology may have a non-linear relationships with risk perceptions of climate change. For ideology, only the squared term is significant, indicating that levels of perceived risk of climate change decline at an increasing rate for those on the most conservative end of the scale. Again, this is consistent with the visual inspection of the relationship between ideology and the residuals in the figure. The question remains whether the introduction of these non-linear (polynomial) terms improves overall model fit. We can check that with an analysis of variance across the simple model (without polynomial terms) and the models with the squared terms.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="c1"># datasummary_correlation(ds.small)   #RStudio</span>
-<span class="nf">datasummary_correlation</span><span class="p">(</span><span class="n">ds.small</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="o">=</span><span class="s">&quot;jupyter&quot;</span><span class="p">)</span>
+<div class=" highlight hl-r"><pre><span></span><span class="nf">anova</span><span class="p">(</span><span class="n">ols1</span><span class="p">,</span><span class="n">ols2</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13999,160 +13533,18 @@ F-statistic: 86.19 on 4 and 445 DF,  p-value: &lt; 2.2e-16
 
 
 <div class="output_html rendered_html output_subarea ">
-<!-- preamble start -->
-<!DOCTYPE html> 
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>tinytable_n5rgvrvg4nd39pedkq3k</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  </head>
-  <body>
-<!-- preamble end -->
+<table class="dataframe">
+<caption>A anova: 2 × 6</caption>
+<thead>
+	<tr><th></th><th scope=col>Res.Df</th><th scope=col>RSS</th><th scope=col>Df</th><th scope=col>Sum of Sq</th><th scope=col>F</th><th scope=col>Pr(&gt;F)</th></tr>
+	<tr><th></th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>1</th><td>445</td><td>2464.247</td><td>NA</td><td>      NA</td><td>      NA</td><td>        NA</td></tr>
+	<tr><th scope=row>2</th><td>441</td><td>2393.188</td><td> 4</td><td>71.05883</td><td>3.273556</td><td>0.01160913</td></tr>
+</tbody>
+</table>
 
-    <script>
-
-      function styleCell_n5rgvrvg4nd39pedkq3k(i, j, css_id) {
-          var table = document.getElementById("tinytable_n5rgvrvg4nd39pedkq3k");
-          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
-          if (cell) {
-              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
-              cell.classList.add(css_id);
-          } else {
-              console.warn(`Cell at (${i}, ${j}) not found.`);
-          }
-      }
-      function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_n5rgvrvg4nd39pedkq3k');
-        var newRow = table.insertRow(i);
-        var newCell = newRow.insertCell(0);
-        newCell.setAttribute("colspan", colspan);
-        // newCell.innerText = content;
-        // this may be unsafe, but innerText does not interpret <br>
-        newCell.innerHTML = content;
-      }
-      function spanCell_n5rgvrvg4nd39pedkq3k(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_n5rgvrvg4nd39pedkq3k");
-        const targetRow = table.rows[i];
-        const targetCell = targetRow.cells[j];
-        for (let r = 0; r < rowspan; r++) {
-          // Only start deleting cells to the right for the first row (r == 0)
-          if (r === 0) {
-            // Delete cells to the right of the target cell in the first row
-            for (let c = colspan - 1; c > 0; c--) {
-              if (table.rows[i + r].cells[j + c]) {
-                table.rows[i + r].deleteCell(j + c);
-              }
-            }
-          }
-          // For rows below the first, delete starting from the target column
-          if (r > 0) {
-            for (let c = colspan - 1; c >= 0; c--) {
-              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
-                table.rows[i + r].deleteCell(j);
-              }
-            }
-          }
-        }
-        // Set rowspan and colspan of the target cell
-        targetCell.rowSpan = rowspan;
-        targetCell.colSpan = colspan;
-      }
-      // tinytable span after
-      window.addEventListener('load', function () {
-          var cellsToStyle = [
-            // tinytable style arrays after
-          { positions: [ { i: 5, j: 3 }, { i: 5, j: 1 }, { i: 5, j: 4 }, { i: 5, j: 2 }, { i: 5, j: 5 },  ], css_id: 'tinytable_css_2p2kt1jgvuz26q9hzrkq',}, 
-          { positions: [ { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 1, j: 3 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 3, j: 4 }, { i: 4, j: 4 }, { i: 1, j: 4 }, { i: 2, j: 4 }, { i: 1, j: 5 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 4, j: 5 },  ], css_id: 'tinytable_css_fyi2mfu34fwhrmdyc8df',}, 
-          { positions: [ { i: 0, j: 1 }, { i: 0, j: 4 }, { i: 0, j: 2 }, { i: 0, j: 5 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_tl864rz0f62737ty1via',}, 
-          { positions: [ { i: 5, j: 0 },  ], css_id: 'tinytable_css_o7r5cjiwl9qi16ovi56j',}, 
-          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 },  ], css_id: 'tinytable_css_rjddxizps6lqr04dx9ix',}, 
-          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_2i8olobeygxlnhn4cpbg',}, 
-          ];
-
-          // Loop over the arrays to style the cells
-          cellsToStyle.forEach(function (group) {
-              group.positions.forEach(function (cell) {
-                  styleCell_n5rgvrvg4nd39pedkq3k(cell.i, cell.j, group.css_id);
-              });
-          });
-      });
-    </script>
-
-    <style>
-      /* tinytable css entries after */
-      .table td.tinytable_css_2p2kt1jgvuz26q9hzrkq, .table th.tinytable_css_2p2kt1jgvuz26q9hzrkq { text-align: right; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_fyi2mfu34fwhrmdyc8df, .table th.tinytable_css_fyi2mfu34fwhrmdyc8df { text-align: right; }
-      .table td.tinytable_css_tl864rz0f62737ty1via, .table th.tinytable_css_tl864rz0f62737ty1via { text-align: right; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_o7r5cjiwl9qi16ovi56j, .table th.tinytable_css_o7r5cjiwl9qi16ovi56j { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_rjddxizps6lqr04dx9ix, .table th.tinytable_css_rjddxizps6lqr04dx9ix { text-align: left; }
-      .table td.tinytable_css_2i8olobeygxlnhn4cpbg, .table th.tinytable_css_2i8olobeygxlnhn4cpbg { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-    </style>
-    <div class="container">
-      <table class="table table-borderless" id="tinytable_n5rgvrvg4nd39pedkq3k" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing='true'>
-        <thead>
-
-              <tr>
-                <th scope="col"> </th>
-                <th scope="col">glbcc_risk</th>
-                <th scope="col">age</th>
-                <th scope="col">education</th>
-                <th scope="col">income</th>
-                <th scope="col">ideol</th>
-              </tr>
-        </thead>
-
-        <tbody>
-                <tr>
-                  <td>glbcc_risk</td>
-                  <td>1</td>
-                  <td>.</td>
-                  <td>.</td>
-                  <td>.</td>
-                  <td>.</td>
-                </tr>
-                <tr>
-                  <td>age</td>
-                  <td>−.06</td>
-                  <td>1</td>
-                  <td>.</td>
-                  <td>.</td>
-                  <td>.</td>
-                </tr>
-                <tr>
-                  <td>education</td>
-                  <td>.04</td>
-                  <td>−.10</td>
-                  <td>1</td>
-                  <td>.</td>
-                  <td>.</td>
-                </tr>
-                <tr>
-                  <td>income</td>
-                  <td>−.01</td>
-                  <td>−.13</td>
-                  <td>.28</td>
-                  <td>1</td>
-                  <td>.</td>
-                </tr>
-                <tr>
-                  <td>ideol</td>
-                  <td>−.66</td>
-                  <td>.06</td>
-                  <td>−.07</td>
-                  <td>.02</td>
-                  <td>1</td>
-                </tr>
-        </tbody>
-      </table>
-    </div>
-<!-- postamble start -->
-  </body>
-
-</html>
-<!-- postamble end -->
-<!-- hack to avoid NA insertion in last line -->
 </div>
 
 </div>
@@ -14164,8 +13556,93 @@ F-statistic: 86.19 on 4 and 445 DF,  p-value: &lt; 2.2e-16
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We can see that while education vs. income has a slightly elevated correlation coefficient it is not that concerning.</p>
-<p>Even better, we can look at the variance inflation factors (VIFs):</p>
+<p>As we can see, the ANOVA test indicates that including the squared terms improves model fit, therefore the relationships include nonlinear components.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="nf">qui</span><span class="p">(</span><span class="nf">if</span><span class="p">(</span><span class="o">!</span><span class="nf">require</span><span class="p">(</span><span class="n">lmtest</span><span class="p">)){</span><span class="nf">install.packages</span><span class="p">(</span><span class="s">&#39;lmtest&#39;</span><span class="p">)})</span><span class="w"> </span><span class="c1"># for resettest()</span>
+<span class="nf">resettest</span><span class="p">(</span><span class="n">ols1</span><span class="p">,</span><span class="n">power</span><span class="o">=</span><span class="m">2</span><span class="o">:</span><span class="m">3</span><span class="p">,</span><span class="n">type</span><span class="o">=</span><span class="s">&quot;regressor&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea ">
+<pre>
+	RESET test
+
+data:  ols1
+RESET = 2.2752, df1 = 8, df2 = 437, p-value = 0.02157
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Again, the test provides evidence that we have a non-linear relationship (i.e. we reject the null hypothesis that the restricted model - the one without polynomial terms- is a better fit.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>What should we do when we identify a nonlinear relationship between our $Y$ and $X$ s? The first step is to look closely at the bi-variate plots, to try to discern the correct functional form for each $X$ regressor. If the relationship looks curvilinear, try a polynomial regression in which you include both $X$ and $X^{2}$ for the relevant independent variables. It may also be the case that a skewed dependent or independent variables is causing the problem. This is not unusual when, for example, the income variable plays an important role in the model, and the distribution of income is skewed upward. In such a case, you can try transforming the skewed variable, using an appropriate log form.</p>
+<p>It is possible that variable transformations won't suffice, however. In that case, you may have no other option by to try non-linear forms of regression.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Heteroskedastic-errors">Heteroskedastic errors<a class="anchor-link" href="#Heteroskedastic-errors">&#182;</a></h3><p>The case when the error variance-covariance matrix is diagonal, but not equal to $\sigma_{\epsilon}^{2} \mathbf{I}$, expressed as:
+$$
+\boldsymbol{\Sigma}=\left[\begin{array}{ccccc}
+\sigma_{1}^{2} &amp; 0 &amp; 0 &amp; \ldots &amp; 0 \\
+0 &amp; \sigma_{2}^{2} &amp; 0 &amp; \ldots &amp; 0 \\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+0 &amp; 0 &amp; 0 &amp; \ldots &amp; \sigma_{N}^{2}
+\end{array}\right]
+$$
+is referred to as heteroskedasticity.</p>
+<p>As mentioned in the summary table above, under heteroskedasticity:</p>
+<ul>
+<li>the OLS estimators will remain unbiased;</li>
+<li>the OLS variance estimator is biased and inconsistent;</li>
+<li>the usual $t$-statistics of the OLS estimates do not have Student's $t$ distribution, even in large samples.</li>
+</ul>
+<p>Let's simulate the following model:
+$$
+\begin{aligned}
+&amp;Y_{i}=\beta_{0}+\beta_{1} X_{1, i}+\beta_{2} X_{2, i}+u_{i} \\
+&amp;u_{i}=i \cdot \epsilon_{i}, \quad \epsilon_{i} \sim \mathcal{N}\left(0, \sigma^{2}\right) \quad\left[\text { or } u_{i} \sim \mathcal{N}\left(0, i^{2} \cdot \sigma^{2}\right)\right]
+\end{aligned}
+$$</p>
 
 </div>
 </div>
@@ -14175,9 +13652,43 @@ F-statistic: 86.19 on 4 and 445 DF,  p-value: &lt; 2.2e-16
 <div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="c1"># install (if not already installed) and load package</span>
-<span class="nf">qui</span><span class="p">(</span><span class="nf">if</span><span class="p">(</span><span class="o">!</span><span class="nf">require</span><span class="p">(</span><span class="n">car</span><span class="p">)){</span><span class="nf">install.packages</span><span class="p">(</span><span class="s">&#39;car&#39;</span><span class="p">)})</span><span class="w">  </span><span class="c1"># for vif() function</span>
-<span class="nf">print</span><span class="p">(</span><span class="nf">cbind</span><span class="p">(</span><span class="nf">vif</span><span class="p">(</span><span class="n">ols1</span><span class="p">)))</span>
+<div class=" highlight hl-r"><pre><span></span><span class="nf">set.seed</span><span class="p">(</span><span class="m">123</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="n">N</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">200</span>
+<span class="n">beta_vec</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="m">-3</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="n">x1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">seq</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">length.out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">N</span><span class="p">)</span>
+<span class="n">x2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span><span class="nf">seq</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">length.out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">80</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">replace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span>
+<span class="n">e</span><span class="w">  </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">rnorm</span><span class="p">(</span><span class="n">mean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">sd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">N</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="n">x_mat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cbind</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="n">y</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">x_mat</span><span class="w"> </span><span class="o">%*%</span><span class="w"> </span><span class="n">beta_vec</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">e</span>
+<span class="c1">#</span>
+<span class="n">data_mat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">data.frame</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can examine the presence of heteroskedasticity from the residuals plots, as well as conducting a number of formal tests.</p>
+<p>We will begin by estimating our model via OLS, as we usually would.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">mdl_hc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">lm</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">x1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">data_mat</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="nf">round</span><span class="p">(</span><span class="nf">coef</span><span class="p">(</span><span class="nf">summary</span><span class="p">(</span><span class="n">mdl_hc</span><span class="p">)),</span><span class="w"> </span><span class="m">5</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -14194,11 +13705,10 @@ F-statistic: 86.19 on 4 and 445 DF,  p-value: &lt; 2.2e-16
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>              [,1]
-age       1.024094
-education 1.098383
-income    1.101733
-ideol     1.009105
+<pre>            Estimate Std. Error  t value Pr(&gt;|t|)
+(Intercept) -0.89066   28.42373 -0.03134  0.97503
+x1           7.21929    5.93429  1.21654  0.22524
+x2          -1.83213    2.18885 -0.83703  0.40359
 </pre>
 </div>
 </div>
@@ -14210,100 +13720,7 @@ ideol     1.009105
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We find no VIFs over 10 which means we don't have to worry about multicollinearity with this model.</p>
-<p>But, if multicollinearity is suspected, what can you do? One option is to drop one of the highly co-linear variables. However, this may result in model mis-specification. As with other modeling considerations, you must use theory as a guide. A second option would be to add new data, thereby lessening the threat posed by multicolinearity. A third option would be to obtain data from specialized samples that maximize independent variation in the collinear variables (e.g., elite samples may disentangle the effects of income, education, and other variables related to socio-economic status).</p>
-<p>Yet another strategy involves reconsidering why your data are so highly correlated. It may be that your measures are in fact different “indicators” of the same underlying theoretical concept. This can happen, for example, when you measure sets of attitudes that are all influenced by a more general attitude or belief system. In such a case, data scaling is a promising option. This can be accomplished by building an additive scale, or using various scaling options in R.</p>
-<p>Another approach would be to use techniques such as factor analysis to tease out the underlying (or "latent") variables represented by your indicator variables. Indeed, the combination of factor analysis and regression modeling is an important and widely used approach, referred to as structural equation modeling (SEM) which you can study in more advanced courses.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Sensitivity-to-a-small-subset:-outliers,-leverage-and-influence">Sensitivity to a small subset: outliers, leverage and influence<a class="anchor-link" href="#Sensitivity-to-a-small-subset:-outliers,-leverage-and-influence">&#182;</a></h2><p>It is also important to examine the regression residuals for "unusual" observations. Unusual observations in the data may be cases of mis-coding (e.g.,  − 99), mis-measurement, or perhaps special cases that require different kinds of treatment in the model. All of these may appear as unusual cases that are observed in your diagnostic analysis. The unusual cases that we should be most concerned about are regression outliers, that are potentially influential and that are suspect because of their differences from other cases.</p>
-<p>Why should we worry about outliers? Recall that OLS minimizes the sum of the squared residuals for a model. Unusual cases – which by definition will have large outliers – have the potential to substantially influence our estimates of  $\hat\beta$ because their already large residuals are squared. A large outlier can thus result in OLS estimates that change the model intercept and slope.</p>
-<p>There are several steps that can help identify outliers and their effects on your model. The first – and most obvious – is to examine the range of values in your  Y and  X  variables. Do they fall within the appropriate ranges?  This step – too often omitted even by experienced analysts – can help you avoid often agonizing mis-steps that result from inclusion of miscoded data or missing values (e.g., -99") that need to be recoded before running your model. If you fail to identify these problems, they will show up in your residual analysis as outliers. But it is much easier to catch the problem before you run your model.</p>
-<p>But sometimes we find outliers for reasons other than mis-codes, and identification requires careful examination of your residuals. First we discuss how to find outliers (unusual values of  Y) and leverage (unusual values of  X), since they are closely related.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Detecting-outliers">Detecting outliers<a class="anchor-link" href="#Detecting-outliers">&#182;</a></h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Let's begin by looking at any Y outliers:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Using the lower quartile $Q_{1}$ and the upper quartile $Q_{3}$, we can define the interquartile range as
-$$
-I Q R=Q_{3}-Q_{1}
-$$
-this is also known as the midspread, which defines a standard <a href="https://www150.statcan.gc.ca/n1/edu/power-pouvoir/ch12/5214889-eng.htm">boxplot</a>. Based on the $I Q R$, Tukey defined an outlier to be any observation outside the interval:
-$$
-\left[Q_{1}-k \times I Q R, Q_{3}+k \times I Q R\right]
-$$
-where we usually take $k=1.5 .$ The lower and upper bound are also marked in the boxplot via the whiskers. The points, which are clearly marked outside the boxplot can be considered outliers.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="n">y</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ds.small</span><span class="o">$</span><span class="n">glbcc_risk</span>
-
-<span class="nf">par</span><span class="p">(</span><span class="n">mfrow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">))</span>
-<span class="nf">boxplot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Y&quot;</span><span class="p">)</span>
-<span class="nf">boxplot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">outline</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Y, no outliers&quot;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_png output_subarea ">
-<img src="output_27_0.png"
-width=420
-height=420
->
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>No obvious difference. We can also look at the actual distribution (i.e. histogram):</p>
+<p>One way of investigating the existence of heteroskedasticity is to visually examine the OLS model residuals. If they are homoskedastic, there should be no pattern in the residuals. If the errors are heteroskedastic, they would exhibit increasing or decreasing variation in some systematic way. For example, variation may increase with larger values of $\widehat{Y}$, or with larger values of $X_{j}$.</p>
 
 </div>
 </div>
@@ -14313,11 +13730,11 @@ height=420
 <div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="nf">layout</span><span class="p">(</span><span class="n">mat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">matrix</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="n">nrow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">ncol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">byrow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">),</span><span class="w">  </span>
-<span class="w">       </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">4</span><span class="p">))</span>
-<span class="nf">par</span><span class="p">(</span><span class="n">mar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">))</span>
-<span class="nf">boxplot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">horizontal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span>
-<span class="nf">hist</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">)</span>
+<div class=" highlight hl-r"><pre><span></span><span class="nf">par</span><span class="p">(</span><span class="n">mfrow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">))</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">mdl_hc</span><span class="o">$</span><span class="n">residuals</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Run-Sequence Plot&quot;</span><span class="p">)</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">mdl_hc</span><span class="o">$</span><span class="n">fitted.values</span><span class="p">,</span><span class="w"> </span><span class="n">mdl_hc</span><span class="o">$</span><span class="n">residuals</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Residuals vs Fitted&quot;</span><span class="p">)</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="n">mdl_hc</span><span class="o">$</span><span class="n">residuals</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bquote</span><span class="p">(</span><span class="s">&quot;Residuals vs&quot;</span><span class="o">~</span><span class="n">X</span><span class="p">[</span><span class="m">1</span><span class="p">]))</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="n">mdl_hc</span><span class="o">$</span><span class="n">residuals</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bquote</span><span class="p">(</span><span class="s">&quot;Residuals vs&quot;</span><span class="o">~</span><span class="n">X</span><span class="p">[</span><span class="m">2</span><span class="p">]))</span>
 </pre></div>
 
     </div>
@@ -14336,7 +13753,7 @@ height=420
 
 
 <div class="output_png output_subarea ">
-<img src="output_29_0.png"
+<img src="output_23_0.png"
 width=420
 height=420
 >
@@ -14347,25 +13764,14 @@ height=420
 </div>
 </div>
 
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>We'll now bring in the influence of the independent variables by looking at the residuals:</p>
-
-</div>
-</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="n">r</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ols1</span><span class="o">$</span><span class="n">residuals</span>
-<span class="c1"># or</span>
-<span class="c1"># r &lt;- residuals(ols1)</span>
-<span class="nf">plot</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="o">=</span><span class="s">&quot;Residuals&quot;</span><span class="p">,)</span>
-<span class="nf">abline</span><span class="p">(</span><span class="n">h</span><span class="o">=</span><span class="m">0</span><span class="p">,</span><span class="n">col</span><span class="o">=</span><span class="s">&quot;red&quot;</span><span class="p">)</span>
+<div class=" highlight hl-r"><pre><span></span><span class="n">BP_t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lmtest</span><span class="o">::</span><span class="nf">bptest</span><span class="p">(</span><span class="n">mdl_hc</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">BP_t</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -14381,55 +13787,15 @@ height=420
     <div class="prompt"></div>
 
 
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+	studentized Breusch-Pagan test
 
+data:  mdl_hc
+BP = 35.896, df = 2, p-value = 1.604e-08
 
-<div class="output_png output_subarea ">
-<img src="output_31_0.png"
-width=420
-height=420
->
+</pre>
 </div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="nf">layout</span><span class="p">(</span><span class="n">mat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">matrix</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="n">nrow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">ncol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">byrow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">),</span><span class="w">  </span>
-<span class="w">       </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">4</span><span class="p">))</span>
-<span class="nf">par</span><span class="p">(</span><span class="n">mar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">))</span>
-<span class="nf">boxplot</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">horizontal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span>
-<span class="nf">hist</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Histogram Residuals&quot;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_png output_subarea ">
-<img src="output_32_0.png"
-width=420
-height=420
->
-</div>
-
 </div>
 
 </div>
@@ -14439,7 +13805,64 @@ height=420
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Next, we can sort the residuals and find the case with the largest absolute value and examine that case.</p>
+<p>The p-value is less than the chosen 0.05 significance level, so the residuals are heteroskedastic. Note that BP test default is studentized = TRUE, meaning it uses the Kronker (1981) "studentized" version of the test statistic.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>There are several steps that can be considered when confronted by heteroskedasticity in the residuals. First, we can consider whether we need to re-specify the model, possibly because we have some omitted variables. If model re-specification does not correct the problem, we can use non-OLS regression techniques that include robust estimated standard errors. Robust standard errors are appropriate when error variance is unknown.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">dt_hce_se</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="kc">NULL</span>
+<span class="nf">for</span><span class="p">(</span><span class="n">hc_type</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;HC0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;HC1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;HC2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;HC3&quot;</span><span class="p">)){</span>
+<span class="w">    </span><span class="n">dt_hce_se</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cbind</span><span class="p">(</span><span class="n">dt_hce_se</span><span class="p">,</span><span class="w"> </span><span class="n">lmtest</span><span class="o">::</span><span class="nf">coeftest</span><span class="p">(</span><span class="n">mdl_hc</span><span class="p">,</span>
+<span class="w">                                                   </span><span class="n">vcov.</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sandwich</span><span class="o">::</span><span class="nf">vcovHC</span><span class="p">(</span><span class="n">mdl_hc</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hc_type</span><span class="p">))[,</span><span class="w"> </span><span class="m">2</span><span class="p">])</span>
+<span class="p">}</span>
+<span class="n">dt_hce_se</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cbind</span><span class="p">(</span><span class="n">dt_hce_se</span><span class="p">,</span><span class="w"> </span><span class="nf">coef</span><span class="p">(</span><span class="nf">summary</span><span class="p">(</span><span class="n">mdl_hc</span><span class="p">))[,</span><span class="w"> </span><span class="m">2</span><span class="p">])</span>
+<span class="nf">colnames</span><span class="p">(</span><span class="n">dt_hce_se</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;HC0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;HC1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;HC2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;HC3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;OLS&quot;</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="nf">round</span><span class="p">(</span><span class="n">dt_hce_se</span><span class="p">,</span><span class="w"> </span><span class="m">6</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>                  HC0       HC1       HC2       HC3       OLS
+(Intercept) 26.329663 26.529386 26.599218 26.872079 28.423734
+x1           6.824231  6.875996  6.894074  6.964745  5.934290
+x2           2.179232  2.195763  2.201433  2.223901  2.188846
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's say we settle on HC3:</p>
 
 </div>
 </div>
@@ -14449,12 +13872,7 @@ height=420
 <div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="c1">#  Sort the residuals</span>
-<span class="n">sorted.residuals</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sort</span><span class="p">(</span><span class="n">ols1</span><span class="o">$</span><span class="n">residuals</span><span class="p">,</span><span class="w"> </span><span class="n">decreasing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w"> </span><span class="c1"># largest first</span>
-
-<span class="c1">#  The head function return the top results, the argument 1 returns 1 variable only</span>
-<span class="nf">head</span><span class="p">(</span><span class="n">sorted.residuals</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">)</span>
-<span class="nf">tail</span><span class="p">(</span><span class="n">sorted.residuals</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">)</span>
+<div class=" highlight hl-r"><pre><span></span><span class="nf">print</span><span class="p">(</span><span class="n">lmtest</span><span class="o">::</span><span class="nf">coeftest</span><span class="p">(</span><span class="n">mdl_hc</span><span class="p">,</span><span class="w"> </span><span class="n">vcov.</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sandwich</span><span class="o">::</span><span class="nf">vcovHC</span><span class="p">(</span><span class="n">mdl_hc</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;HC3&quot;</span><span class="p">)))</span>
 </pre></div>
 
     </div>
@@ -14470,23 +13888,17 @@ height=420
     <div class="prompt"></div>
 
 
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+t test of coefficients:
 
-<div class="output_html rendered_html output_subarea ">
-<strong>94:</strong> 6.89807711071873
+            Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept) -0.89066   26.87208 -0.0331   0.9736
+x1           7.21929    6.96475  1.0365   0.3012
+x2          -1.83213    2.22390 -0.8238   0.4110
+
+</pre>
 </div>
-
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-<strong>298:</strong> -7.16169537164994
-</div>
-
 </div>
 
 </div>
@@ -14496,7 +13908,17 @@ height=420
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Then, we can examine the  X  and  Y values of those cases on key variables. Here we examine the values across all independent variables in the model:</p>
+<p>Despite these adjustments, the results on the coefficients' significance remain unchanged.</p>
+<p>It is important to note that, while robust estimators can help atone for heteroscedasticity in your models, their use should not be seen as an alternative to careful model construction. The first step should always be to evaluate your model specification and functional form (e.g., the use of polynomials, inclusion of relevant variables), as well as possible measurement error, before resorting to robust estimation.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Weighted Least Squares</strong></p>
+<p>A more involved alternative is to model the heteroskedasticity and weigh the residuals accordingly. This method and the associated problems will be covered later in the course under (GLS).</p>
 
 </div>
 </div>
@@ -14506,215 +13928,11 @@ height=420
 <div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="n">ds.small</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="m">298</span><span class="p">,</span><span class="m">94</span><span class="p">),</span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;age&quot;</span><span class="p">,</span><span class="s">&quot;education&quot;</span><span class="p">,</span><span class="s">&quot;income&quot;</span><span class="p">,</span><span class="s">&quot;ideol&quot;</span><span class="p">,</span><span class="s">&quot;glbcc_risk&quot;</span><span class="p">)]</span><span class="w"> </span><span class="c1"># [c(row numbers),c(column numbers)]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-<table class="dataframe">
-<caption>A data.frame: 2 × 5</caption>
-<thead>
-	<tr><th></th><th scope=col>age</th><th scope=col>education</th><th scope=col>income</th><th scope=col>ideol</th><th scope=col>glbcc_risk</th></tr>
-	<tr><th></th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th></tr>
-</thead>
-<tbody>
-	<tr><th scope=row>298</th><td>69</td><td>6</td><td>100000</td><td>2</td><td> 2</td></tr>
-	<tr><th scope=row>94</th><td>55</td><td>7</td><td> 94000</td><td>7</td><td>10</td></tr>
-</tbody>
-</table>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>By examining the case of 298, we can see that this is outlier because the observed values of Y  are far from what would be expected, given the values of  X. A wealthy older liberal would most likely rate climate change as riskier than a 2. In case 94, a strong conservative rates climate change risk at the highest possible value. This observation, while not consistent with the estimated relationship between ideology and environmental concern, is certainly not implausible. But the unusual appearance of a case with a strong conservative leaning, and high risk of climate change results in a large residual.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Leverage">Leverage<a class="anchor-link" href="#Leverage">&#182;</a></h4><p>Leverage measures how far away an observation of a predictor variable, $\mathbf{X}$, is from the mean of the predictor variable. For the linear regression model, the leverage score for the $i$-th observation is defined as the $i$-th diagonal element of the projection matrix $\mathbf{P}=\mathbf{X}\left(\mathbf{X}^{'} \mathbf{X}\right)^{-1} \mathbf{X}^{'}$, which is equivalent to taking a partial derivative of $\widehat{Y}_{i}$ with respect to $Y_{i}$ :
-$$
-h_{i i}=\frac{\partial \hat{Y}_{i}}{\partial Y_{i}}=(\mathbf{P})_{i i}
-$$
-Defining the leverage score via the partial derivative allows us to <strong>interpret the leverage score as the observation self-influence, which describes how the actual value, $Y_{i}$, influences the fitted value, $\widehat{Y}_{i}$</strong></p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Another visual tool is to plot the studentized residuals against the leverage points:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="nf">qui</span><span class="p">(</span><span class="nf">if</span><span class="p">(</span><span class="o">!</span><span class="nf">require</span><span class="p">(</span><span class="n">olsrr</span><span class="p">)){</span><span class="nf">install.packages</span><span class="p">(</span><span class="s">&#39;olsrr&#39;</span><span class="p">)})</span>
-<span class="nf">ols_plot_resid_lev</span><span class="p">(</span><span class="n">ols1</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_png output_subarea ">
-<img src="output_40_0.png"
-width=420
-height=420
->
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>What we really want to know is: does any particular case substantially change the regression results? If a case substantively change the results than it is said to have influence. Individual cases can be outliers, but still be influential. Note that DFBETAS are case statistics, therefore a DFBETA value will be calculated for each variable for each case.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="DFBETAS-(Influence)">DFBETAS (Influence)<a class="anchor-link" href="#DFBETAS-(Influence)">&#182;</a></h4><p>DFBETAS measure the influence of case $i$ on the $j$ estimated coefficients. Specifically, it asks by how many standard errors does $B_{j}$ change when case $i$ is removed DFBETAS are expressed as:
-$$
-\operatorname{DFBETAS}_{i j}=\frac{B_{j(-i)}-B_{j}}{S E\left(B_{j}\right)}
-$$
-Note that if DFBETAS $&gt;0$, then case $i$ pulls $B_{j}$ up, and if DFBETAS $&lt;0$, then case $i$ pulls $B_{j}$ down. In general, if $\left|\mathrm{DFBETAS}_{i j}\right|&gt;\frac{2}{\sqrt{n}}$ then these cases warrant further examination. Note that this approach gets the top $5 \%$ of influential cases, given the sample size. For both simple (bi-variate) and multiple regression models the DFBETA cut-offs can be calculated in $R$.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="n">df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">2</span><span class="o">/</span><span class="nf">sqrt</span><span class="p">(</span><span class="m">450</span><span class="p">)</span>
-<span class="nf">round</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="m">3</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-0.094
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="n">df.ols1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">dfbetas</span><span class="p">(</span><span class="n">ols1</span><span class="p">)</span>
-<span class="n">df.ols1</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">,]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-<table class="dataframe">
-<caption>A matrix: 5 × 5 of type dbl</caption>
-<thead>
-	<tr><th></th><th scope=col>(Intercept)</th><th scope=col>age</th><th scope=col>education</th><th scope=col>income</th><th scope=col>ideol</th></tr>
-</thead>
-<tbody>
-	<tr><th scope=row>1</th><td>-0.004396485</td><td> 0.005554545</td><td> 0.01043817</td><td>-0.01548697</td><td>-0.005616679</td></tr>
-	<tr><th scope=row>2</th><td> 0.046302381</td><td>-0.007569305</td><td>-0.02671961</td><td>-0.01401653</td><td>-0.042323468</td></tr>
-	<tr><th scope=row>3</th><td>-0.002896270</td><td> 0.018301623</td><td>-0.01946054</td><td> 0.02534233</td><td>-0.023111519</td></tr>
-	<tr><th scope=row>4</th><td>-0.072106074</td><td> 0.060263914</td><td> 0.02966501</td><td> 0.01243482</td><td> 0.015464937</td></tr>
-	<tr><th scope=row>5</th><td>-0.057608817</td><td>-0.005345142</td><td>-0.04948456</td><td> 0.06456577</td><td> 0.134103149</td></tr>
-</tbody>
-</table>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="c1"># with all of the observations</span>
-<span class="n">olsrr</span><span class="o">::</span><span class="nf">ols_plot_dfbetas</span><span class="p">(</span><span class="n">ols1</span><span class="p">)</span>
+<div class=" highlight hl-r"><pre><span></span><span class="c1"># estimate via WLS</span>
+<span class="n">resid_data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">data.frame</span><span class="p">(</span><span class="n">log_e2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span><span class="n">mdl_hc</span><span class="o">$</span><span class="n">residuals</span><span class="o">^</span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">)</span>
+<span class="n">h_est</span><span class="w">   </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">exp</span><span class="p">(</span><span class="nf">lm</span><span class="p">(</span><span class="n">log_e2</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">x1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">resid_data</span><span class="p">)</span><span class="o">$</span><span class="n">fitted.values</span><span class="p">)</span>
+<span class="n">mdl_wls</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">lm</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">x1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">data_mat</span><span class="p">,</span><span class="w"> </span><span class="n">weights</span><span class="w"> </span><span class="o">=</span><span class="w">  </span><span class="m">1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">h_est</span><span class="p">)</span>
+<span class="nf">summary</span><span class="p">(</span><span class="n">mdl_wls</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -14733,16 +13951,174 @@ Note that if DFBETAS $&gt;0$, then case $i$ pulls $B_{j}$ up, and if DFBETAS $&l
 
 
 <div class="output_text output_subarea ">
-<pre>[[1]]
-NULL
+<pre>
+Call:
+lm(formula = y ~ x1 + x2, data = data_mat, weights = 1/h_est)
 
-[[2]]
-NULL
+Weighted Residuals:
+    Min      1Q  Median      3Q     Max 
+-4.5762 -1.3421 -0.0546  1.2794  5.9209 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)  
+(Intercept)  -1.3924    10.1948  -0.137   0.8915  
+x1            7.9764     4.0033   1.992   0.0477 *
+x2           -2.0246     0.8816  -2.297   0.0227 *
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 2.076 on 197 degrees of freedom
+Multiple R-squared:  0.04577,	Adjusted R-squared:  0.03608 
+F-statistic: 4.724 on 2 and 197 DF,  p-value: 0.009906
 </pre>
 </div>
 
 </div>
 
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Independence-of-$\epsilon$:-Autocorrelated-(Serially-Correlated)-Errors">Independence of $\epsilon$: Autocorrelated (Serially Correlated) Errors<a class="anchor-link" href="#Independence-of-$\epsilon$:-Autocorrelated-(Serially-Correlated)-Errors">&#182;</a></h3><p>The case when the error variance-covariance matrix is no longer diagonal, but with equal diagonal elements, expressed as:
+$$
+\boldsymbol{\Sigma}=\left[\begin{array}{ccccc}
+\sigma^{2} &amp; \sigma_{1,2} &amp; \sigma_{1,3} &amp; \ldots &amp; \sigma_{1, N} \\
+\sigma_{2,1} &amp; \sigma^{2} &amp; \sigma_{2,3} &amp; \ldots &amp; \sigma_{2, N} \\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+\sigma_{N, 1} &amp; \sigma_{N, 2} &amp; \sigma_{N 3,} &amp; \ldots &amp; \sigma^{2}
+\end{array}\right], \quad \sigma_{i, j}=\sigma_{j, i}=\mathbb{C o v}\left(\epsilon_{i}, \epsilon_{j}\right) \neq 0, \quad i, j=1, \ldots, N
+$$
+is referred to as autocorrelation (or serial correlation). Just like before with heteroskedasticity:</p>
+<ul>
+<li>the OLS estimators remain unbiased and consistent;</li>
+<li>OLS estimators are no longer efficient;</li>
+<li>the variance estimator of the OLS estimates is biased and inconsistent;</li>
+<li>$t$-statistics of the OLS estimates are invalid.
+It should be stressed that serial correlation is usually present in time-series data. For cross-sectional data, the errors may be correlated in terms of social, or geographical distance. For example, the distance between cities, towns, neighborhoods, etc.</li>
+</ul>
+<p>To gain some insight into the problem we will simulate the following model:
+$$
+\left\{\begin{array}{l}
+Y_{i}=\beta_{0}+\beta_{1} X_{1, i}+\beta_{2} X_{2, i}+\epsilon_{i} \\
+\epsilon_{i}=\rho \epsilon_{i-1}+u_{i},|\rho|&lt;1, u_{i} \sim \mathcal{N}\left(0, \sigma^{2}\right), \quad \epsilon_{0}=0
+\end{array}\right.
+$$</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="nf">set.seed</span><span class="p">(</span><span class="m">123</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="n">N</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">200</span>
+<span class="n">beta_vec</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="m">-3</span><span class="p">)</span>
+<span class="n">rho</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">0.8</span>
+<span class="c1">#</span>
+<span class="n">x1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">seq</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">length.out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">N</span><span class="p">)</span>
+<span class="n">x2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span><span class="nf">seq</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">17</span><span class="p">,</span><span class="w"> </span><span class="n">length.out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">80</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">replace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span>
+<span class="c1"># serially correlated residuals:</span>
+<span class="n">ee</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">rnorm</span><span class="p">(</span><span class="n">mean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">sd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">N</span><span class="p">)</span>
+<span class="nf">for</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="m">2</span><span class="o">:</span><span class="n">N</span><span class="p">){</span>
+<span class="w">  </span><span class="n">ee</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rho</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">ee</span><span class="p">[</span><span class="n">i</span><span class="m">-1</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ee</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="p">}</span>
+<span class="c1">#</span>
+<span class="n">x_mat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cbind</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="n">y</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">x_mat</span><span class="w"> </span><span class="o">%*%</span><span class="w"> </span><span class="n">beta_vec</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ee</span>
+<span class="c1">#</span>
+<span class="n">data_mat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">data.frame</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can identify autocorrelation from the residuals plots or by conducting a number of formal statistical tests.</p>
+<p>We will begin by estimating our model via OLS, as we usually would:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">mdl_ac</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">lm</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">x1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">data_mat</span><span class="p">)</span>
+<span class="nf">summary</span><span class="p">(</span><span class="n">mdl_ac</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea ">
+<pre>
+Call:
+lm(formula = y ~ x1 + x2, data = data_mat)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-9.7965 -3.2193  0.0674  2.5057 11.8135 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 10.61601    0.97983   10.84   &lt;2e-16 ***
+x1           4.89018    0.20457   23.91   &lt;2e-16 ***
+x2          -2.93686    0.07545  -38.92   &lt;2e-16 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 4.182 on 197 degrees of freedom
+Multiple R-squared:  0.9198,	Adjusted R-squared:  0.919 
+F-statistic:  1129 on 2 and 197 DF,  p-value: &lt; 2.2e-16
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="nf">plot</span><span class="p">(</span><span class="n">mdl_ac</span><span class="o">$</span><span class="n">res</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
 <div class="output_area">
 
     <div class="prompt"></div>
@@ -14751,23 +14127,7 @@ NULL
 
 
 <div class="output_png output_subarea ">
-<img src="output_45_1.png"
-width=420
-height=420
->
-</div>
-
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_png output_subarea ">
-<img src="output_45_2.png"
+<img src="output_37_0.png"
 width=420
 height=420
 >
@@ -14782,7 +14142,54 @@ height=420
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>As can be seen, several cases seem to exceed the 0.094 cut-off. Next we find the case with the highest absolute DFBETA value, and examine the  X  and  Y  values for that case.</p>
+<p>The residuals plot show the telltale signs of autocorrelation. It is more obvious if we smooth the pattern:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">r</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mdl_ac</span><span class="o">$</span><span class="n">res</span>
+<span class="n">n</span><span class="o">&lt;-</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+<span class="nf">lines</span><span class="p">(</span><span class="nf">predict</span><span class="p">(</span><span class="nf">loess</span><span class="p">(</span><span class="n">r</span><span class="o">~</span><span class="n">n</span><span class="p">)),</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s">&#39;red&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">lwd</span><span class="o">=</span><span class="m">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="output_39_0.png"
+width=420
+height=420
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The sinusoidal pattern also shows up in the residuals <a href="https://en.wikipedia.org/wiki/Correlogram#:~:text=In%20the%20analysis%20of%20data,is%20called%20a%20cross%2Dcorrelogram.">correlogram</a>:</p>
 
 </div>
 </div>
@@ -14792,9 +14199,174 @@ height=420
 <div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="c1">#  Return Absolute Value dfbeta</span>
-<span class="n">df.ols1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.data.frame</span><span class="p">(</span><span class="n">df.ols1</span><span class="p">)</span>
-<span class="nf">which</span><span class="p">(</span><span class="n">df.ols1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="nf">abs</span><span class="p">(</span><span class="n">df.ols1</span><span class="p">))</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">arr.ind</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span>
+<div class=" highlight hl-r"><pre><span></span><span class="nf">qui</span><span class="p">(</span><span class="nf">if</span><span class="p">(</span><span class="o">!</span><span class="nf">require</span><span class="p">(</span><span class="n">forecast</span><span class="p">)){</span><span class="nf">install.packages</span><span class="p">(</span><span class="s">&#39;forecast&#39;</span><span class="p">)})</span><span class="w"> </span><span class="c1"># for Acf()</span>
+<span class="nf">Acf</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="output_41_0.png"
+width=420
+height=420
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Breusch-Godfrey (BG or LM) Test for autocorrelation.<br>
+$$\left\{\begin{array}{l}H_{0}: \rho_{1}=\ldots=\rho_{p}=0 \\ H_{1}: \rho_{j} \neq 0, \text { for some } j\end{array}\right.$$</p>
+<p>To test the null hypothesis that at least on of the first three lags of the residuals is not zero:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">bg_t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lmtest</span><span class="o">::</span><span class="nf">bgtest</span><span class="p">(</span><span class="n">mdl_ac</span><span class="p">,</span><span class="w"> </span><span class="n">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">bg_t</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+	Breusch-Godfrey test for serial correlation of order up to 3
+
+data:  mdl_ac
+LM test = 100.72, df = 3, p-value &lt; 2.2e-16
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Since the $p$ - value $&lt;0.05$, we reject the null hypothesis and conclude that there is serial correlation in the residuals.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>If we find autocorrelation, we would need to respecify our model to account for (or estimate) the relationships among the error terms. In time series analysis, where observations are taken sequentially over time, we would typically include a "lag" term (in which the value of $Y$ in period $t$ is predicted by the value of $Y$ in period $t-1$ ). This is a typical $A R 1$ model, which would be discussed in a time-series analysis course. The entangled residuals can, of course, be much more complex, and require more specialized models (e.g., ARIMA or vectorautoregression models). These approaches will be studied next semester.</p>
+<p>As a bandaid we may calculate heteroskedasticity-and-autocorrelation-consistent standard errors (HAC) to improve inferences.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="nf">print</span><span class="p">(</span><span class="n">lmtest</span><span class="o">::</span><span class="nf">coeftest</span><span class="p">(</span><span class="n">mdl_ac</span><span class="p">,</span><span class="w"> </span><span class="n">sandwich</span><span class="o">::</span><span class="nf">vcovHAC</span><span class="p">(</span><span class="n">mdl_ac</span><span class="p">)))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+t test of coefficients:
+
+             Estimate Std. Error  t value  Pr(&gt;|t|)    
+(Intercept) 10.616005   1.165046   9.1121 &lt; 2.2e-16 ***
+x1           4.890185   0.413444  11.8279 &lt; 2.2e-16 ***
+x2          -2.936860   0.060834 -48.2769 &lt; 2.2e-16 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Normality-Tests">Normality Tests<a class="anchor-link" href="#Normality-Tests">&#182;</a></h3><p>The hypothesis that we want to test is:
+$$
+\begin{cases}H_{0} &amp; \text { : residuals follow a normal distribution } \\ H_{1} &amp; \text { : residuals do not follow a normal distribution }\end{cases}
+$$
+We will carry our the following tests and combine their $p$-values a single output:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">norm_tests.df</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">data.frame</span><span class="p">(</span><span class="n">Tests</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;Anderson-Darling&quot;</span><span class="p">,</span><span class="w"> </span>
+<span class="w">              </span><span class="s">&quot;Shapiro-Wilk&quot;</span><span class="p">,</span><span class="w"> </span>
+<span class="w">              </span><span class="s">&quot;Cramer-von Mises&quot;</span><span class="p">,</span><span class="w"> </span>
+<span class="w">              </span><span class="s">&quot;Jarque-Bera&quot;</span><span class="p">))</span>
+<span class="n">norm_tests.df</span><span class="o">$</span><span class="n">p_vals</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">nortest</span><span class="o">::</span><span class="nf">ad.test</span><span class="p">(</span><span class="n">mdl_ac</span><span class="o">$</span><span class="n">residuals</span><span class="p">)</span><span class="o">$</span><span class="n">p.value</span><span class="p">,</span>
+<span class="w">                </span><span class="nf">shapiro.test</span><span class="p">(</span><span class="n">mdl_ac</span><span class="o">$</span><span class="n">residuals</span><span class="p">)</span><span class="o">$</span><span class="n">p.value</span><span class="p">,</span>
+<span class="w">                </span><span class="n">nortest</span><span class="o">::</span><span class="nf">cvm.test</span><span class="p">(</span><span class="n">mdl_ac</span><span class="o">$</span><span class="n">residuals</span><span class="p">)</span><span class="o">$</span><span class="n">p.value</span><span class="p">,</span>
+<span class="w">                </span><span class="n">tseries</span><span class="o">::</span><span class="nf">jarque.bera.test</span><span class="p">(</span><span class="n">mdl_ac</span><span class="o">$</span><span class="n">residuals</span><span class="p">)</span><span class="o">$</span><span class="n">p.value</span><span class="p">)</span>
+
+<span class="c1"># Rstudio output</span>
+<span class="c1"># kable(norm_tests.df,digits=2, align=&quot;c&quot;, caption=&quot;Sample Correlation Matrix mdl_ac&quot;,&quot;html&quot;) </span>
+
+<span class="c1"># Jupyter output</span>
+<span class="nf">kable</span><span class="p">(</span><span class="n">norm_tests.df</span><span class="p">,</span><span class="n">digits</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">align</span><span class="o">=</span><span class="s">&quot;c&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">caption</span><span class="o">=</span><span class="s">&quot;Sample Correlation Matrix mdl_ac&quot;</span><span class="p">,</span><span class="s">&quot;html&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span>
+<span class="w"> </span><span class="n">as.character</span><span class="w">  </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">IRdisplay</span><span class="o">::</span><span class="nf">display_html</span><span class="p">()</span>
 </pre></div>
 
     </div>
@@ -14812,16 +14384,157 @@ height=420
 
 
 <div class="output_html rendered_html output_subarea ">
-<table class="dataframe">
-<caption>A matrix: 1 × 2 of type int</caption>
-<thead>
-	<tr><th></th><th scope=col>row</th><th scope=col>col</th></tr>
-</thead>
+<table>
+<caption>Sample Correlation Matrix mdl_ac</caption>
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Tests </th>
+   <th style="text-align:center;"> p_vals </th>
+  </tr>
+ </thead>
 <tbody>
-	<tr><th scope=row>445</th><td>445</td><td>4</td></tr>
+  <tr>
+   <td style="text-align:center;"> Anderson-Darling </td>
+   <td style="text-align:center;"> 0.56 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Shapiro-Wilk </td>
+   <td style="text-align:center;"> 0.55 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Cramer-von Mises </td>
+   <td style="text-align:center;"> 0.56 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Jarque-Bera </td>
+   <td style="text-align:center;"> 0.43 </td>
+  </tr>
 </tbody>
 </table>
+</div>
 
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We see that the  p-value above the 5% significance level for the four tests so we cannot reject the null hypothesis of normality. So while the residuals for this model are serially correlated, they are normally distributed. Note that the condition for gaussian white noise is both independence and normal distribution.</p>
+<p>Compare this with our earlier model of the quadratic DGP:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="n">norm_tests.df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">data.frame</span><span class="p">(</span><span class="n">Tests</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;Anderson-Darling&quot;</span><span class="p">,</span><span class="w"> </span>
+<span class="w">              </span><span class="s">&quot;Shapiro-Wilk&quot;</span><span class="p">,</span><span class="w"> </span>
+<span class="w">              </span><span class="s">&quot;Cramer-von Mises&quot;</span><span class="p">,</span><span class="w"> </span>
+<span class="w">              </span><span class="s">&quot;Jarque-Bera&quot;</span><span class="p">))</span>
+<span class="n">norm_tests.df</span><span class="o">$</span><span class="n">p_vals</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">nortest</span><span class="o">::</span><span class="nf">ad.test</span><span class="p">(</span><span class="n">mdl_quad</span><span class="o">$</span><span class="n">residuals</span><span class="p">)</span><span class="o">$</span><span class="n">p.value</span><span class="p">,</span>
+<span class="w">                </span><span class="nf">shapiro.test</span><span class="p">(</span><span class="n">mdl_quad</span><span class="o">$</span><span class="n">residuals</span><span class="p">)</span><span class="o">$</span><span class="n">p.value</span><span class="p">,</span>
+<span class="w">                </span><span class="n">nortest</span><span class="o">::</span><span class="nf">cvm.test</span><span class="p">(</span><span class="n">mdl_quad</span><span class="o">$</span><span class="n">residuals</span><span class="p">)</span><span class="o">$</span><span class="n">p.value</span><span class="p">,</span>
+<span class="w">                </span><span class="n">tseries</span><span class="o">::</span><span class="nf">jarque.bera.test</span><span class="p">(</span><span class="n">mdl_quad</span><span class="o">$</span><span class="n">residuals</span><span class="p">)</span><span class="o">$</span><span class="n">p.value</span><span class="p">)</span>
+<span class="c1"># Rstudio output</span>
+<span class="c1"># kable(norm_tests.df,digits=2, align=&quot;c&quot;, caption=&quot;Sample Correlation Matrix mdl_quad&quot;,&quot;html&quot;) </span>
+
+<span class="c1"># Jupyter output</span>
+<span class="nf">kable</span><span class="p">(</span><span class="n">norm_tests.df</span><span class="p">,</span><span class="n">digits</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">align</span><span class="o">=</span><span class="s">&quot;c&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">caption</span><span class="o">=</span><span class="s">&quot;Sample Correlation Matrix mdl_quad&quot;</span><span class="p">,</span><span class="s">&quot;html&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span>
+<span class="w"> </span><span class="n">as.character</span><span class="w">  </span><span class="o">%&gt;%</span><span class="w"> </span><span class="n">IRdisplay</span><span class="o">::</span><span class="nf">display_html</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<table>
+<caption>Sample Correlation Matrix mdl_quad</caption>
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Tests </th>
+   <th style="text-align:center;"> p_vals </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> Anderson-Darling </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Shapiro-Wilk </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Cramer-von Mises </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Jarque-Bera </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+</tbody>
+</table>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>According to all 4 tests we can reject the $Ho$ that residuals are normally distributed. This can also be confirmed by the quantile-quantile plots:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="nf">plot</span><span class="p">(</span><span class="n">mdl_quad</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="output_52_0.png"
+width=420
+height=420
+>
 </div>
 
 </div>
@@ -14832,10 +14545,10 @@ height=420
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="n">ds.small</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="m">445</span><span class="p">),</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;age&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;education&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;income&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;ideol&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;glbcc_risk&quot;</span><span class="p">)]</span>
+<div class=" highlight hl-r"><pre><span></span><span class="nf">plot</span><span class="p">(</span><span class="n">mdl_ac</span><span class="p">,</span><span class="m">2</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -14852,18 +14565,12 @@ height=420
 
 
 
-<div class="output_html rendered_html output_subarea ">
-<table class="dataframe">
-<caption>A data.frame: 1 × 5</caption>
-<thead>
-	<tr><th></th><th scope=col>age</th><th scope=col>education</th><th scope=col>income</th><th scope=col>ideol</th><th scope=col>glbcc_risk</th></tr>
-	<tr><th></th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;int&gt;</th></tr>
-</thead>
-<tbody>
-	<tr><th scope=row>445</th><td>46</td><td>8</td><td>4e+05</td><td>4</td><td>10</td></tr>
-</tbody>
-</table>
 
+<div class="output_png output_subarea ">
+<img src="output_53_0.png"
+width=420
+height=420
+>
 </div>
 
 </div>
@@ -14875,35 +14582,99 @@ height=420
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Note that this severe outlier is not implausible: a highly educated 46 year old, high income ($400, 000), who is slightly liberal and perceives very high risk for climate change. Therefore we can be reassured that even in this most extreme case we do not have a problematic outlier.</p>
-
+<h2 id="The-TLDR-version">The TLDR version<a class="anchor-link" href="#The-TLDR-version">&#182;</a></h2>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Addressing-Outliers">Addressing Outliers<a class="anchor-link" href="#Addressing-Outliers">&#182;</a></h3><p>So, having explored the residuals from our model, we found a number of outliers, some with significant influence on our model results. In inspection of the most extreme outlier gave us no cause to worry that the observations were inappropriately distorting our model results. But what should you do if you find puzzling, implausible observations that may influence your model?</p>
-<p>First, as always, evaluate your theory. Is it possible that the case represented a class of observations that behave systematically differently than the other cases? <strong>This is of particular concern if you have a cluster of cases, all determined to be outliers, that have similar properties. You may need to modify your theory to account for this subgroup.</strong> One such example can be found in the study of American politics, wherein the Southern states routinely appeared to behave differently than others. Most careful efforts to model state (and individual) political behavior account for the unique aspects of southern politics, in ways ranging from the addition of dummy variables to interaction terms in regression models.</p>
-<p>How would you determine whether the model (and theory) should be revised? Look closely at the deviant cases – what can you learn from them? Try experiments by running the models with controls – dummies and interaction terms. What effects do you observe? If your results suggest theoretical revisions, you will need to collect new data to test your new hypotheses. Remember: In empirical studies, you need to keep your discoveries distinct from your hypothesis tests.</p>
-<p><strong>Capping the Outliers</strong>
-If we find that the explanatory variables $X_{1, i}, \ldots, X_{k, i}$ of an outlier variable $Y_{i}$ are similar to other observations, with non-outlier values of $Y_{i}$, we may cap the value of the outlier, to match the values.</p>
-<p><strong>Replacing Outliers with Imputed Values</strong>
-If we are certain that the outlier is due to some error in the data itself - we could try to impute the observations by treating them as missing values and substituting them for some average value of $Y$.
-The Expectation-maximization (EM) algorithm could be utilized for missing data imputation.</p>
-<p><strong>Deleting Outliers</strong>
-As a last resort, if you have troubling outliers for which you cannot account in theory, you might decide omit those observations from your model and re-run your analyses. This course of action is not recommended, because it can appear to be a case of jiggering the data" to get the results you want.</p>
+<p>R has a lot of different plots embedded in the default lm() function output. The examples above should help in understanding how to interpret these plots.</p>
+<p>And here is how to view them:</p>
 
 </div>
 </div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="nf">par</span><span class="p">(</span><span class="n">mfrow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="n">mar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">))</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">mdl_ac</span><span class="p">,</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="output_56_0.png"
+width=420
+height=420
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Examination-of-the-statistical-assumptions-needed-for-correct-interpretation-of-the-output">Examination of the statistical assumptions needed for correct interpretation of the output<a class="anchor-link" href="#Examination-of-the-statistical-assumptions-needed-for-correct-interpretation-of-the-output">&#182;</a></h2><p>Continued <a href="https://wwwedu.github.io/NYU_1101/Diagnostics/reg_diagnostics_part_2.html">here</a></p>
+<p>Or, to display an individual plot:</p>
 
 </div>
 </div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[28]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="nf">plot</span><span class="p">(</span><span class="n">mdl_ac</span><span class="p">,</span><span class="m">1</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="output_58_0.png"
+width=420
+height=420
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
     </div>
   </div>
