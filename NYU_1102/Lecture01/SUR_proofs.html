@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Dragos Ailoae">
+<meta name="dcterms.date" content="2026-01-25">
+
+<title>Seemingly Unrelated Regression (SUR)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="SUR_proofs_files/libs/clipboard/clipboard.min.js"></script>
+<script src="SUR_proofs_files/libs/quarto-html/quarto.js"></script>
+<script src="SUR_proofs_files/libs/quarto-html/popper.min.js"></script>
+<script src="SUR_proofs_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="SUR_proofs_files/libs/quarto-html/anchor.min.js"></script>
+<link href="SUR_proofs_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="SUR_proofs_files/libs/quarto-html/quarto-syntax-highlighting-de84f8d6bb715db06a919283c2d1e787.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="SUR_proofs_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="SUR_proofs_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="SUR_proofs_files/libs/bootstrap/bootstrap-cf43a150f4ed865b4eb4d60b88c21c49.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-full toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction-to-sur-systems" id="toc-introduction-to-sur-systems" class="nav-link active" data-scroll-target="#introduction-to-sur-systems"><span class="header-section-number">1</span> Introduction to SUR Systems</a></li>
+  <li><a href="#the-three-sur-cases" id="toc-the-three-sur-cases" class="nav-link" data-scroll-target="#the-three-sur-cases"><span class="header-section-number">2</span> The Three SUR Cases</a>
+  <ul class="collapse">
+  <li><a href="#case-1-contemporaneously-uncorrelated-disturbances" id="toc-case-1-contemporaneously-uncorrelated-disturbances" class="nav-link" data-scroll-target="#case-1-contemporaneously-uncorrelated-disturbances"><span class="header-section-number">2.1</span> Case 1: Contemporaneously Uncorrelated Disturbances</a></li>
+  <li><a href="#case-2-correlated-disturbances-with-identical-regressors" id="toc-case-2-correlated-disturbances-with-identical-regressors" class="nav-link" data-scroll-target="#case-2-correlated-disturbances-with-identical-regressors"><span class="header-section-number">2.2</span> Case 2: Correlated Disturbances with Identical Regressors</a></li>
+  <li><a href="#case-3-correlated-disturbances-with-different-regressors" id="toc-case-3-correlated-disturbances-with-different-regressors" class="nav-link" data-scroll-target="#case-3-correlated-disturbances-with-different-regressors"><span class="header-section-number">2.3</span> Case 3: Correlated Disturbances with Different Regressors</a></li>
+  </ul></li>
+  <li><a href="#sec-case1" id="toc-sec-case1" class="nav-link" data-scroll-target="#sec-case1"><span class="header-section-number">3</span> Proof for Case 1: No Contemporaneous Correlation</a>
+  <ul class="collapse">
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup"><span class="header-section-number">3.1</span> Setup</a></li>
+  <li><a href="#derivation-using-block-diagonal-structure" id="toc-derivation-using-block-diagonal-structure" class="nav-link" data-scroll-target="#derivation-using-block-diagonal-structure"><span class="header-section-number">3.2</span> Derivation Using Block Diagonal Structure</a></li>
+  <li><a href="#alternative-derivation-using-greenes-expanded-form" id="toc-alternative-derivation-using-greenes-expanded-form" class="nav-link" data-scroll-target="#alternative-derivation-using-greenes-expanded-form"><span class="header-section-number">3.3</span> Alternative Derivation Using Greene’s Expanded Form</a></li>
+  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation"><span class="header-section-number">3.4</span> Interpretation</a></li>
+  </ul></li>
+  <li><a href="#sec-case2" id="toc-sec-case2" class="nav-link" data-scroll-target="#sec-case2"><span class="header-section-number">4</span> Proof for Case 2: Identical Regressors</a>
+  <ul class="collapse">
+  <li><a href="#two-equation-case" id="toc-two-equation-case" class="nav-link" data-scroll-target="#two-equation-case"><span class="header-section-number">4.1</span> Two-Equation Case</a>
+  <ul class="collapse">
+  <li><a href="#substitution-using-ols-estimates" id="toc-substitution-using-ols-estimates" class="nav-link" data-scroll-target="#substitution-using-ols-estimates"><span class="header-section-number">4.1.1</span> Substitution Using OLS Estimates</a></li>
+  <li><a href="#key-simplification" id="toc-key-simplification" class="nav-link" data-scroll-target="#key-simplification"><span class="header-section-number">4.1.2</span> Key Simplification</a></li>
+  </ul></li>
+  <li><a href="#general-case-m-equations-with-identical-regressors" id="toc-general-case-m-equations-with-identical-regressors" class="nav-link" data-scroll-target="#general-case-m-equations-with-identical-regressors"><span class="header-section-number">4.2</span> General Case: <span class="math inline">\(M\)</span> Equations with Identical Regressors</a></li>
+  <li><a href="#interpretation-1" id="toc-interpretation-1" class="nav-link" data-scroll-target="#interpretation-1"><span class="header-section-number">4.3</span> Interpretation</a></li>
+  </ul></li>
+  <li><a href="#summary-and-practical-implications" id="toc-summary-and-practical-implications" class="nav-link" data-scroll-target="#summary-and-practical-implications"><span class="header-section-number">5</span> Summary and Practical Implications</a>
+  <ul class="collapse">
+  <li><a href="#main-results" id="toc-main-results" class="nav-link" data-scroll-target="#main-results"><span class="header-section-number">5.1</span> Main Results</a></li>
+  <li><a href="#when-sur-improves-efficiency" id="toc-when-sur-improves-efficiency" class="nav-link" data-scroll-target="#when-sur-improves-efficiency"><span class="header-section-number">5.2</span> When SUR Improves Efficiency</a></li>
+  <li><a href="#practical-example-demand-system" id="toc-practical-example-demand-system" class="nav-link" data-scroll-target="#practical-example-demand-system"><span class="header-section-number">5.3</span> Practical Example: Demand System</a>
+  <ul class="collapse">
+  <li><a href="#what-sur-does-not-do-here" id="toc-what-sur-does-not-do-here" class="nav-link" data-scroll-target="#what-sur-does-not-do-here"><span class="header-section-number">5.3.1</span> What SUR Does <em>Not</em> Do Here</a></li>
+  <li><a href="#why-demand-systems-are-still-estimated-jointly" id="toc-why-demand-systems-are-still-estimated-jointly" class="nav-link" data-scroll-target="#why-demand-systems-are-still-estimated-jointly"><span class="header-section-number">5.3.2</span> Why Demand Systems Are Still Estimated Jointly</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#appendix-kronecker-product-properties" id="toc-appendix-kronecker-product-properties" class="nav-link" data-scroll-target="#appendix-kronecker-product-properties"><span class="header-section-number">6</span> Appendix: Kronecker Product Properties</a></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content column-page-right" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Seemingly Unrelated Regression (SUR)</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<p class="subtitle lead">Proofs and Derivations</p>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-right">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dragos Ailoae </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 25, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Applied Statistics and Econometrics 2</p>
+<section id="introduction-to-sur-systems" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Introduction to SUR Systems</h1>
+<p>In the analysis of Seemingly Unrelated Regression (SUR) systems, we examine multiple regression equations that appear independent but may have correlated error terms. The key question is: <strong>when does Generalized Least Squares (GLS) provide efficiency gains over Ordinary Least Squares (OLS)?</strong></p>
+<p>This document proves that in two important special cases, GLS estimation offers <strong>no efficiency gains</strong> and yields <strong>identical estimates</strong> to equation-by-equation OLS.</p>
+</section>
+<section id="the-three-sur-cases" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> The Three SUR Cases</h1>
+<p>In SUR analysis, three distinct cases arise based on the structure of error correlations and regressors:</p>
+<section id="case-1-contemporaneously-uncorrelated-disturbances" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="case-1-contemporaneously-uncorrelated-disturbances"><span class="header-section-number">2.1</span> Case 1: Contemporaneously Uncorrelated Disturbances</h2>
+<p>The disturbances are uncorrelated across equations: <span class="math display">\[
+E\left(\boldsymbol{\varepsilon}_i \boldsymbol{\varepsilon}_j^{\prime}\right) = \mathbf{0}, \quad \text{for } i \neq j
+\]</span></p>
+</section>
+<section id="case-2-correlated-disturbances-with-identical-regressors" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="case-2-correlated-disturbances-with-identical-regressors"><span class="header-section-number">2.2</span> Case 2: Correlated Disturbances with Identical Regressors</h2>
+<p>The disturbances are contemporaneously correlated <strong>and</strong> all equations share the same regressors: <span class="math display">\[
+E\left(\boldsymbol{\varepsilon}_i \boldsymbol{\varepsilon}_j^{\prime}\right) = \sigma_{ij} \mathbf{I}_T \neq \mathbf{0}
+\]</span> where <span class="math inline">\(\mathbf{I}_T\)</span> is a <span class="math inline">\(T \times T\)</span> identity matrix, and <span class="math display">\[
+\mathbf{X}_i = \mathbf{X}_j, \quad \text{for all } i, j
+\]</span></p>
+</section>
+<section id="case-3-correlated-disturbances-with-different-regressors" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="case-3-correlated-disturbances-with-different-regressors"><span class="header-section-number">2.3</span> Case 3: Correlated Disturbances with Different Regressors</h2>
+<p>The disturbances are contemporaneously correlated with different regressors: <span class="math display">\[
+E\left(\boldsymbol{\varepsilon}_i \boldsymbol{\varepsilon}_j^{\prime}\right) = \sigma_{ij} \mathbf{I}_T \neq \mathbf{0}
+\]</span> and <span class="math display">\[
+\mathbf{X}_i \neq \mathbf{X}_j, \quad \text{for at least some } i \text{ and } j
+\]</span></p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Main Result
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>In Cases 1 and 2, there are no efficiency gains from GLS, and the estimator is identical to OLS.</strong></p>
+<p>Only in Case 3 does SUR estimation provide efficiency improvements over OLS.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-case1" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Proof for Case 1: No Contemporaneous Correlation</h1>
+<section id="setup" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="setup"><span class="header-section-number">3.1</span> Setup</h2>
+<p>When <span class="math inline">\(\sigma_{12} = \sigma_{21} = 0\)</span>, the variance-covariance matrix is block diagonal: <span class="math display">\[
+\boldsymbol{\Omega} = \boldsymbol{\Sigma} \otimes \mathbf{I}_T =
+\begin{bmatrix}
+\sigma_{11} &amp; 0 \\
+0 &amp; \sigma_{22}
+\end{bmatrix} \otimes \mathbf{I}_T
+\]</span></p>
+</section>
+<section id="derivation-using-block-diagonal-structure" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="derivation-using-block-diagonal-structure"><span class="header-section-number">3.2</span> Derivation Using Block Diagonal Structure</h2>
+<p>The GLS estimator has the general form: <span class="math display">\[
+\mathbf{b}_{\text{GLS}} = \left(\mathbf{X}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{y}
+\]</span></p>
+<p>For the two-equation case: <span class="math display">\[
+\begin{aligned}
+\mathbf{b}_{\text{GLS}} = \begin{bmatrix}
+\mathbf{b}_{1} \\
+\mathbf{b}_{2}
+\end{bmatrix}
+&amp;= \left[\begin{pmatrix}
+\mathbf{X}_1^{\prime} &amp; \mathbf{0} \\
+\mathbf{0} &amp; \mathbf{X}_2^{\prime}
+\end{pmatrix}
+\begin{pmatrix}
+\boldsymbol{\Omega}_{11}^{-1} &amp; \mathbf{0} \\
+\mathbf{0} &amp; \boldsymbol{\Omega}_{22}^{-1}
+\end{pmatrix}
+\begin{pmatrix}
+\mathbf{X}_1 &amp; \mathbf{0} \\
+\mathbf{0} &amp; \mathbf{X}_2
+\end{pmatrix}\right]^{-1} \\
+&amp;\quad \times \left[\begin{pmatrix}
+\mathbf{X}_1^{\prime} &amp; \mathbf{0} \\
+\mathbf{0} &amp; \mathbf{X}_2^{\prime}
+\end{pmatrix}
+\begin{pmatrix}
+\boldsymbol{\Omega}_{11}^{-1} &amp; \mathbf{0} \\
+\mathbf{0} &amp; \boldsymbol{\Omega}_{22}^{-1}
+\end{pmatrix}
+\begin{pmatrix}
+\mathbf{y}_1 \\
+\mathbf{y}_2
+\end{pmatrix}\right] \\[1em]
+&amp;= \begin{pmatrix}
+\mathbf{X}_1^{\prime} \boldsymbol{\Omega}_{11}^{-1} \mathbf{X}_1 &amp; \mathbf{0} \\
+\mathbf{0} &amp; \mathbf{X}_2^{\prime} \boldsymbol{\Omega}_{22}^{-1} \mathbf{X}_2
+\end{pmatrix}^{-1}
+\begin{pmatrix}
+\mathbf{X}_1^{\prime} \boldsymbol{\Omega}_{11}^{-1} \mathbf{y}_1 \\
+\mathbf{X}_2^{\prime} \boldsymbol{\Omega}_{22}^{-1} \mathbf{y}_2
+\end{pmatrix} \\[1em]
+&amp;= \begin{pmatrix}
+\left(\mathbf{X}_1^{\prime} \boldsymbol{\Omega}_{11}^{-1} \mathbf{X}_1\right)^{-1} \mathbf{X}_1^{\prime} \boldsymbol{\Omega}_{11}^{-1} \mathbf{y}_1 \\
+\left(\mathbf{X}_2^{\prime} \boldsymbol{\Omega}_{22}^{-1} \mathbf{X}_2\right)^{-1} \mathbf{X}_2^{\prime} \boldsymbol{\Omega}_{22}^{-1} \mathbf{y}_2
+\end{pmatrix}
+\end{aligned}
+\]</span></p>
+<p>Since <span class="math inline">\(\boldsymbol{\Omega}_{ii} = \sigma_{ii} \mathbf{I}_T\)</span>, it factors out: <span class="math display">\[
+\mathbf{b}_{\text{GLS}} = \begin{bmatrix}
+\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} \\
+\left(\mathbf{X}_{2}^{\prime} \mathbf{X}_{2}\right)^{-1} \mathbf{X}_{2}^{\prime} \mathbf{y}_{2}
+\end{bmatrix} = \mathbf{b}_{\text{OLS}}
+\]</span></p>
+</section>
+<section id="alternative-derivation-using-greenes-expanded-form" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="alternative-derivation-using-greenes-expanded-form"><span class="header-section-number">3.3</span> Alternative Derivation Using Greene’s Expanded Form</h2>
+<p>Greene’s expanded SUR estimator uses elements <span class="math inline">\(\sigma^{ij}\)</span> from <span class="math inline">\(\boldsymbol{\Sigma}^{-1}\)</span>: <span class="math display">\[
+\mathbf{b}_{\text{GLS}} = \begin{bmatrix}
+\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} &amp; \sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{X}_{2} \\
+\sigma^{21} \mathbf{X}_{2}^{\prime} \mathbf{X}_{1} &amp; \sigma^{22} \mathbf{X}_{2}^{\prime} \mathbf{X}_{2}
+\end{bmatrix}^{-1}
+\begin{bmatrix}
+\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} + \sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2} \\
+\sigma^{21} \mathbf{X}_{2}^{\prime} \mathbf{y}_{1} + \sigma^{22} \mathbf{X}_{2}^{\prime} \mathbf{y}_{2}
+\end{bmatrix}
+\]</span></p>
+<p>When <span class="math inline">\(\sigma^{12} = \sigma^{21} = 0\)</span>: <span class="math display">\[
+\mathbf{b}_{\text{GLS}} = \begin{bmatrix}
+\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} &amp; \mathbf{0} \\
+\mathbf{0} &amp; \sigma^{22} \mathbf{X}_{2}^{\prime} \mathbf{X}_{2}
+\end{bmatrix}^{-1}
+\begin{bmatrix}
+\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} \\
+\sigma^{22} \mathbf{X}_{2}^{\prime} \mathbf{y}_{2}
+\end{bmatrix} = \begin{bmatrix}
+\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} \\
+\left(\mathbf{X}_{2}^{\prime} \mathbf{X}_{2}\right)^{-1} \mathbf{X}_{2}^{\prime} \mathbf{y}_{2}
+\end{bmatrix}
+\]</span></p>
+</section>
+<section id="interpretation" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="interpretation"><span class="header-section-number">3.4</span> Interpretation</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Case 1 Takeaway
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If the models are truly unrelated (uncorrelated disturbances), then:</p>
+<ul>
+<li>The GLS/SUR estimator reduces to equation-by-equation OLS</li>
+<li>There is <strong>no efficiency gain</strong> from joint estimation</li>
+<li>Inference procedures are identical whether estimated jointly or separately</li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-case2" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Proof for Case 2: Identical Regressors</h1>
+<section id="two-equation-case" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="two-equation-case"><span class="header-section-number">4.1</span> Two-Equation Case</h2>
+<p>Assume <span class="math inline">\(\mathbf{X}_{1} = \mathbf{X}_{2}\)</span> but disturbances are correlated. Starting from Greene’s expanded form:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathbf{b}_{\text{GLS}} &amp;= \begin{bmatrix}
+\sigma^{11} \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right) &amp; \sigma^{12} \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right) \\
+\sigma^{21} \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right) &amp; \sigma^{22} \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)
+\end{bmatrix}^{-1}
+\begin{bmatrix}
+\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} + \sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2} \\
+\sigma^{21} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} + \sigma^{22} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2}
+\end{bmatrix} \\[1em]
+&amp;= \left[\boldsymbol{\Sigma}^{-1} \otimes \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)\right]^{-1}
+\begin{bmatrix}
+\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} + \sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2} \\
+\sigma^{21} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} + \sigma^{22} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2}
+\end{bmatrix}
+\end{aligned}
+\]</span></p>
+<p>Using the Kronecker product property <span class="math inline">\((\mathbf{A} \otimes \mathbf{B})^{-1} = \mathbf{A}^{-1} \otimes \mathbf{B}^{-1}\)</span>:</p>
+<p><span class="math display">\[
+\mathbf{b}_{\text{GLS}} = \left[\boldsymbol{\Sigma} \otimes \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1}\right]
+\begin{bmatrix}
+\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} + \sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2} \\
+\sigma^{21} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} + \sigma^{22} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2}
+\end{bmatrix}
+\]</span></p>
+<section id="substitution-using-ols-estimates" class="level3" data-number="4.1.1">
+<h3 data-number="4.1.1" class="anchored" data-anchor-id="substitution-using-ols-estimates"><span class="header-section-number">4.1.1</span> Substitution Using OLS Estimates</h3>
+<p>From equation-by-equation OLS: <span class="math display">\[
+\mathbf{b}_{j} = \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \mathbf{X}_{1}^{\prime} \mathbf{y}_{j}, \quad j = 1, 2
+\]</span></p>
+<p>This implies: <span class="math display">\[
+\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right) \mathbf{b}_{j} = \mathbf{X}_{1}^{\prime} \mathbf{y}_{j}
+\]</span></p>
+<p>Substituting <span class="math inline">\(\mathbf{X}_{j}^{\prime} \mathbf{y}_{j}\)</span> in the GLS formula:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathbf{b}_{\text{GLS}} &amp;= \left[\boldsymbol{\Sigma} \otimes \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1}\right]
+\begin{bmatrix}
+\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \mathbf{b}_{1} + \sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \mathbf{b}_{2} \\
+\sigma^{21} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \mathbf{b}_{1} + \sigma^{22} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \mathbf{b}_{2}
+\end{bmatrix} \\[1em]
+&amp;= \begin{bmatrix}
+\sigma_{11} \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} &amp; \sigma_{12} \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \\
+\sigma_{21} \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} &amp; \sigma_{22} \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1}
+\end{bmatrix}
+\begin{bmatrix}
+\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \mathbf{b}_{1} + \sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \mathbf{b}_{2} \\
+\sigma^{21} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \mathbf{b}_{1} + \sigma^{22} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \mathbf{b}_{2}
+\end{bmatrix}
+\end{aligned}
+\]</span></p>
+<p>Expanding the matrix multiplication:</p>
+<p><span class="math display">\[
+\mathbf{b}_{\text{GLS}} = \begin{bmatrix}
+\mathbf{b}_{1}\left(\sigma_{11} \sigma^{11} + \sigma_{12} \sigma^{21}\right) + \mathbf{b}_{2}\left(\sigma_{11} \sigma^{12} + \sigma_{12} \sigma^{22}\right) \\
+\mathbf{b}_{1}\left(\sigma_{21} \sigma^{11} + \sigma_{22} \sigma^{21}\right) + \mathbf{b}_{2}\left(\sigma_{21} \sigma^{12} + \sigma_{22} \sigma^{22}\right)
+\end{bmatrix}
+\]</span></p>
+</section>
+<section id="key-simplification" class="level3" data-number="4.1.2">
+<h3 data-number="4.1.2" class="anchored" data-anchor-id="key-simplification"><span class="header-section-number">4.1.2</span> Key Simplification</h3>
+<p>The terms in parentheses simplify using <span class="math inline">\(\boldsymbol{\Sigma} \boldsymbol{\Sigma}^{-1} = \mathbf{I}\)</span>:</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+\sigma_{11} &amp; \sigma_{12} \\
+\sigma_{21} &amp; \sigma_{22}
+\end{bmatrix}
+\begin{bmatrix}
+\sigma^{11} &amp; \sigma^{12} \\
+\sigma^{21} &amp; \sigma^{22}
+\end{bmatrix} = \begin{bmatrix}
+1 &amp; 0 \\
+0 &amp; 1
+\end{bmatrix}
+\]</span></p>
+<p>This yields: <span class="math display">\[
+\begin{aligned}
+\sigma_{11} \sigma^{11} + \sigma_{12} \sigma^{21} &amp;= 1 \\
+\sigma_{11} \sigma^{12} + \sigma_{12} \sigma^{22} &amp;= 0 \\
+\sigma_{21} \sigma^{11} + \sigma_{22} \sigma^{21} &amp;= 0 \\
+\sigma_{21} \sigma^{12} + \sigma_{22} \sigma^{22} &amp;= 1
+\end{aligned}
+\]</span></p>
+<p>Therefore: <span class="math display">\[
+\mathbf{b}_{\text{GLS}} = \begin{bmatrix}
+\mathbf{b}_{1} \\
+\mathbf{b}_{2}
+\end{bmatrix} = \begin{bmatrix}
+\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} \\
+\left(\mathbf{X}_{2}^{\prime} \mathbf{X}_{2}\right)^{-1} \mathbf{X}_{2}^{\prime} \mathbf{y}_{2}
+\end{bmatrix} = \mathbf{b}_{\text{OLS}}
+\]</span></p>
+</section>
+</section>
+<section id="general-case-m-equations-with-identical-regressors" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="general-case-m-equations-with-identical-regressors"><span class="header-section-number">4.2</span> General Case: <span class="math inline">\(M\)</span> Equations with Identical Regressors</h2>
+<p>For <span class="math inline">\(M\)</span> equations where <span class="math inline">\(\mathbf{X}_{j} \equiv \mathbf{X}_{0}\)</span> (an <span class="math inline">\(N \times K^{*}\)</span> matrix with <span class="math inline">\(K^{*} = K/M\)</span>), the stacked regressor matrix is:</p>
+<p><span class="math display">\[
+\underset{(MN \times K)}{\mathbf{X}} = \begin{pmatrix}
+\mathbf{X}_{0} &amp; \mathbf{0} &amp; \cdots &amp; \mathbf{0} \\
+\mathbf{0} &amp; \mathbf{X}_{0} &amp; \cdots &amp; \mathbf{0} \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+\mathbf{0} &amp; \mathbf{0} &amp; \cdots &amp; \mathbf{X}_{0}
+\end{pmatrix} = \mathbf{I}_{M} \otimes \mathbf{X}_{0}
+\]</span></p>
+<p>The GLS estimator becomes:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathbf{b}_{\text{GLS}} &amp;= \left(\mathbf{X}^{\prime}\left(\boldsymbol{\Sigma} \otimes \mathbf{I}_{N}\right)^{-1} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime}\left(\boldsymbol{\Sigma} \otimes \mathbf{I}_{N}\right)^{-1} \mathbf{y} \\[0.5em]
+&amp;= \left(\left(\mathbf{I}_{M} \otimes \mathbf{X}_{0}\right)^{\prime}\left(\boldsymbol{\Sigma}^{-1} \otimes \mathbf{I}_{N}\right)\left(\mathbf{I}_{M} \otimes \mathbf{X}_{0}\right)\right)^{-1}\left(\mathbf{I}_{M} \otimes \mathbf{X}_{0}\right)^{\prime}\left(\boldsymbol{\Sigma}^{-1} \otimes \mathbf{I}_{N}\right) \mathbf{y}
+\end{aligned}
+\]</span></p>
+<p>Using the Kronecker product property <span class="math inline">\((\mathbf{A} \otimes \mathbf{B})(\mathbf{C} \otimes \mathbf{D}) = \mathbf{AC} \otimes \mathbf{BD}\)</span>:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathbf{b}_{\text{GLS}} &amp;= \left(\boldsymbol{\Sigma}^{-1} \otimes \mathbf{X}_{0}^{\prime} \mathbf{X}_{0}\right)^{-1}\left(\boldsymbol{\Sigma}^{-1} \otimes \mathbf{X}_{0}^{\prime}\right) \mathbf{y} \\[0.5em]
+&amp;= \left(\mathbf{I}_{M} \otimes \left(\mathbf{X}_{0}^{\prime} \mathbf{X}_{0}\right)^{-1} \mathbf{X}_{0}^{\prime}\right)
+\begin{pmatrix}
+\mathbf{y}_{1} \\
+\mathbf{y}_{2} \\
+\vdots \\
+\mathbf{y}_{M}
+\end{pmatrix} \\[0.5em]
+&amp;= \begin{pmatrix}
+\left(\mathbf{X}_{0}^{\prime} \mathbf{X}_{0}\right)^{-1} \mathbf{X}_{0}^{\prime} \mathbf{y}_{1} \\
+\left(\mathbf{X}_{0}^{\prime} \mathbf{X}_{0}\right)^{-1} \mathbf{X}_{0}^{\prime} \mathbf{y}_{2} \\
+\vdots \\
+\left(\mathbf{X}_{0}^{\prime} \mathbf{X}_{0}\right)^{-1} \mathbf{X}_{0}^{\prime} \mathbf{y}_{M}
+\end{pmatrix} = \mathbf{b}_{\text{OLS}}
+\end{aligned}
+\]</span></p>
+</section>
+<section id="interpretation-1" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="interpretation-1"><span class="header-section-number">4.3</span> Interpretation</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Case 2 Takeaway
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Even when disturbances are correlated across equations, if all equations use the same regressors:</p>
+<ul>
+<li>GLS estimates equal OLS estimates</li>
+<li>Joint estimation provides <strong>no coefficient efficiency gain</strong></li>
+<li>This result may seem counterintuitive but follows from the algebraic structure</li>
+<li>However, joint estimation still enables valid <strong>cross-equation hypothesis tests</strong></li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+<section id="summary-and-practical-implications" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Summary and Practical Implications</h1>
+<section id="main-results" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="main-results"><span class="header-section-number">5.1</span> Main Results</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 15%">
+<col style="width: 15%">
+<col style="width: 38%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Case</th>
+<th>Error Correlation</th>
+<th>Regressors</th>
+<th><span class="math inline">\(\mathbf{b}_{\text{GLS}} = \mathbf{b}_{\text{OLS}}\)</span>?</th>
+<th>Efficiency Gain?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>None</td>
+<td>Any</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Present</td>
+<td>Identical</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Present</td>
+<td>Different</td>
+<td>No</td>
+<td><strong>Yes</strong></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="when-sur-improves-efficiency" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="when-sur-improves-efficiency"><span class="header-section-number">5.2</span> When SUR Improves Efficiency</h2>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+SUR and Efficiency
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>SUR provides efficiency gains <strong>only when</strong>:</p>
+<ol type="1">
+<li>Disturbances are contemporaneously correlated across equations, <strong>and</strong></li>
+<li>Equations contain different regressors</li>
+</ol>
+<p>A helpful rule of thumb: <strong>correlated errors are not enough</strong>.</p>
+</div>
+</div>
+</section>
+<section id="practical-example-demand-system" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="practical-example-demand-system"><span class="header-section-number">5.3</span> Practical Example: Demand System</h2>
+<p>Consider a system of household demand equations: <span class="math display">\[
+\begin{aligned}
+\text{housing} &amp;= \beta_{10} + \beta_{11}\text{houseprc} + \beta_{12}\text{foodprc} + \beta_{13}\text{clothprc}
++ \beta_{14}\text{income} + \beta_{15}\text{size} + \beta_{16}\text{age} + u_1 \\
+\text{food} &amp;= \beta_{20} + \beta_{21}\text{houseprc} + \beta_{22}\text{foodprc} + \beta_{23}\text{clothprc}
++ \beta_{24}\text{income} + \beta_{25}\text{size} + \beta_{26}\text{age} + u_2 \\
+\text{clothing} &amp;= \beta_{30} + \beta_{31}\text{houseprc} + \beta_{32}\text{foodprc} + \beta_{33}\text{clothprc}
++ \beta_{34}\text{income} + \beta_{35}\text{size} + \beta_{36}\text{age} + u_3
+\end{aligned}
+\]</span></p>
+<p>All three equations use <strong>identical regressors</strong> but different dependent variables.</p>
+<section id="what-sur-does-not-do-here" class="level3" data-number="5.3.1">
+<h3 data-number="5.3.1" class="anchored" data-anchor-id="what-sur-does-not-do-here"><span class="header-section-number">5.3.1</span> What SUR Does <em>Not</em> Do Here</h3>
+<p>Because the regressor matrices are identical:</p>
+<ul>
+<li>SUR does <strong>not</strong> improve coefficient efficiency</li>
+<li>GLS estimates equal equation-by-equation OLS</li>
+<li>This is an application of <strong>Case 2</strong></li>
+</ul>
+<p>In short, SUR cannot extract additional information from correlated errors alone.</p>
+</section>
+<section id="why-demand-systems-are-still-estimated-jointly" class="level3" data-number="5.3.2">
+<h3 data-number="5.3.2" class="anchored" data-anchor-id="why-demand-systems-are-still-estimated-jointly"><span class="header-section-number">5.3.2</span> Why Demand Systems Are Still Estimated Jointly</h3>
+<p>Demand systems are estimated jointly <strong>not for efficiency</strong>, but for <strong>economic structure</strong>.</p>
+<p>Joint estimation allows researchers to:</p>
+<ul>
+<li>Impose <strong>cross-equation restrictions</strong> implied by theory:
+<ul>
+<li>Adding-up</li>
+<li>Homogeneity</li>
+<li>Symmetry</li>
+</ul></li>
+<li>Estimate the <strong>cross-equation error covariance matrix</strong></li>
+<li>Conduct valid <strong>system-wide hypothesis tests</strong></li>
+</ul>
+<p>Once such restrictions are imposed, we are estimating a <strong>different (constrained) model</strong>, so the resulting estimates generally differ from unrestricted OLS or unrestricted SUR.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Efficiency vs.&nbsp;Structure
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>SUR for efficiency</strong> requires different regressors</li>
+<li><strong>SUR for economic theory</strong> arises when coefficients are linked across equations</li>
+</ul>
+<p>Demand systems rely primarily on the <strong>second</strong>, not the first.</p>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="appendix-kronecker-product-properties" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Appendix: Kronecker Product Properties</h1>
+<p>For conformable matrices <span class="math inline">\(\mathbf{A}\)</span>, <span class="math inline">\(\mathbf{B}\)</span>, <span class="math inline">\(\mathbf{C}\)</span>, and <span class="math inline">\(\mathbf{D}\)</span>: <span class="math display">\[
+(\mathbf{A} \otimes \mathbf{B})^{-1} = \mathbf{A}^{-1} \otimes \mathbf{B}^{-1}
+\]</span> <span class="math display">\[
+(\mathbf{A} \otimes \mathbf{B})(\mathbf{C} \otimes \mathbf{D}) = \mathbf{AC} \otimes \mathbf{BD}
+\]</span></p>
+<p>See Greene’s <a href="http://pages.stern.nyu.edu/~wgreene/Text/Greene-EA-7&amp;8ed-Appendices.pdf#page=24">Appendix A</a> for comprehensive treatment.</p>
+<p><strong>End of Lecture Notes</strong></p>
+<p><em>These notes were prepared for educational purposes. Questions and feedback are welcome!</em></p>
+<!-- -->
+
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Seemingly Unrelated Regression (SUR)"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> "Proofs and Derivations"</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Dragos Ailoae"</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> today</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>Applied Statistics and Econometrics 2</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu"># Introduction to SUR Systems</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>In the analysis of Seemingly Unrelated Regression (SUR) systems, we examine multiple regression equations that appear independent but may have correlated error terms. The key question is: **when does Generalized Least Squares (GLS) provide efficiency gains over Ordinary Least Squares (OLS)?**</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>This document proves that in two important special cases, GLS estimation offers **no efficiency gains** and yields **identical estimates** to equation-by-equation OLS.</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu"># The Three SUR Cases</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>In SUR analysis, three distinct cases arise based on the structure of error correlations and regressors:</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">## Case 1: Contemporaneously Uncorrelated Disturbances</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>The disturbances are uncorrelated across equations: $$</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>E\left(\boldsymbol{\varepsilon}_i \boldsymbol{\varepsilon}_j^{\prime}\right) = \mathbf{0}, \quad \text{for } i \neq j</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="fu">## Case 2: Correlated Disturbances with Identical Regressors</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>The disturbances are contemporaneously correlated **and** all equations share the same regressors: $$</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>E\left(\boldsymbol{\varepsilon}_i \boldsymbol{\varepsilon}_j^{\prime}\right) = \sigma_{ij} \mathbf{I}_T \neq \mathbf{0}</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>$$ where $\mathbf{I}_T$ is a $T \times T$ identity matrix, and $$</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>\mathbf{X}_i = \mathbf{X}_j, \quad \text{for all } i, j</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="fu">## Case 3: Correlated Disturbances with Different Regressors</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>The disturbances are contemporaneously correlated with different regressors: $$</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>E\left(\boldsymbol{\varepsilon}_i \boldsymbol{\varepsilon}_j^{\prime}\right) = \sigma_{ij} \mathbf{I}_T \neq \mathbf{0}</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>$$ and $$</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>\mathbf{X}_i \neq \mathbf{X}_j, \quad \text{for at least some } i \text{ and } j</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>::: callout-important</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="fu">## Main Result</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>**In Cases 1 and 2, there are no efficiency gains from GLS, and the estimator is identical to OLS.**</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>Only in Case 3 does SUR estimation provide efficiency improvements over OLS.</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="fu"># Proof for Case 1: No Contemporaneous Correlation {#sec-case1}</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="fu">## Setup</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>When $\sigma_{12} = \sigma_{21} = 0$, the variance-covariance matrix is block diagonal: $$</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\Omega} = \boldsymbol{\Sigma} \otimes \mathbf{I}_T =</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>\begin{bmatrix}</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>\sigma_{11} &amp; 0 <span class="sc">\\</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>0 &amp; \sigma_{22}</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>\end{bmatrix} \otimes \mathbf{I}_T</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a><span class="fu">## Derivation Using Block Diagonal Structure</span></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>The GLS estimator has the general form: $$</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>\mathbf{b}_{\text{GLS}} = \left(\mathbf{X}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime} \boldsymbol{\Omega}^{-1} \mathbf{y}</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>For the two-equation case: $$</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>\mathbf{b}_{\text{GLS}} = \begin{bmatrix}</span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>\mathbf{b}_{1} <span class="sc">\\</span></span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>\mathbf{b}_{2}</span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>\end{bmatrix} </span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>&amp;= \left[\begin{pmatrix}</span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>\mathbf{X}_1^{\prime} &amp; \mathbf{0} <span class="sc">\\</span></span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>\mathbf{0} &amp; \mathbf{X}_2^{\prime}</span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>\end{pmatrix}</span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a>\begin{pmatrix}</span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\Omega}_{11}^{-1} &amp; \mathbf{0} <span class="sc">\\</span></span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a>\mathbf{0} &amp; \boldsymbol{\Omega}_{22}^{-1}</span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a>\end{pmatrix}</span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a>\begin{pmatrix}</span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>\mathbf{X}_1 &amp; \mathbf{0} <span class="sc">\\</span></span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a>\mathbf{0} &amp; \mathbf{X}_2</span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>\end{pmatrix}\right]^{-1} <span class="sc">\\</span></span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a>&amp;\quad \times \left[\begin{pmatrix}</span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a>\mathbf{X}_1^{\prime} &amp; \mathbf{0} <span class="sc">\\</span></span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a>\mathbf{0} &amp; \mathbf{X}_2^{\prime}</span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>\end{pmatrix}</span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a>\begin{pmatrix}</span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\Omega}_{11}^{-1} &amp; \mathbf{0} <span class="sc">\\</span></span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a>\mathbf{0} &amp; \boldsymbol{\Omega}_{22}^{-1}</span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a>\end{pmatrix}</span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a>\begin{pmatrix}</span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a>\mathbf{y}_1 <span class="sc">\\</span></span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>\mathbf{y}_2</span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a>\end{pmatrix}\right] <span class="sc">\\</span><span class="co">[</span><span class="ot">1em</span><span class="co">]</span></span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a>&amp;= \begin{pmatrix}</span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a>\mathbf{X}_1^{\prime} \boldsymbol{\Omega}_{11}^{-1} \mathbf{X}_1 &amp; \mathbf{0} <span class="sc">\\</span></span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a>\mathbf{0} &amp; \mathbf{X}_2^{\prime} \boldsymbol{\Omega}_{22}^{-1} \mathbf{X}_2</span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a>\end{pmatrix}^{-1}</span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a>\begin{pmatrix}</span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a>\mathbf{X}_1^{\prime} \boldsymbol{\Omega}_{11}^{-1} \mathbf{y}_1 <span class="sc">\\</span></span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a>\mathbf{X}_2^{\prime} \boldsymbol{\Omega}_{22}^{-1} \mathbf{y}_2</span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a>\end{pmatrix} <span class="sc">\\</span><span class="co">[</span><span class="ot">1em</span><span class="co">]</span></span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a>&amp;= \begin{pmatrix}</span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a>\left(\mathbf{X}_1^{\prime} \boldsymbol{\Omega}_{11}^{-1} \mathbf{X}_1\right)^{-1} \mathbf{X}_1^{\prime} \boldsymbol{\Omega}_{11}^{-1} \mathbf{y}_1 <span class="sc">\\</span></span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a>\left(\mathbf{X}_2^{\prime} \boldsymbol{\Omega}_{22}^{-1} \mathbf{X}_2\right)^{-1} \mathbf{X}_2^{\prime} \boldsymbol{\Omega}_{22}^{-1} \mathbf{y}_2</span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a>\end{pmatrix}</span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a>Since $\boldsymbol{\Omega}_{ii} = \sigma_{ii} \mathbf{I}_T$, it factors out: $$</span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a>\mathbf{b}_{\text{GLS}} = \begin{bmatrix}</span>
+<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a>\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} <span class="sc">\\</span></span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a>\left(\mathbf{X}_{2}^{\prime} \mathbf{X}_{2}\right)^{-1} \mathbf{X}_{2}^{\prime} \mathbf{y}_{2}</span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a>\end{bmatrix} = \mathbf{b}_{\text{OLS}}</span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a><span class="fu">## Alternative Derivation Using Greene's Expanded Form</span></span>
+<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a>Greene's expanded SUR estimator uses elements $\sigma^{ij}$ from $\boldsymbol{\Sigma}^{-1}$: $$</span>
+<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a>\mathbf{b}_{\text{GLS}} = \begin{bmatrix}</span>
+<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a>\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} &amp; \sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{X}_{2} <span class="sc">\\</span></span>
+<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a>\sigma^{21} \mathbf{X}_{2}^{\prime} \mathbf{X}_{1} &amp; \sigma^{22} \mathbf{X}_{2}^{\prime} \mathbf{X}_{2}</span>
+<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}^{-1}</span>
+<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a>\begin{bmatrix}</span>
+<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a>\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} + \sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2} <span class="sc">\\</span></span>
+<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a>\sigma^{21} \mathbf{X}_{2}^{\prime} \mathbf{y}_{1} + \sigma^{22} \mathbf{X}_{2}^{\prime} \mathbf{y}_{2}</span>
+<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
+<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a>When $\sigma^{12} = \sigma^{21} = 0$: $$</span>
+<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a>\mathbf{b}_{\text{GLS}} = \begin{bmatrix}</span>
+<span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a>\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} &amp; \mathbf{0} <span class="sc">\\</span></span>
+<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a>\mathbf{0} &amp; \sigma^{22} \mathbf{X}_{2}^{\prime} \mathbf{X}_{2}</span>
+<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}^{-1}</span>
+<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a>\begin{bmatrix}</span>
+<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a>\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} <span class="sc">\\</span></span>
+<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a>\sigma^{22} \mathbf{X}_{2}^{\prime} \mathbf{y}_{2}</span>
+<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a>\end{bmatrix} = \begin{bmatrix}</span>
+<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a>\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} <span class="sc">\\</span></span>
+<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a>\left(\mathbf{X}_{2}^{\prime} \mathbf{X}_{2}\right)^{-1} \mathbf{X}_{2}^{\prime} \mathbf{y}_{2}</span>
+<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
+<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a><span class="fu">## Interpretation</span></span>
+<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a>::: callout-note</span>
+<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a><span class="fu">## Case 1 Takeaway</span></span>
+<span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a>If the models are truly unrelated (uncorrelated disturbances), then:</span>
+<span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>The GLS/SUR estimator reduces to equation-by-equation OLS</span>
+<span id="cb1-155"><a href="#cb1-155" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>There is **no efficiency gain** from joint estimation</span>
+<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Inference procedures are identical whether estimated jointly or separately</span>
+<span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a><span class="fu"># Proof for Case 2: Identical Regressors {#sec-case2}</span></span>
+<span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a><span class="fu">## Two-Equation Case</span></span>
+<span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-163"><a href="#cb1-163" aria-hidden="true" tabindex="-1"></a>Assume $\mathbf{X}_{1} = \mathbf{X}_{2}$ but disturbances are correlated. Starting from Greene's expanded form:</span>
+<span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-165"><a href="#cb1-165" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="cb1-167"><a href="#cb1-167" aria-hidden="true" tabindex="-1"></a>\mathbf{b}_{\text{GLS}} &amp;= \begin{bmatrix}</span>
+<span id="cb1-168"><a href="#cb1-168" aria-hidden="true" tabindex="-1"></a>\sigma^{11} \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right) &amp; \sigma^{12} \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right) <span class="sc">\\</span></span>
+<span id="cb1-169"><a href="#cb1-169" aria-hidden="true" tabindex="-1"></a>\sigma^{21} \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right) &amp; \sigma^{22} \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)</span>
+<span id="cb1-170"><a href="#cb1-170" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}^{-1}</span>
+<span id="cb1-171"><a href="#cb1-171" aria-hidden="true" tabindex="-1"></a>\begin{bmatrix}</span>
+<span id="cb1-172"><a href="#cb1-172" aria-hidden="true" tabindex="-1"></a>\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} + \sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2} <span class="sc">\\</span></span>
+<span id="cb1-173"><a href="#cb1-173" aria-hidden="true" tabindex="-1"></a>\sigma^{21} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} + \sigma^{22} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2}</span>
+<span id="cb1-174"><a href="#cb1-174" aria-hidden="true" tabindex="-1"></a>\end{bmatrix} <span class="sc">\\</span><span class="co">[</span><span class="ot">1em</span><span class="co">]</span></span>
+<span id="cb1-175"><a href="#cb1-175" aria-hidden="true" tabindex="-1"></a>&amp;= \left<span class="co">[</span><span class="ot">\boldsymbol{\Sigma}^{-1} \otimes \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)\right</span><span class="co">]</span>^{-1}</span>
+<span id="cb1-176"><a href="#cb1-176" aria-hidden="true" tabindex="-1"></a>\begin{bmatrix}</span>
+<span id="cb1-177"><a href="#cb1-177" aria-hidden="true" tabindex="-1"></a>\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} + \sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2} <span class="sc">\\</span></span>
+<span id="cb1-178"><a href="#cb1-178" aria-hidden="true" tabindex="-1"></a>\sigma^{21} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} + \sigma^{22} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2}</span>
+<span id="cb1-179"><a href="#cb1-179" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
+<span id="cb1-180"><a href="#cb1-180" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="cb1-181"><a href="#cb1-181" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-182"><a href="#cb1-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-183"><a href="#cb1-183" aria-hidden="true" tabindex="-1"></a>Using the Kronecker product property $(\mathbf{A} \otimes \mathbf{B})^{-1} = \mathbf{A}^{-1} \otimes \mathbf{B}^{-1}$:</span>
+<span id="cb1-184"><a href="#cb1-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-185"><a href="#cb1-185" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-186"><a href="#cb1-186" aria-hidden="true" tabindex="-1"></a>\mathbf{b}_{\text{GLS}} = \left[\boldsymbol{\Sigma} \otimes \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1}\right]</span>
+<span id="cb1-187"><a href="#cb1-187" aria-hidden="true" tabindex="-1"></a>\begin{bmatrix}</span>
+<span id="cb1-188"><a href="#cb1-188" aria-hidden="true" tabindex="-1"></a>\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} + \sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2} <span class="sc">\\</span></span>
+<span id="cb1-189"><a href="#cb1-189" aria-hidden="true" tabindex="-1"></a>\sigma^{21} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} + \sigma^{22} \mathbf{X}_{1}^{\prime} \mathbf{y}_{2}</span>
+<span id="cb1-190"><a href="#cb1-190" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
+<span id="cb1-191"><a href="#cb1-191" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-192"><a href="#cb1-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-193"><a href="#cb1-193" aria-hidden="true" tabindex="-1"></a><span class="fu">### Substitution Using OLS Estimates</span></span>
+<span id="cb1-194"><a href="#cb1-194" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-195"><a href="#cb1-195" aria-hidden="true" tabindex="-1"></a>From equation-by-equation OLS: $$</span>
+<span id="cb1-196"><a href="#cb1-196" aria-hidden="true" tabindex="-1"></a>\mathbf{b}_{j} = \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \mathbf{X}_{1}^{\prime} \mathbf{y}_{j}, \quad j = 1, 2</span>
+<span id="cb1-197"><a href="#cb1-197" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-198"><a href="#cb1-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-199"><a href="#cb1-199" aria-hidden="true" tabindex="-1"></a>This implies: $$</span>
+<span id="cb1-200"><a href="#cb1-200" aria-hidden="true" tabindex="-1"></a>\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right) \mathbf{b}_{j} = \mathbf{X}_{1}^{\prime} \mathbf{y}_{j}</span>
+<span id="cb1-201"><a href="#cb1-201" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-202"><a href="#cb1-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-203"><a href="#cb1-203" aria-hidden="true" tabindex="-1"></a>Substituting $\mathbf{X}_{j}^{\prime} \mathbf{y}_{j}$ in the GLS formula:</span>
+<span id="cb1-204"><a href="#cb1-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-205"><a href="#cb1-205" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-206"><a href="#cb1-206" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="cb1-207"><a href="#cb1-207" aria-hidden="true" tabindex="-1"></a>\mathbf{b}_{\text{GLS}} &amp;= \left[\boldsymbol{\Sigma} \otimes \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1}\right]</span>
+<span id="cb1-208"><a href="#cb1-208" aria-hidden="true" tabindex="-1"></a>\begin{bmatrix}</span>
+<span id="cb1-209"><a href="#cb1-209" aria-hidden="true" tabindex="-1"></a>\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \mathbf{b}_{1} + \sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \mathbf{b}_{2} <span class="sc">\\</span></span>
+<span id="cb1-210"><a href="#cb1-210" aria-hidden="true" tabindex="-1"></a>\sigma^{21} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \mathbf{b}_{1} + \sigma^{22} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \mathbf{b}_{2}</span>
+<span id="cb1-211"><a href="#cb1-211" aria-hidden="true" tabindex="-1"></a>\end{bmatrix} <span class="sc">\\</span><span class="co">[</span><span class="ot">1em</span><span class="co">]</span></span>
+<span id="cb1-212"><a href="#cb1-212" aria-hidden="true" tabindex="-1"></a>&amp;= \begin{bmatrix}</span>
+<span id="cb1-213"><a href="#cb1-213" aria-hidden="true" tabindex="-1"></a>\sigma_{11} \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} &amp; \sigma_{12} \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} <span class="sc">\\</span></span>
+<span id="cb1-214"><a href="#cb1-214" aria-hidden="true" tabindex="-1"></a>\sigma_{21} \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} &amp; \sigma_{22} \left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1}</span>
+<span id="cb1-215"><a href="#cb1-215" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
+<span id="cb1-216"><a href="#cb1-216" aria-hidden="true" tabindex="-1"></a>\begin{bmatrix}</span>
+<span id="cb1-217"><a href="#cb1-217" aria-hidden="true" tabindex="-1"></a>\sigma^{11} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \mathbf{b}_{1} + \sigma^{12} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \mathbf{b}_{2} <span class="sc">\\</span></span>
+<span id="cb1-218"><a href="#cb1-218" aria-hidden="true" tabindex="-1"></a>\sigma^{21} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \mathbf{b}_{1} + \sigma^{22} \mathbf{X}_{1}^{\prime} \mathbf{X}_{1} \mathbf{b}_{2}</span>
+<span id="cb1-219"><a href="#cb1-219" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
+<span id="cb1-220"><a href="#cb1-220" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="cb1-221"><a href="#cb1-221" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-222"><a href="#cb1-222" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-223"><a href="#cb1-223" aria-hidden="true" tabindex="-1"></a>Expanding the matrix multiplication:</span>
+<span id="cb1-224"><a href="#cb1-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-225"><a href="#cb1-225" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-226"><a href="#cb1-226" aria-hidden="true" tabindex="-1"></a>\mathbf{b}_{\text{GLS}} = \begin{bmatrix}</span>
+<span id="cb1-227"><a href="#cb1-227" aria-hidden="true" tabindex="-1"></a>\mathbf{b}_{1}\left(\sigma_{11} \sigma^{11} + \sigma_{12} \sigma^{21}\right) + \mathbf{b}_{2}\left(\sigma_{11} \sigma^{12} + \sigma_{12} \sigma^{22}\right) <span class="sc">\\</span></span>
+<span id="cb1-228"><a href="#cb1-228" aria-hidden="true" tabindex="-1"></a>\mathbf{b}_{1}\left(\sigma_{21} \sigma^{11} + \sigma_{22} \sigma^{21}\right) + \mathbf{b}_{2}\left(\sigma_{21} \sigma^{12} + \sigma_{22} \sigma^{22}\right)</span>
+<span id="cb1-229"><a href="#cb1-229" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
+<span id="cb1-230"><a href="#cb1-230" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-231"><a href="#cb1-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-232"><a href="#cb1-232" aria-hidden="true" tabindex="-1"></a><span class="fu">### Key Simplification</span></span>
+<span id="cb1-233"><a href="#cb1-233" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-234"><a href="#cb1-234" aria-hidden="true" tabindex="-1"></a>The terms in parentheses simplify using $\boldsymbol{\Sigma} \boldsymbol{\Sigma}^{-1} = \mathbf{I}$:</span>
+<span id="cb1-235"><a href="#cb1-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-236"><a href="#cb1-236" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-237"><a href="#cb1-237" aria-hidden="true" tabindex="-1"></a>\begin{bmatrix}</span>
+<span id="cb1-238"><a href="#cb1-238" aria-hidden="true" tabindex="-1"></a>\sigma_{11} &amp; \sigma_{12} <span class="sc">\\</span></span>
+<span id="cb1-239"><a href="#cb1-239" aria-hidden="true" tabindex="-1"></a>\sigma_{21} &amp; \sigma_{22}</span>
+<span id="cb1-240"><a href="#cb1-240" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
+<span id="cb1-241"><a href="#cb1-241" aria-hidden="true" tabindex="-1"></a>\begin{bmatrix}</span>
+<span id="cb1-242"><a href="#cb1-242" aria-hidden="true" tabindex="-1"></a>\sigma^{11} &amp; \sigma^{12} <span class="sc">\\</span></span>
+<span id="cb1-243"><a href="#cb1-243" aria-hidden="true" tabindex="-1"></a>\sigma^{21} &amp; \sigma^{22}</span>
+<span id="cb1-244"><a href="#cb1-244" aria-hidden="true" tabindex="-1"></a>\end{bmatrix} = \begin{bmatrix}</span>
+<span id="cb1-245"><a href="#cb1-245" aria-hidden="true" tabindex="-1"></a>1 &amp; 0 <span class="sc">\\</span></span>
+<span id="cb1-246"><a href="#cb1-246" aria-hidden="true" tabindex="-1"></a>0 &amp; 1</span>
+<span id="cb1-247"><a href="#cb1-247" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
+<span id="cb1-248"><a href="#cb1-248" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-249"><a href="#cb1-249" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-250"><a href="#cb1-250" aria-hidden="true" tabindex="-1"></a>This yields: $$</span>
+<span id="cb1-251"><a href="#cb1-251" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="cb1-252"><a href="#cb1-252" aria-hidden="true" tabindex="-1"></a>\sigma_{11} \sigma^{11} + \sigma_{12} \sigma^{21} &amp;= 1 <span class="sc">\\</span></span>
+<span id="cb1-253"><a href="#cb1-253" aria-hidden="true" tabindex="-1"></a>\sigma_{11} \sigma^{12} + \sigma_{12} \sigma^{22} &amp;= 0 <span class="sc">\\</span></span>
+<span id="cb1-254"><a href="#cb1-254" aria-hidden="true" tabindex="-1"></a>\sigma_{21} \sigma^{11} + \sigma_{22} \sigma^{21} &amp;= 0 <span class="sc">\\</span></span>
+<span id="cb1-255"><a href="#cb1-255" aria-hidden="true" tabindex="-1"></a>\sigma_{21} \sigma^{12} + \sigma_{22} \sigma^{22} &amp;= 1</span>
+<span id="cb1-256"><a href="#cb1-256" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="cb1-257"><a href="#cb1-257" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-258"><a href="#cb1-258" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-259"><a href="#cb1-259" aria-hidden="true" tabindex="-1"></a>Therefore: $$</span>
+<span id="cb1-260"><a href="#cb1-260" aria-hidden="true" tabindex="-1"></a>\mathbf{b}_{\text{GLS}} = \begin{bmatrix}</span>
+<span id="cb1-261"><a href="#cb1-261" aria-hidden="true" tabindex="-1"></a>\mathbf{b}_{1} <span class="sc">\\</span></span>
+<span id="cb1-262"><a href="#cb1-262" aria-hidden="true" tabindex="-1"></a>\mathbf{b}_{2}</span>
+<span id="cb1-263"><a href="#cb1-263" aria-hidden="true" tabindex="-1"></a>\end{bmatrix} = \begin{bmatrix}</span>
+<span id="cb1-264"><a href="#cb1-264" aria-hidden="true" tabindex="-1"></a>\left(\mathbf{X}_{1}^{\prime} \mathbf{X}_{1}\right)^{-1} \mathbf{X}_{1}^{\prime} \mathbf{y}_{1} <span class="sc">\\</span></span>
+<span id="cb1-265"><a href="#cb1-265" aria-hidden="true" tabindex="-1"></a>\left(\mathbf{X}_{2}^{\prime} \mathbf{X}_{2}\right)^{-1} \mathbf{X}_{2}^{\prime} \mathbf{y}_{2}</span>
+<span id="cb1-266"><a href="#cb1-266" aria-hidden="true" tabindex="-1"></a>\end{bmatrix} = \mathbf{b}_{\text{OLS}}</span>
+<span id="cb1-267"><a href="#cb1-267" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-268"><a href="#cb1-268" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-269"><a href="#cb1-269" aria-hidden="true" tabindex="-1"></a><span class="fu">## General Case: $M$ Equations with Identical Regressors</span></span>
+<span id="cb1-270"><a href="#cb1-270" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-271"><a href="#cb1-271" aria-hidden="true" tabindex="-1"></a>For $M$ equations where $\mathbf{X}_{j} \equiv \mathbf{X}_{0}$ (an $N \times K^{*}$ matrix with $K^{*} = K/M$), the stacked regressor matrix is:</span>
+<span id="cb1-272"><a href="#cb1-272" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-273"><a href="#cb1-273" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-274"><a href="#cb1-274" aria-hidden="true" tabindex="-1"></a>\underset{(MN \times K)}{\mathbf{X}} = \begin{pmatrix}</span>
+<span id="cb1-275"><a href="#cb1-275" aria-hidden="true" tabindex="-1"></a>\mathbf{X}_{0} &amp; \mathbf{0} &amp; \cdots &amp; \mathbf{0} <span class="sc">\\</span></span>
+<span id="cb1-276"><a href="#cb1-276" aria-hidden="true" tabindex="-1"></a>\mathbf{0} &amp; \mathbf{X}_{0} &amp; \cdots &amp; \mathbf{0} <span class="sc">\\</span></span>
+<span id="cb1-277"><a href="#cb1-277" aria-hidden="true" tabindex="-1"></a>\vdots &amp; \vdots &amp; \ddots &amp; \vdots <span class="sc">\\</span></span>
+<span id="cb1-278"><a href="#cb1-278" aria-hidden="true" tabindex="-1"></a>\mathbf{0} &amp; \mathbf{0} &amp; \cdots &amp; \mathbf{X}_{0}</span>
+<span id="cb1-279"><a href="#cb1-279" aria-hidden="true" tabindex="-1"></a>\end{pmatrix} = \mathbf{I}_{M} \otimes \mathbf{X}_{0}</span>
+<span id="cb1-280"><a href="#cb1-280" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-281"><a href="#cb1-281" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-282"><a href="#cb1-282" aria-hidden="true" tabindex="-1"></a>The GLS estimator becomes:</span>
+<span id="cb1-283"><a href="#cb1-283" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-284"><a href="#cb1-284" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-285"><a href="#cb1-285" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="cb1-286"><a href="#cb1-286" aria-hidden="true" tabindex="-1"></a>\mathbf{b}_{\text{GLS}} &amp;= \left(\mathbf{X}^{\prime}\left(\boldsymbol{\Sigma} \otimes \mathbf{I}_{N}\right)^{-1} \mathbf{X}\right)^{-1} \mathbf{X}^{\prime}\left(\boldsymbol{\Sigma} \otimes \mathbf{I}_{N}\right)^{-1} \mathbf{y} <span class="sc">\\</span><span class="co">[</span><span class="ot">0.5em</span><span class="co">]</span></span>
+<span id="cb1-287"><a href="#cb1-287" aria-hidden="true" tabindex="-1"></a>&amp;= \left(\left(\mathbf{I}_{M} \otimes \mathbf{X}_{0}\right)^{\prime}\left(\boldsymbol{\Sigma}^{-1} \otimes \mathbf{I}_{N}\right)\left(\mathbf{I}_{M} \otimes \mathbf{X}_{0}\right)\right)^{-1}\left(\mathbf{I}_{M} \otimes \mathbf{X}_{0}\right)^{\prime}\left(\boldsymbol{\Sigma}^{-1} \otimes \mathbf{I}_{N}\right) \mathbf{y}</span>
+<span id="cb1-288"><a href="#cb1-288" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="cb1-289"><a href="#cb1-289" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-290"><a href="#cb1-290" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-291"><a href="#cb1-291" aria-hidden="true" tabindex="-1"></a>Using the Kronecker product property $(\mathbf{A} \otimes \mathbf{B})(\mathbf{C} \otimes \mathbf{D}) = \mathbf{AC} \otimes \mathbf{BD}$:</span>
+<span id="cb1-292"><a href="#cb1-292" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-293"><a href="#cb1-293" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-294"><a href="#cb1-294" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="cb1-295"><a href="#cb1-295" aria-hidden="true" tabindex="-1"></a>\mathbf{b}_{\text{GLS}} &amp;= \left(\boldsymbol{\Sigma}^{-1} \otimes \mathbf{X}_{0}^{\prime} \mathbf{X}_{0}\right)^{-1}\left(\boldsymbol{\Sigma}^{-1} \otimes \mathbf{X}_{0}^{\prime}\right) \mathbf{y} <span class="sc">\\</span><span class="co">[</span><span class="ot">0.5em</span><span class="co">]</span></span>
+<span id="cb1-296"><a href="#cb1-296" aria-hidden="true" tabindex="-1"></a>&amp;= \left(\mathbf{I}_{M} \otimes \left(\mathbf{X}_{0}^{\prime} \mathbf{X}_{0}\right)^{-1} \mathbf{X}_{0}^{\prime}\right)</span>
+<span id="cb1-297"><a href="#cb1-297" aria-hidden="true" tabindex="-1"></a>\begin{pmatrix}</span>
+<span id="cb1-298"><a href="#cb1-298" aria-hidden="true" tabindex="-1"></a>\mathbf{y}_{1} <span class="sc">\\</span></span>
+<span id="cb1-299"><a href="#cb1-299" aria-hidden="true" tabindex="-1"></a>\mathbf{y}_{2} <span class="sc">\\</span></span>
+<span id="cb1-300"><a href="#cb1-300" aria-hidden="true" tabindex="-1"></a>\vdots <span class="sc">\\</span></span>
+<span id="cb1-301"><a href="#cb1-301" aria-hidden="true" tabindex="-1"></a>\mathbf{y}_{M}</span>
+<span id="cb1-302"><a href="#cb1-302" aria-hidden="true" tabindex="-1"></a>\end{pmatrix} <span class="sc">\\</span><span class="co">[</span><span class="ot">0.5em</span><span class="co">]</span></span>
+<span id="cb1-303"><a href="#cb1-303" aria-hidden="true" tabindex="-1"></a>&amp;= \begin{pmatrix}</span>
+<span id="cb1-304"><a href="#cb1-304" aria-hidden="true" tabindex="-1"></a>\left(\mathbf{X}_{0}^{\prime} \mathbf{X}_{0}\right)^{-1} \mathbf{X}_{0}^{\prime} \mathbf{y}_{1} <span class="sc">\\</span></span>
+<span id="cb1-305"><a href="#cb1-305" aria-hidden="true" tabindex="-1"></a>\left(\mathbf{X}_{0}^{\prime} \mathbf{X}_{0}\right)^{-1} \mathbf{X}_{0}^{\prime} \mathbf{y}_{2} <span class="sc">\\</span></span>
+<span id="cb1-306"><a href="#cb1-306" aria-hidden="true" tabindex="-1"></a>\vdots <span class="sc">\\</span></span>
+<span id="cb1-307"><a href="#cb1-307" aria-hidden="true" tabindex="-1"></a>\left(\mathbf{X}_{0}^{\prime} \mathbf{X}_{0}\right)^{-1} \mathbf{X}_{0}^{\prime} \mathbf{y}_{M}</span>
+<span id="cb1-308"><a href="#cb1-308" aria-hidden="true" tabindex="-1"></a>\end{pmatrix} = \mathbf{b}_{\text{OLS}}</span>
+<span id="cb1-309"><a href="#cb1-309" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="cb1-310"><a href="#cb1-310" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-311"><a href="#cb1-311" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-312"><a href="#cb1-312" aria-hidden="true" tabindex="-1"></a><span class="fu">## Interpretation</span></span>
+<span id="cb1-313"><a href="#cb1-313" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-314"><a href="#cb1-314" aria-hidden="true" tabindex="-1"></a>::: callout-note</span>
+<span id="cb1-315"><a href="#cb1-315" aria-hidden="true" tabindex="-1"></a><span class="fu">## Case 2 Takeaway</span></span>
+<span id="cb1-316"><a href="#cb1-316" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-317"><a href="#cb1-317" aria-hidden="true" tabindex="-1"></a>Even when disturbances are correlated across equations, if all equations use the same regressors:</span>
+<span id="cb1-318"><a href="#cb1-318" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-319"><a href="#cb1-319" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>GLS estimates equal OLS estimates</span>
+<span id="cb1-320"><a href="#cb1-320" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Joint estimation provides **no coefficient efficiency gain**</span>
+<span id="cb1-321"><a href="#cb1-321" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>This result may seem counterintuitive but follows from the algebraic structure</span>
+<span id="cb1-322"><a href="#cb1-322" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>However, joint estimation still enables valid **cross-equation hypothesis tests**</span>
+<span id="cb1-323"><a href="#cb1-323" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-324"><a href="#cb1-324" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-325"><a href="#cb1-325" aria-hidden="true" tabindex="-1"></a><span class="fu"># Summary and Practical Implications</span></span>
+<span id="cb1-326"><a href="#cb1-326" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-327"><a href="#cb1-327" aria-hidden="true" tabindex="-1"></a><span class="fu">## Main Results</span></span>
+<span id="cb1-328"><a href="#cb1-328" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-329"><a href="#cb1-329" aria-hidden="true" tabindex="-1"></a>| Case | Error Correlation | Regressors | $\mathbf{b}_{\text{GLS}} = \mathbf{b}_{\text{OLS}}$? | Efficiency Gain? |</span>
+<span id="cb1-330"><a href="#cb1-330" aria-hidden="true" tabindex="-1"></a>|-----------|-----------|-----------|----------------------------|-----------|</span>
+<span id="cb1-331"><a href="#cb1-331" aria-hidden="true" tabindex="-1"></a>| 1 | None | Any | Yes | No |</span>
+<span id="cb1-332"><a href="#cb1-332" aria-hidden="true" tabindex="-1"></a>| 2 | Present | Identical | Yes | No |</span>
+<span id="cb1-333"><a href="#cb1-333" aria-hidden="true" tabindex="-1"></a>| 3 | Present | Different | No | **Yes** |</span>
+<span id="cb1-334"><a href="#cb1-334" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-335"><a href="#cb1-335" aria-hidden="true" tabindex="-1"></a><span class="fu">## When SUR Improves Efficiency</span></span>
+<span id="cb1-336"><a href="#cb1-336" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-337"><a href="#cb1-337" aria-hidden="true" tabindex="-1"></a>::: callout-tip</span>
+<span id="cb1-338"><a href="#cb1-338" aria-hidden="true" tabindex="-1"></a><span class="fu">## SUR and Efficiency</span></span>
+<span id="cb1-339"><a href="#cb1-339" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-340"><a href="#cb1-340" aria-hidden="true" tabindex="-1"></a>SUR provides efficiency gains **only when**:</span>
+<span id="cb1-341"><a href="#cb1-341" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-342"><a href="#cb1-342" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Disturbances are contemporaneously correlated across equations, **and**</span>
+<span id="cb1-343"><a href="#cb1-343" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Equations contain different regressors</span>
+<span id="cb1-344"><a href="#cb1-344" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-345"><a href="#cb1-345" aria-hidden="true" tabindex="-1"></a>A helpful rule of thumb: **correlated errors are not enough**.</span>
+<span id="cb1-346"><a href="#cb1-346" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-347"><a href="#cb1-347" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-348"><a href="#cb1-348" aria-hidden="true" tabindex="-1"></a><span class="fu">## Practical Example: Demand System</span></span>
+<span id="cb1-349"><a href="#cb1-349" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-350"><a href="#cb1-350" aria-hidden="true" tabindex="-1"></a>Consider a system of household demand equations: $$</span>
+<span id="cb1-351"><a href="#cb1-351" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="cb1-352"><a href="#cb1-352" aria-hidden="true" tabindex="-1"></a>\text{housing} &amp;= \beta_{10} + \beta_{11}\text{houseprc} + \beta_{12}\text{foodprc} + \beta_{13}\text{clothprc}</span>
+<span id="cb1-353"><a href="#cb1-353" aria-hidden="true" tabindex="-1"></a><span class="ss">+ </span>\beta_{14}\text{income} + \beta_{15}\text{size} + \beta_{16}\text{age} + u_1 <span class="sc">\\</span></span>
+<span id="cb1-354"><a href="#cb1-354" aria-hidden="true" tabindex="-1"></a>\text{food} &amp;= \beta_{20} + \beta_{21}\text{houseprc} + \beta_{22}\text{foodprc} + \beta_{23}\text{clothprc}</span>
+<span id="cb1-355"><a href="#cb1-355" aria-hidden="true" tabindex="-1"></a><span class="ss">+ </span>\beta_{24}\text{income} + \beta_{25}\text{size} + \beta_{26}\text{age} + u_2 <span class="sc">\\</span></span>
+<span id="cb1-356"><a href="#cb1-356" aria-hidden="true" tabindex="-1"></a>\text{clothing} &amp;= \beta_{30} + \beta_{31}\text{houseprc} + \beta_{32}\text{foodprc} + \beta_{33}\text{clothprc}</span>
+<span id="cb1-357"><a href="#cb1-357" aria-hidden="true" tabindex="-1"></a><span class="ss">+ </span>\beta_{34}\text{income} + \beta_{35}\text{size} + \beta_{36}\text{age} + u_3</span>
+<span id="cb1-358"><a href="#cb1-358" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="cb1-359"><a href="#cb1-359" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-360"><a href="#cb1-360" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-361"><a href="#cb1-361" aria-hidden="true" tabindex="-1"></a>All three equations use **identical regressors** but different dependent variables.</span>
+<span id="cb1-362"><a href="#cb1-362" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-363"><a href="#cb1-363" aria-hidden="true" tabindex="-1"></a><span class="fu">### What SUR Does *Not* Do Here</span></span>
+<span id="cb1-364"><a href="#cb1-364" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-365"><a href="#cb1-365" aria-hidden="true" tabindex="-1"></a>Because the regressor matrices are identical:</span>
+<span id="cb1-366"><a href="#cb1-366" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-367"><a href="#cb1-367" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>SUR does **not** improve coefficient efficiency</span>
+<span id="cb1-368"><a href="#cb1-368" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>GLS estimates equal equation-by-equation OLS</span>
+<span id="cb1-369"><a href="#cb1-369" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>This is an application of **Case 2**</span>
+<span id="cb1-370"><a href="#cb1-370" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-371"><a href="#cb1-371" aria-hidden="true" tabindex="-1"></a>In short, SUR cannot extract additional information from correlated errors alone.</span>
+<span id="cb1-372"><a href="#cb1-372" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-373"><a href="#cb1-373" aria-hidden="true" tabindex="-1"></a><span class="fu">### Why Demand Systems Are Still Estimated Jointly</span></span>
+<span id="cb1-374"><a href="#cb1-374" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-375"><a href="#cb1-375" aria-hidden="true" tabindex="-1"></a>Demand systems are estimated jointly **not for efficiency**, but for **economic structure**.</span>
+<span id="cb1-376"><a href="#cb1-376" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-377"><a href="#cb1-377" aria-hidden="true" tabindex="-1"></a>Joint estimation allows researchers to:</span>
+<span id="cb1-378"><a href="#cb1-378" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-379"><a href="#cb1-379" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Impose **cross-equation restrictions** implied by theory:</span>
+<span id="cb1-380"><a href="#cb1-380" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Adding-up</span>
+<span id="cb1-381"><a href="#cb1-381" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Homogeneity</span>
+<span id="cb1-382"><a href="#cb1-382" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Symmetry</span>
+<span id="cb1-383"><a href="#cb1-383" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Estimate the **cross-equation error covariance matrix**</span>
+<span id="cb1-384"><a href="#cb1-384" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Conduct valid **system-wide hypothesis tests**</span>
+<span id="cb1-385"><a href="#cb1-385" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-386"><a href="#cb1-386" aria-hidden="true" tabindex="-1"></a>Once such restrictions are imposed, we are estimating a **different (constrained) model**, so the resulting estimates generally differ from unrestricted OLS or unrestricted SUR.</span>
+<span id="cb1-387"><a href="#cb1-387" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-388"><a href="#cb1-388" aria-hidden="true" tabindex="-1"></a>::: callout-important</span>
+<span id="cb1-389"><a href="#cb1-389" aria-hidden="true" tabindex="-1"></a><span class="fu">## Efficiency vs. Structure</span></span>
+<span id="cb1-390"><a href="#cb1-390" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-391"><a href="#cb1-391" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**SUR for efficiency** requires different regressors</span>
+<span id="cb1-392"><a href="#cb1-392" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**SUR for economic theory** arises when coefficients are linked across equations</span>
+<span id="cb1-393"><a href="#cb1-393" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-394"><a href="#cb1-394" aria-hidden="true" tabindex="-1"></a>Demand systems rely primarily on the **second**, not the first.</span>
+<span id="cb1-395"><a href="#cb1-395" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-396"><a href="#cb1-396" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-397"><a href="#cb1-397" aria-hidden="true" tabindex="-1"></a><span class="fu"># Appendix: Kronecker Product Properties</span></span>
+<span id="cb1-398"><a href="#cb1-398" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-399"><a href="#cb1-399" aria-hidden="true" tabindex="-1"></a>For conformable matrices $\mathbf{A}$, $\mathbf{B}$, $\mathbf{C}$, and $\mathbf{D}$: $$</span>
+<span id="cb1-400"><a href="#cb1-400" aria-hidden="true" tabindex="-1"></a>(\mathbf{A} \otimes \mathbf{B})^{-1} = \mathbf{A}^{-1} \otimes \mathbf{B}^{-1}</span>
+<span id="cb1-401"><a href="#cb1-401" aria-hidden="true" tabindex="-1"></a>$$ $$</span>
+<span id="cb1-402"><a href="#cb1-402" aria-hidden="true" tabindex="-1"></a>(\mathbf{A} \otimes \mathbf{B})(\mathbf{C} \otimes \mathbf{D}) = \mathbf{AC} \otimes \mathbf{BD}</span>
+<span id="cb1-403"><a href="#cb1-403" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-404"><a href="#cb1-404" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-405"><a href="#cb1-405" aria-hidden="true" tabindex="-1"></a>See Greene's <span class="co">[</span><span class="ot">Appendix A</span><span class="co">](http://pages.stern.nyu.edu/~wgreene/Text/Greene-EA-7&amp;8ed-Appendices.pdf#page=24)</span> for comprehensive treatment.</span>
+<span id="cb1-406"><a href="#cb1-406" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-407"><a href="#cb1-407" aria-hidden="true" tabindex="-1"></a>**End of Lecture Notes**</span>
+<span id="cb1-408"><a href="#cb1-408" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-409"><a href="#cb1-409" aria-hidden="true" tabindex="-1"></a>*These notes were prepared for educational purposes. Questions and feedback are welcome!*</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
