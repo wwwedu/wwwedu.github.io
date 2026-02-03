@@ -7,7 +7,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Dragos Ailoae">
-<meta name="dcterms.date" content="2026-01-25">
 
 <title>Seemingly Unrelated Regression (SUR)</title>
 <style>
@@ -185,8 +184,8 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Seemingly Unrelated Regression (SUR)</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
-<p class="subtitle lead">Theory, Intuition, and Application to the Grunfeld Dataset</p>
+<h1 class="title">Seemingly Unrelated Regression (SUR)</h1>
+<p class="subtitle lead">Theory, Intuition, and Application to the Grunfeld Dataset<br>NYU - Applied Statistics and Econometrics 2</p>
 </div>
 
 
@@ -200,12 +199,6 @@ window.Quarto = {
           </div>
   </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">January 25, 2026</p>
-    </div>
-  </div>
   
     
   </div>
@@ -747,8 +740,8 @@ F-statistic: 15.32 on 2 and 17 DF,  p-value: 0.0001571</code></pre>
 
     <script>
 
-      function styleCell_jywmb5sakjvxvp8l348r(i, j, css_id) {
-          var table = document.getElementById("tinytable_jywmb5sakjvxvp8l348r");
+      function styleCell_ip8oxxq2brbugxlytbku(i, j, css_id) {
+          var table = document.getElementById("tinytable_ip8oxxq2brbugxlytbku");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -758,7 +751,7 @@ F-statistic: 15.32 on 2 and 17 DF,  p-value: 0.0001571</code></pre>
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_jywmb5sakjvxvp8l348r');
+        var table = document.getElementById('tinytable_ip8oxxq2brbugxlytbku');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -766,8 +759,8 @@ F-statistic: 15.32 on 2 and 17 DF,  p-value: 0.0001571</code></pre>
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_jywmb5sakjvxvp8l348r(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_jywmb5sakjvxvp8l348r");
+      function spanCell_ip8oxxq2brbugxlytbku(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_ip8oxxq2brbugxlytbku");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -797,20 +790,20 @@ F-statistic: 15.32 on 2 and 17 DF,  p-value: 0.0001571</code></pre>
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 10, j: 1 }, { i: 10, j: 2 },  ], css_id: 'tinytable_css_078sya4tw472q24osr3x',}, 
-          { positions: [ { i: 6, j: 1 }, { i: 6, j: 2 },  ], css_id: 'tinytable_css_sokmtl9rdbntspzou2gz',}, 
-          { positions: [ { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 4, j: 1 }, { i: 5, j: 1 }, { i: 3, j: 2 }, { i: 3, j: 1 }, { i: 8, j: 1 }, { i: 9, j: 1 }, { i: 7, j: 2 }, { i: 7, j: 1 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 4, j: 2 }, { i: 5, j: 2 }, { i: 8, j: 2 }, { i: 9, j: 2 },  ], css_id: 'tinytable_css_947eykmhrbrsjtp4pdbf',}, 
-          { positions: [ { i: 0, j: 1 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_wggzydlja50qqmje45ll',}, 
-          { positions: [ { i: 10, j: 0 },  ], css_id: 'tinytable_css_f2fc2usbxc7bvzlbovtd',}, 
-          { positions: [ { i: 6, j: 0 },  ], css_id: 'tinytable_css_zhjw6oon1d1vwdlilzoj',}, 
-          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 },  ], css_id: 'tinytable_css_uzb7v2zd174uh62rd6q2',}, 
-          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_5cc3yjwwox0hithnsakl',}, 
+          { positions: [ { i: 10, j: 1 }, { i: 10, j: 2 },  ], css_id: 'tinytable_css_a3ap9t4dcadguk4z50lf',}, 
+          { positions: [ { i: 6, j: 1 }, { i: 6, j: 2 },  ], css_id: 'tinytable_css_5vv8mxkctm8l0d4jimgb',}, 
+          { positions: [ { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 4, j: 1 }, { i: 5, j: 1 }, { i: 3, j: 2 }, { i: 3, j: 1 }, { i: 8, j: 1 }, { i: 9, j: 1 }, { i: 7, j: 2 }, { i: 7, j: 1 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 4, j: 2 }, { i: 5, j: 2 }, { i: 8, j: 2 }, { i: 9, j: 2 },  ], css_id: 'tinytable_css_8lfaqq04kgdo7wfbiykt',}, 
+          { positions: [ { i: 0, j: 1 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_vt0jqndosi90pbgwa278',}, 
+          { positions: [ { i: 10, j: 0 },  ], css_id: 'tinytable_css_auzgx34aw4oycnikogie',}, 
+          { positions: [ { i: 6, j: 0 },  ], css_id: 'tinytable_css_ewijgyrzd2jdzbr7euzy',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 },  ], css_id: 'tinytable_css_70eb8mibbcyfc7az4p6c',}, 
+          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_iz2t2e4zi32v8s43tox0',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_jywmb5sakjvxvp8l348r(cell.i, cell.j, group.css_id);
+                  styleCell_ip8oxxq2brbugxlytbku(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -818,17 +811,17 @@ F-statistic: 15.32 on 2 and 17 DF,  p-value: 0.0001571</code></pre>
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_078sya4tw472q24osr3x, .table th.tinytable_css_078sya4tw472q24osr3x { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_sokmtl9rdbntspzou2gz, .table th.tinytable_css_sokmtl9rdbntspzou2gz { text-align: center; border-bottom: solid black 0.05em; }
-      .table td.tinytable_css_947eykmhrbrsjtp4pdbf, .table th.tinytable_css_947eykmhrbrsjtp4pdbf { text-align: center; }
-      .table td.tinytable_css_wggzydlja50qqmje45ll, .table th.tinytable_css_wggzydlja50qqmje45ll { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_f2fc2usbxc7bvzlbovtd, .table th.tinytable_css_f2fc2usbxc7bvzlbovtd { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_zhjw6oon1d1vwdlilzoj, .table th.tinytable_css_zhjw6oon1d1vwdlilzoj { text-align: left; border-bottom: solid black 0.05em; }
-      .table td.tinytable_css_uzb7v2zd174uh62rd6q2, .table th.tinytable_css_uzb7v2zd174uh62rd6q2 { text-align: left; }
-      .table td.tinytable_css_5cc3yjwwox0hithnsakl, .table th.tinytable_css_5cc3yjwwox0hithnsakl { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_a3ap9t4dcadguk4z50lf, .table th.tinytable_css_a3ap9t4dcadguk4z50lf { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_5vv8mxkctm8l0d4jimgb, .table th.tinytable_css_5vv8mxkctm8l0d4jimgb { text-align: center; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_8lfaqq04kgdo7wfbiykt, .table th.tinytable_css_8lfaqq04kgdo7wfbiykt { text-align: center; }
+      .table td.tinytable_css_vt0jqndosi90pbgwa278, .table th.tinytable_css_vt0jqndosi90pbgwa278 { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_auzgx34aw4oycnikogie, .table th.tinytable_css_auzgx34aw4oycnikogie { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_ewijgyrzd2jdzbr7euzy, .table th.tinytable_css_ewijgyrzd2jdzbr7euzy { text-align: left; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_70eb8mibbcyfc7az4p6c, .table th.tinytable_css_70eb8mibbcyfc7az4p6c { text-align: left; }
+      .table td.tinytable_css_iz2t2e4zi32v8s43tox0, .table th.tinytable_css_iz2t2e4zi32v8s43tox0 { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_jywmb5sakjvxvp8l348r" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_ip8oxxq2brbugxlytbku" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -3344,8 +3337,6 @@ alternative hypothesis: unstability</code></pre>
 <hr>
 <p><strong>End of Lecture Notes</strong></p>
 <p><em>These notes were prepared for educational purposes. Questions and feedback are welcome!</em></p>
-<!-- -->
-
 </section>
 
 </main>
@@ -3437,57 +3428,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       container: window.document.getElementById('quarto-embedded-source-code-modal')
     });
     clipboardModal.on('success', onCopySuccess);
-  }
-  const viewSource = window.document.getElementById('quarto-view-source') ||
-                     window.document.getElementById('quarto-code-tools-source');
-  if (viewSource) {
-    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
-    viewSource.addEventListener("click", function(e) {
-      if (sourceUrl) {
-        // rstudio viewer pane
-        if (/\bcapabilities=\b/.test(window.location)) {
-          window.open(sourceUrl);
-        } else {
-          window.location.href = sourceUrl;
-        }
-      } else {
-        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
-        modal.show();
-      }
-      return false;
-    });
-  }
-  function toggleCodeHandler(show) {
-    return function(e) {
-      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
-      for (let i=0; i<detailsSrc.length; i++) {
-        const details = detailsSrc[i].parentElement;
-        if (show) {
-          details.open = true;
-        } else {
-          details.removeAttribute("open");
-        }
-      }
-      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
-      const fromCls = show ? "hidden" : "unhidden";
-      const toCls = show ? "unhidden" : "hidden";
-      for (let i=0; i<cellCodeDivs.length; i++) {
-        const codeDiv = cellCodeDivs[i];
-        if (codeDiv.classList.contains(fromCls)) {
-          codeDiv.classList.remove(fromCls);
-          codeDiv.classList.add(toCls);
-        } 
-      }
-      return false;
-    }
-  }
-  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
-  if (hideAllCode) {
-    hideAllCode.addEventListener("click", toggleCodeHandler(false));
-  }
-  const showAllCode = window.document.getElementById("quarto-show-all-code");
-  if (showAllCode) {
-    showAllCode.addEventListener("click", toggleCodeHandler(true));
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
@@ -3817,592 +3757,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 });
-</script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb48" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Seemingly Unrelated Regression (SUR)"</span></span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> "Theory, Intuition, and Application to the Grunfeld Dataset"</span></span>
-<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Dragos Ailoae"</span></span>
-<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> today</span></span>
-<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a><span class="fu"># What This Notebook Covers {.unnumbered}</span></span>
-<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>This notebook explores **Seemingly Unrelated Regression (SUR)**, a technique for estimating multiple regression equations simultaneously when their error terms are correlated. We'll walk through the motivation for SUR, show when and why it's useful, and demonstrate how to implement it in R using the classic Grunfeld investment dataset.</span>
-<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>Along the way, we'll cover how to test for cross-sectional dependence, compare the efficiency gains of SUR versus standard OLS, and interpret the results in the context of investment decisions by firms facing common macroeconomic shocks.</span>
-<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a><span class="fu"># Introduction: What is SUR?</span></span>
-<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a>**Seemingly Unrelated Regression (SUR)** is a generalization of linear regression that allows us to estimate a system of equations simultaneously. The equations appear "unrelated" because they involve different dependent variables, but they become "related" through contemporaneously correlated error terms.</span>
-<span id="cb48-18"><a href="#cb48-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-19"><a href="#cb48-19" aria-hidden="true" tabindex="-1"></a><span class="fu">## Key Intuition</span></span>
-<span id="cb48-20"><a href="#cb48-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-21"><a href="#cb48-21" aria-hidden="true" tabindex="-1"></a>Imagine you're modeling investment decisions for two firms. Even though each firm makes independent investment decisions, both might be affected by the same macroeconomic shocks (e.g., interest rate changes, oil price shocks, or policy changes). These common shocks create correlation between the error terms in the two regression equations.</span>
-<span id="cb48-22"><a href="#cb48-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-23"><a href="#cb48-23" aria-hidden="true" tabindex="-1"></a>**Why does this matter?** If we estimate each equation separately using OLS, we ignore this correlation and lose efficiency. SUR estimation accounts for this correlation structure, producing more efficient estimators with lower standard errors.</span>
-<span id="cb48-24"><a href="#cb48-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-25"><a href="#cb48-25" aria-hidden="true" tabindex="-1"></a><span class="fu">## When to Use SUR</span></span>
-<span id="cb48-26"><a href="#cb48-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-27"><a href="#cb48-27" aria-hidden="true" tabindex="-1"></a>SUR is particularly useful when:</span>
-<span id="cb48-28"><a href="#cb48-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-29"><a href="#cb48-29" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>You have multiple related equations with different dependent variables</span>
-<span id="cb48-30"><a href="#cb48-30" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>The equations share similar regressors but have different coefficients</span>
-<span id="cb48-31"><a href="#cb48-31" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>You suspect contemporaneous correlation in the disturbances</span>
-<span id="cb48-32"><a href="#cb48-32" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>You want more efficient estimates than equation-by-equation OLS</span>
-<span id="cb48-33"><a href="#cb48-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-34"><a href="#cb48-34" aria-hidden="true" tabindex="-1"></a>**Mathematical Setup:** For $M$ equations observed over $T$ time periods:</span>
-<span id="cb48-35"><a href="#cb48-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-36"><a href="#cb48-36" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb48-37"><a href="#cb48-37" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
-<span id="cb48-38"><a href="#cb48-38" aria-hidden="true" tabindex="-1"></a>y_{1t} &amp;= X_{1t}\beta_1 + \epsilon_{1t} <span class="sc">\\</span></span>
-<span id="cb48-39"><a href="#cb48-39" aria-hidden="true" tabindex="-1"></a>y_{2t} &amp;= X_{2t}\beta_2 + \epsilon_{2t} <span class="sc">\\</span></span>
-<span id="cb48-40"><a href="#cb48-40" aria-hidden="true" tabindex="-1"></a>&amp;\vdots <span class="sc">\\</span></span>
-<span id="cb48-41"><a href="#cb48-41" aria-hidden="true" tabindex="-1"></a>y_{Mt} &amp;= X_{Mt}\beta_M + \epsilon_{Mt}</span>
-<span id="cb48-42"><a href="#cb48-42" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
-<span id="cb48-43"><a href="#cb48-43" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb48-44"><a href="#cb48-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-45"><a href="#cb48-45" aria-hidden="true" tabindex="-1"></a>The key assumption is: $E<span class="co">[</span><span class="ot">\epsilon_{it}\epsilon_{jt}</span><span class="co">]</span> = \sigma_{ij} \neq 0$ (contemporaneous correlation)</span>
-<span id="cb48-46"><a href="#cb48-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-47"><a href="#cb48-47" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb48-48"><a href="#cb48-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-49"><a href="#cb48-49" aria-hidden="true" tabindex="-1"></a><span class="fu"># The Grunfeld Investment Dataset</span></span>
-<span id="cb48-50"><a href="#cb48-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-51"><a href="#cb48-51" aria-hidden="true" tabindex="-1"></a>We'll use the famous Grunfeld dataset to illustrate SUR estimation. This dataset was popularized by Arnold Zellner in his seminal 1962 paper on seemingly unrelated regressions. Grunfeld originally collected the data for his 1958 PhD thesis at the University of Chicago on the determinants of corporate investment.</span>
-<span id="cb48-52"><a href="#cb48-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-53"><a href="#cb48-53" aria-hidden="true" tabindex="-1"></a><span class="fu">## The Investment Model</span></span>
-<span id="cb48-54"><a href="#cb48-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-55"><a href="#cb48-55" aria-hidden="true" tabindex="-1"></a>The Grunfeld model relates a firm's gross investment to its market value and capital stock:</span>
-<span id="cb48-56"><a href="#cb48-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-57"><a href="#cb48-57" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb48-58"><a href="#cb48-58" aria-hidden="true" tabindex="-1"></a>\text{inv}_{it} = \beta_{0i} + \beta_{1i} \text{val}_{it} + \beta_{2i} \text{cap}_{it} + \epsilon_{it}</span>
-<span id="cb48-59"><a href="#cb48-59" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb48-60"><a href="#cb48-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-61"><a href="#cb48-61" aria-hidden="true" tabindex="-1"></a>where:</span>
-<span id="cb48-62"><a href="#cb48-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-63"><a href="#cb48-63" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>$\text{inv}_{it}$ = gross investment for firm $i$ at time $t$</span>
-<span id="cb48-64"><a href="#cb48-64" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>$\text{val}_{it}$ = market value of firm $i$ at time $t$</span>
-<span id="cb48-65"><a href="#cb48-65" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>$\text{cap}_{it}$ = capital stock of firm $i$ at time $t$</span>
-<span id="cb48-66"><a href="#cb48-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-67"><a href="#cb48-67" aria-hidden="true" tabindex="-1"></a>**Our subset** focuses on two firms:</span>
-<span id="cb48-68"><a href="#cb48-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-69"><a href="#cb48-69" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**US**: United States Steel Corporation</span>
-<span id="cb48-70"><a href="#cb48-70" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**DM**: Diamond Match Company</span>
-<span id="cb48-71"><a href="#cb48-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-72"><a href="#cb48-72" aria-hidden="true" tabindex="-1"></a>Both observed annually from 1935 to 1954 (20 years).</span>
-<span id="cb48-73"><a href="#cb48-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-74"><a href="#cb48-74" aria-hidden="true" tabindex="-1"></a><span class="fu">## Why These Two Firms?</span></span>
-<span id="cb48-75"><a href="#cb48-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-76"><a href="#cb48-76" aria-hidden="true" tabindex="-1"></a>While these firms operated in different industries (steel vs. consumer goods), they both faced similar macroeconomic conditions during the pre-war, wartime, and post-war periods. This makes them ideal candidates for SUR estimation.</span>
-<span id="cb48-77"><a href="#cb48-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-78"><a href="#cb48-78" aria-hidden="true" tabindex="-1"></a>**Additional Resources:**</span>
-<span id="cb48-79"><a href="#cb48-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-80"><a href="#cb48-80" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="co">[</span><span class="ot">Full Grunfeld dataset - NYU</span><span class="co">](http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF10-4.csv)</span></span>
-<span id="cb48-81"><a href="#cb48-81" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="co">[</span><span class="ot">Alternative source with documentation</span><span class="co">](https://www.zeileis.org/grunfeld/)</span></span>
-<span id="cb48-82"><a href="#cb48-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-83"><a href="#cb48-83" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb48-84"><a href="#cb48-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-85"><a href="#cb48-85" aria-hidden="true" tabindex="-1"></a><span class="fu"># Setup and Data Loading</span></span>
-<span id="cb48-86"><a href="#cb48-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-87"><a href="#cb48-87" aria-hidden="true" tabindex="-1"></a><span class="fu">## Load Required Packages</span></span>
-<span id="cb48-88"><a href="#cb48-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-89"><a href="#cb48-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-92"><a href="#cb48-92" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-93"><a href="#cb48-93" aria-hidden="true" tabindex="-1"></a><span class="co"># Clear workspace (use with caution!)</span></span>
-<span id="cb48-94"><a href="#cb48-94" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
-<span id="cb48-95"><a href="#cb48-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-96"><a href="#cb48-96" aria-hidden="true" tabindex="-1"></a><span class="co"># Set plotting options</span></span>
-<span id="cb48-97"><a href="#cb48-97" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(</span>
-<span id="cb48-98"><a href="#cb48-98" aria-hidden="true" tabindex="-1"></a>  <span class="at">repr.plot.width =</span> <span class="dv">8</span>, </span>
-<span id="cb48-99"><a href="#cb48-99" aria-hidden="true" tabindex="-1"></a>  <span class="at">repr.plot.height =</span> <span class="dv">6</span>,</span>
-<span id="cb48-100"><a href="#cb48-100" aria-hidden="true" tabindex="-1"></a>  <span class="at">repr.plot.res =</span> <span class="dv">150</span>, </span>
-<span id="cb48-101"><a href="#cb48-101" aria-hidden="true" tabindex="-1"></a>  <span class="at">warn =</span> <span class="sc">-</span><span class="dv">1</span></span>
-<span id="cb48-102"><a href="#cb48-102" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb48-103"><a href="#cb48-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-104"><a href="#cb48-104" aria-hidden="true" tabindex="-1"></a><span class="co"># Required packages for SUR analysis</span></span>
-<span id="cb48-105"><a href="#cb48-105" aria-hidden="true" tabindex="-1"></a>packages <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb48-106"><a href="#cb48-106" aria-hidden="true" tabindex="-1"></a>  <span class="st">"plm"</span>,           <span class="co"># Panel Linear Models</span></span>
-<span id="cb48-107"><a href="#cb48-107" aria-hidden="true" tabindex="-1"></a>  <span class="st">"systemfit"</span>,     <span class="co"># System of equations estimation</span></span>
-<span id="cb48-108"><a href="#cb48-108" aria-hidden="true" tabindex="-1"></a>  <span class="st">"modelsummary"</span>,  <span class="co"># Beautiful regression tables</span></span>
-<span id="cb48-109"><a href="#cb48-109" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ggplot2"</span>,       <span class="co"># Enhanced graphics</span></span>
-<span id="cb48-110"><a href="#cb48-110" aria-hidden="true" tabindex="-1"></a>  <span class="st">"knitr"</span>          <span class="co"># Table formatting</span></span>
-<span id="cb48-111"><a href="#cb48-111" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb48-112"><a href="#cb48-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-113"><a href="#cb48-113" aria-hidden="true" tabindex="-1"></a><span class="co"># Install packages if needed, then load them</span></span>
-<span id="cb48-114"><a href="#cb48-114" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">lapply</span>(packages, <span class="cf">function</span>(pkg) {</span>
-<span id="cb48-115"><a href="#cb48-115" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(pkg, <span class="at">character.only =</span> <span class="cn">TRUE</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
-<span id="cb48-116"><a href="#cb48-116" aria-hidden="true" tabindex="-1"></a>    <span class="fu">install.packages</span>(pkg)</span>
-<span id="cb48-117"><a href="#cb48-117" aria-hidden="true" tabindex="-1"></a>    <span class="fu">require</span>(pkg, <span class="at">character.only =</span> <span class="cn">TRUE</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb48-118"><a href="#cb48-118" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb48-119"><a href="#cb48-119" aria-hidden="true" tabindex="-1"></a>}))</span>
-<span id="cb48-120"><a href="#cb48-120" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-121"><a href="#cb48-121" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-122"><a href="#cb48-122" aria-hidden="true" tabindex="-1"></a><span class="fu">## Load and Inspect the Data</span></span>
-<span id="cb48-123"><a href="#cb48-123" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-126"><a href="#cb48-126" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-127"><a href="#cb48-127" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data from online source</span></span>
-<span id="cb48-128"><a href="#cb48-128" aria-hidden="true" tabindex="-1"></a>my.raw.data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(</span>
-<span id="cb48-129"><a href="#cb48-129" aria-hidden="true" tabindex="-1"></a>  <span class="fu">url</span>(<span class="st">"https://wwwedu.github.io/NYU_S25/Lecture02/grun_data.csv"</span>)</span>
-<span id="cb48-130"><a href="#cb48-130" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb48-131"><a href="#cb48-131" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-132"><a href="#cb48-132" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the data</span></span>
-<span id="cb48-133"><a href="#cb48-133" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb48-134"><a href="#cb48-134" aria-hidden="true" tabindex="-1"></a>  my.raw.data,</span>
-<span id="cb48-135"><a href="#cb48-135" aria-hidden="true" tabindex="-1"></a>  <span class="at">format =</span> <span class="st">"pipe"</span>,</span>
-<span id="cb48-136"><a href="#cb48-136" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">2</span>,</span>
-<span id="cb48-137"><a href="#cb48-137" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">"Table 1: Grunfeld Investment Data (US Steel and Diamond Match, 1935-1954)"</span></span>
-<span id="cb48-138"><a href="#cb48-138" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb48-139"><a href="#cb48-139" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-140"><a href="#cb48-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-143"><a href="#cb48-143" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-144"><a href="#cb48-144" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary statistics</span></span>
-<span id="cb48-145"><a href="#cb48-145" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(my.raw.data)</span>
-<span id="cb48-146"><a href="#cb48-146" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-147"><a href="#cb48-147" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-148"><a href="#cb48-148" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb48-149"><a href="#cb48-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-150"><a href="#cb48-150" aria-hidden="true" tabindex="-1"></a><span class="fu"># Equation-by-Equation OLS Estimation</span></span>
-<span id="cb48-151"><a href="#cb48-151" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-152"><a href="#cb48-152" aria-hidden="true" tabindex="-1"></a>As a baseline, let's estimate each firm's investment equation separately using ordinary least squares (OLS). This ignores any potential correlation between the firms' disturbances.</span>
-<span id="cb48-153"><a href="#cb48-153" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-154"><a href="#cb48-154" aria-hidden="true" tabindex="-1"></a><span class="fu">## Split Data by Firm</span></span>
-<span id="cb48-155"><a href="#cb48-155" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-158"><a href="#cb48-158" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-159"><a href="#cb48-159" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset data for each firm</span></span>
-<span id="cb48-160"><a href="#cb48-160" aria-hidden="true" tabindex="-1"></a>US.data <span class="ot">&lt;-</span> <span class="fu">subset</span>(my.raw.data, firm <span class="sc">==</span> <span class="st">"US"</span>)</span>
-<span id="cb48-161"><a href="#cb48-161" aria-hidden="true" tabindex="-1"></a>DM.data <span class="ot">&lt;-</span> <span class="fu">subset</span>(my.raw.data, firm <span class="sc">==</span> <span class="st">"DM"</span>)</span>
-<span id="cb48-162"><a href="#cb48-162" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-163"><a href="#cb48-163" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"US Steel observations:"</span>, <span class="fu">nrow</span>(US.data), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb48-164"><a href="#cb48-164" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Diamond Match observations:"</span>, <span class="fu">nrow</span>(DM.data), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb48-165"><a href="#cb48-165" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-166"><a href="#cb48-166" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-167"><a href="#cb48-167" aria-hidden="true" tabindex="-1"></a><span class="fu">## Estimate US Steel Investment</span></span>
-<span id="cb48-168"><a href="#cb48-168" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-171"><a href="#cb48-171" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-172"><a href="#cb48-172" aria-hidden="true" tabindex="-1"></a>lm.US <span class="ot">&lt;-</span> <span class="fu">lm</span>(inv <span class="sc">~</span> val <span class="sc">+</span> cap, <span class="at">data =</span> US.data)</span>
-<span id="cb48-173"><a href="#cb48-173" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm.US)</span>
-<span id="cb48-174"><a href="#cb48-174" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-175"><a href="#cb48-175" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-176"><a href="#cb48-176" aria-hidden="true" tabindex="-1"></a>**Interpretation (US Steel):**</span>
-<span id="cb48-177"><a href="#cb48-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-178"><a href="#cb48-178" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**Value coefficient**: For every unit increase in market value, investment increases by <span class="in">`r round(coef(lm.US)[2], 3)`</span></span>
-<span id="cb48-179"><a href="#cb48-179" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**Capital coefficient**: The negative coefficient on capital stock suggests firms with larger existing capital stock invest less (replacement vs. expansion trade-off)</span>
-<span id="cb48-180"><a href="#cb48-180" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**R²**: The model explains <span class="in">`r round(summary(lm.US)$r.squared * 100, 1)`</span>% of investment variation</span>
-<span id="cb48-181"><a href="#cb48-181" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-182"><a href="#cb48-182" aria-hidden="true" tabindex="-1"></a><span class="fu">## Estimate Diamond Match Investment</span></span>
-<span id="cb48-183"><a href="#cb48-183" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-186"><a href="#cb48-186" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-187"><a href="#cb48-187" aria-hidden="true" tabindex="-1"></a>lm.DM <span class="ot">&lt;-</span> <span class="fu">lm</span>(inv <span class="sc">~</span> val <span class="sc">+</span> cap, <span class="at">data =</span> DM.data)</span>
-<span id="cb48-188"><a href="#cb48-188" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm.DM)</span>
-<span id="cb48-189"><a href="#cb48-189" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-190"><a href="#cb48-190" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-193"><a href="#cb48-193" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-194"><a href="#cb48-194" aria-hidden="true" tabindex="-1"></a><span class="co"># Optional: Show just the OLS models side-by-side using modelsummary</span></span>
-<span id="cb48-195"><a href="#cb48-195" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(</span>
-<span id="cb48-196"><a href="#cb48-196" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="st">"US Steel (OLS)"</span> <span class="ot">=</span> lm.US, </span>
-<span id="cb48-197"><a href="#cb48-197" aria-hidden="true" tabindex="-1"></a>       <span class="st">"Diamond Match (OLS)"</span> <span class="ot">=</span> lm.DM),</span>
-<span id="cb48-198"><a href="#cb48-198" aria-hidden="true" tabindex="-1"></a>  <span class="at">stars =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb48-199"><a href="#cb48-199" aria-hidden="true" tabindex="-1"></a>  <span class="at">gof_map =</span> <span class="fu">c</span>(<span class="st">"nobs"</span>, <span class="st">"r.squared"</span>, <span class="st">"adj.r.squared"</span>, <span class="st">"rmse"</span>)</span>
-<span id="cb48-200"><a href="#cb48-200" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb48-201"><a href="#cb48-201" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-202"><a href="#cb48-202" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-203"><a href="#cb48-203" aria-hidden="true" tabindex="-1"></a>**Interpretation (Diamond Match):**</span>
-<span id="cb48-204"><a href="#cb48-204" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-205"><a href="#cb48-205" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>The coefficients are quite different from US Steel, suggesting heterogeneous investment behavior</span>
-<span id="cb48-206"><a href="#cb48-206" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>The R² is lower, indicating more unexplained variation in Diamond Match's investment decisions</span>
-<span id="cb48-207"><a href="#cb48-207" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-208"><a href="#cb48-208" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb48-209"><a href="#cb48-209" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-210"><a href="#cb48-210" aria-hidden="true" tabindex="-1"></a><span class="fu"># The Case for SUR: Examining Residual Correlation</span></span>
-<span id="cb48-211"><a href="#cb48-211" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-212"><a href="#cb48-212" aria-hidden="true" tabindex="-1"></a><span class="fu">## Visual Inspection of Residuals</span></span>
-<span id="cb48-213"><a href="#cb48-213" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-214"><a href="#cb48-214" aria-hidden="true" tabindex="-1"></a>The key motivation for SUR is the presence of contemporaneously correlated disturbances. Let's visualize the residuals from our separate OLS regressions:</span>
-<span id="cb48-215"><a href="#cb48-215" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-218"><a href="#cb48-218" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-219"><a href="#cb48-219" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb48-220"><a href="#cb48-220" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-221"><a href="#cb48-221" aria-hidden="true" tabindex="-1"></a><span class="co"># US Steel residuals</span></span>
-<span id="cb48-222"><a href="#cb48-222" aria-hidden="true" tabindex="-1"></a>r_US <span class="ot">&lt;-</span> lm.US<span class="sc">$</span>residuals</span>
-<span id="cb48-223"><a href="#cb48-223" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(r_US)</span>
-<span id="cb48-224"><a href="#cb48-224" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(n, r_US, </span>
-<span id="cb48-225"><a href="#cb48-225" aria-hidden="true" tabindex="-1"></a>     <span class="at">type =</span> <span class="st">"b"</span>, </span>
-<span id="cb48-226"><a href="#cb48-226" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">19</span>,</span>
-<span id="cb48-227"><a href="#cb48-227" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"steelblue"</span>,</span>
-<span id="cb48-228"><a href="#cb48-228" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"US Steel Residuals"</span>,</span>
-<span id="cb48-229"><a href="#cb48-229" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Time Period"</span>, </span>
-<span id="cb48-230"><a href="#cb48-230" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Residual"</span>)</span>
-<span id="cb48-231"><a href="#cb48-231" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"gray50"</span>)</span>
-<span id="cb48-232"><a href="#cb48-232" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">predict</span>(<span class="fu">loess</span>(r_US <span class="sc">~</span> n)), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb48-233"><a href="#cb48-233" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-234"><a href="#cb48-234" aria-hidden="true" tabindex="-1"></a><span class="co"># Diamond Match residuals</span></span>
-<span id="cb48-235"><a href="#cb48-235" aria-hidden="true" tabindex="-1"></a>r_DM <span class="ot">&lt;-</span> lm.DM<span class="sc">$</span>residuals</span>
-<span id="cb48-236"><a href="#cb48-236" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(n, r_DM, </span>
-<span id="cb48-237"><a href="#cb48-237" aria-hidden="true" tabindex="-1"></a>     <span class="at">type =</span> <span class="st">"b"</span>, </span>
-<span id="cb48-238"><a href="#cb48-238" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">19</span>,</span>
-<span id="cb48-239"><a href="#cb48-239" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"darkgreen"</span>,</span>
-<span id="cb48-240"><a href="#cb48-240" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Diamond Match Residuals"</span>,</span>
-<span id="cb48-241"><a href="#cb48-241" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Time Period"</span>, </span>
-<span id="cb48-242"><a href="#cb48-242" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Residual"</span>)</span>
-<span id="cb48-243"><a href="#cb48-243" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"gray50"</span>)</span>
-<span id="cb48-244"><a href="#cb48-244" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">predict</span>(<span class="fu">loess</span>(r_DM <span class="sc">~</span> n)), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb48-245"><a href="#cb48-245" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-246"><a href="#cb48-246" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-247"><a href="#cb48-247" aria-hidden="true" tabindex="-1"></a>**What do we observe?**</span>
-<span id="cb48-248"><a href="#cb48-248" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-249"><a href="#cb48-249" aria-hidden="true" tabindex="-1"></a>The residual patterns show similar movements over time (note the red smoothing lines). Both firms' residuals are:</span>
-<span id="cb48-250"><a href="#cb48-250" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-251"><a href="#cb48-251" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>High in the early periods (pre-WWII)</span>
-<span id="cb48-252"><a href="#cb48-252" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Dip during the war years</span>
-<span id="cb48-253"><a href="#cb48-253" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Rise again in the post-war period</span>
-<span id="cb48-254"><a href="#cb48-254" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-255"><a href="#cb48-255" aria-hidden="true" tabindex="-1"></a>This suggests common macroeconomic shocks affecting both firms simultaneously.</span>
-<span id="cb48-256"><a href="#cb48-256" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-257"><a href="#cb48-257" aria-hidden="true" tabindex="-1"></a><span class="fu">## Scatter Plot of Residuals</span></span>
-<span id="cb48-258"><a href="#cb48-258" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-261"><a href="#cb48-261" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-262"><a href="#cb48-262" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lm.US<span class="sc">$</span>residuals, lm.DM<span class="sc">$</span>residuals,</span>
-<span id="cb48-263"><a href="#cb48-263" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">19</span>,</span>
-<span id="cb48-264"><a href="#cb48-264" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"steelblue"</span>,</span>
-<span id="cb48-265"><a href="#cb48-265" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"US Steel Residuals"</span>,</span>
-<span id="cb48-266"><a href="#cb48-266" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Diamond Match Residuals"</span>,</span>
-<span id="cb48-267"><a href="#cb48-267" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Residual Correlation Between Firms"</span>)</span>
-<span id="cb48-268"><a href="#cb48-268" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">lm</span>(lm.DM<span class="sc">$</span>residuals <span class="sc">~</span> lm.US<span class="sc">$</span>residuals), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb48-269"><a href="#cb48-269" aria-hidden="true" tabindex="-1"></a><span class="fu">grid</span>()</span>
-<span id="cb48-270"><a href="#cb48-270" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-271"><a href="#cb48-271" aria-hidden="true" tabindex="-1"></a><span class="co"># Add correlation</span></span>
-<span id="cb48-272"><a href="#cb48-272" aria-hidden="true" tabindex="-1"></a>corr <span class="ot">&lt;-</span> <span class="fu">cor</span>(lm.US<span class="sc">$</span>residuals, lm.DM<span class="sc">$</span>residuals)</span>
-<span id="cb48-273"><a href="#cb48-273" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x =</span> <span class="fu">min</span>(lm.US<span class="sc">$</span>residuals), </span>
-<span id="cb48-274"><a href="#cb48-274" aria-hidden="true" tabindex="-1"></a>     <span class="at">y =</span> <span class="fu">max</span>(lm.DM<span class="sc">$</span>residuals),</span>
-<span id="cb48-275"><a href="#cb48-275" aria-hidden="true" tabindex="-1"></a>     <span class="at">labels =</span> <span class="fu">paste0</span>(<span class="st">"ρ = "</span>, <span class="fu">round</span>(corr, <span class="dv">3</span>)),</span>
-<span id="cb48-276"><a href="#cb48-276" aria-hidden="true" tabindex="-1"></a>     <span class="at">pos =</span> <span class="dv">4</span>,</span>
-<span id="cb48-277"><a href="#cb48-277" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"red"</span>,</span>
-<span id="cb48-278"><a href="#cb48-278" aria-hidden="true" tabindex="-1"></a>     <span class="at">font =</span> <span class="dv">2</span>)</span>
-<span id="cb48-279"><a href="#cb48-279" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-280"><a href="#cb48-280" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-281"><a href="#cb48-281" aria-hidden="true" tabindex="-1"></a>A positive correlation confirms our suspicion of contemporaneous dependence!</span>
-<span id="cb48-282"><a href="#cb48-282" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-283"><a href="#cb48-283" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb48-284"><a href="#cb48-284" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-285"><a href="#cb48-285" aria-hidden="true" tabindex="-1"></a><span class="fu"># Panel Data Configuration</span></span>
-<span id="cb48-286"><a href="#cb48-286" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-287"><a href="#cb48-287" aria-hidden="true" tabindex="-1"></a>Before using advanced panel estimation methods, we need to configure our data as a panel object, specifying the cross-sectional (firm) and time (year) dimensions.</span>
-<span id="cb48-288"><a href="#cb48-288" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-291"><a href="#cb48-291" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-292"><a href="#cb48-292" aria-hidden="true" tabindex="-1"></a><span class="co"># Configure as panel data</span></span>
-<span id="cb48-293"><a href="#cb48-293" aria-hidden="true" tabindex="-1"></a>my.data <span class="ot">&lt;-</span> <span class="fu">pdata.frame</span>(my.raw.data, <span class="at">index =</span> <span class="fu">c</span>(<span class="st">"firm"</span>, <span class="st">"year"</span>))</span>
-<span id="cb48-294"><a href="#cb48-294" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-295"><a href="#cb48-295" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the structure</span></span>
-<span id="cb48-296"><a href="#cb48-296" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(my.data)</span>
-<span id="cb48-297"><a href="#cb48-297" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-298"><a href="#cb48-298" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-299"><a href="#cb48-299" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb48-300"><a href="#cb48-300" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-301"><a href="#cb48-301" aria-hidden="true" tabindex="-1"></a><span class="fu"># Alternative Methods for Equation-by-Equation Estimation</span></span>
-<span id="cb48-302"><a href="#cb48-302" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-303"><a href="#cb48-303" aria-hidden="true" tabindex="-1"></a><span class="fu">## Using PLM Package</span></span>
-<span id="cb48-304"><a href="#cb48-304" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-305"><a href="#cb48-305" aria-hidden="true" tabindex="-1"></a>The <span class="in">`pvcm()`</span> function (Panel Variable Coefficients Model) estimates separate equations for each panel unit:</span>
-<span id="cb48-306"><a href="#cb48-306" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-309"><a href="#cb48-309" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-310"><a href="#cb48-310" aria-hidden="true" tabindex="-1"></a>myOLS.pvcm <span class="ot">&lt;-</span> <span class="fu">pvcm</span>(inv <span class="sc">~</span> val <span class="sc">+</span> cap, </span>
-<span id="cb48-311"><a href="#cb48-311" aria-hidden="true" tabindex="-1"></a>                    <span class="at">data =</span> my.data, </span>
-<span id="cb48-312"><a href="#cb48-312" aria-hidden="true" tabindex="-1"></a>                    <span class="at">model =</span> <span class="st">"within"</span>)</span>
-<span id="cb48-313"><a href="#cb48-313" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-314"><a href="#cb48-314" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">coef</span>(myOLS.pvcm))</span>
-<span id="cb48-315"><a href="#cb48-315" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-316"><a href="#cb48-316" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-317"><a href="#cb48-317" aria-hidden="true" tabindex="-1"></a>**Note:** The <span class="in">`pvcm()`</span> object doesn't easily provide standard errors for individual coefficients. For full coefficient information including standard errors, use <span class="in">`systemfit()`</span> (shown below) or the individual <span class="in">`lm()`</span> models we estimated earlier.</span>
-<span id="cb48-318"><a href="#cb48-318" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-319"><a href="#cb48-319" aria-hidden="true" tabindex="-1"></a><span class="fu">## Using SYSTEMFIT Package</span></span>
-<span id="cb48-320"><a href="#cb48-320" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-321"><a href="#cb48-321" aria-hidden="true" tabindex="-1"></a>The <span class="in">`systemfit()`</span> function with <span class="in">`method = "OLS"`</span> gives the same results:</span>
-<span id="cb48-322"><a href="#cb48-322" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-325"><a href="#cb48-325" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-326"><a href="#cb48-326" aria-hidden="true" tabindex="-1"></a>myOLS.sysfit <span class="ot">&lt;-</span> <span class="fu">systemfit</span>(inv <span class="sc">~</span> val <span class="sc">+</span> cap, </span>
-<span id="cb48-327"><a href="#cb48-327" aria-hidden="true" tabindex="-1"></a>                           <span class="at">method =</span> <span class="st">"OLS"</span>, </span>
-<span id="cb48-328"><a href="#cb48-328" aria-hidden="true" tabindex="-1"></a>                           <span class="at">data =</span> my.data)</span>
-<span id="cb48-329"><a href="#cb48-329" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-330"><a href="#cb48-330" aria-hidden="true" tabindex="-1"></a><span class="co"># Display coefficients in a formatted table</span></span>
-<span id="cb48-331"><a href="#cb48-331" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb48-332"><a href="#cb48-332" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>(myOLS.sysfit)<span class="sc">$</span>coefficients,</span>
-<span id="cb48-333"><a href="#cb48-333" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">4</span>,</span>
-<span id="cb48-334"><a href="#cb48-334" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">"OLS Estimates by Equation"</span></span>
-<span id="cb48-335"><a href="#cb48-335" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb48-336"><a href="#cb48-336" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-337"><a href="#cb48-337" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-338"><a href="#cb48-338" aria-hidden="true" tabindex="-1"></a><span class="fu">## Manual Calculation: Understanding the Math</span></span>
-<span id="cb48-339"><a href="#cb48-339" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-340"><a href="#cb48-340" aria-hidden="true" tabindex="-1"></a>To understand what's happening under the hood, let's calculate the OLS coefficients manually. This reveals the block-diagonal structure of the SUR design matrix:</span>
-<span id="cb48-341"><a href="#cb48-341" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-344"><a href="#cb48-344" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-345"><a href="#cb48-345" aria-hidden="true" tabindex="-1"></a><span class="co"># Construct design matrix for US Steel (top block)</span></span>
-<span id="cb48-346"><a href="#cb48-346" aria-hidden="true" tabindex="-1"></a>X1 <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="dv">1</span>, US.data<span class="sc">$</span>val, US.data<span class="sc">$</span>cap, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb48-347"><a href="#cb48-347" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-348"><a href="#cb48-348" aria-hidden="true" tabindex="-1"></a><span class="co"># Construct design matrix for Diamond Match (bottom block)</span></span>
-<span id="cb48-349"><a href="#cb48-349" aria-hidden="true" tabindex="-1"></a>X2 <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, DM.data<span class="sc">$</span>val, DM.data<span class="sc">$</span>cap)</span>
-<span id="cb48-350"><a href="#cb48-350" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-351"><a href="#cb48-351" aria-hidden="true" tabindex="-1"></a><span class="co"># Stack the blocks</span></span>
-<span id="cb48-352"><a href="#cb48-352" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">rbind</span>(X1, X2)</span>
-<span id="cb48-353"><a href="#cb48-353" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-354"><a href="#cb48-354" aria-hidden="true" tabindex="-1"></a><span class="co"># Stack the dependent variables</span></span>
-<span id="cb48-355"><a href="#cb48-355" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> my.raw.data<span class="sc">$</span>inv</span>
-<span id="cb48-356"><a href="#cb48-356" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-357"><a href="#cb48-357" aria-hidden="true" tabindex="-1"></a><span class="co"># OLS formula: β = (X'X)^(-1) X'y</span></span>
-<span id="cb48-358"><a href="#cb48-358" aria-hidden="true" tabindex="-1"></a>betas.ols <span class="ot">&lt;-</span> <span class="fu">solve</span>(<span class="fu">t</span>(X) <span class="sc">%*%</span> X) <span class="sc">%*%</span> <span class="fu">t</span>(X) <span class="sc">%*%</span> y</span>
-<span id="cb48-359"><a href="#cb48-359" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-360"><a href="#cb48-360" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Manually calculated OLS coefficients:</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb48-361"><a href="#cb48-361" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(betas.ols)</span>
-<span id="cb48-362"><a href="#cb48-362" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-363"><a href="#cb48-363" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-364"><a href="#cb48-364" aria-hidden="true" tabindex="-1"></a>**The Structure:** Note how the design matrix has a block-diagonal structure where:</span>
-<span id="cb48-365"><a href="#cb48-365" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-366"><a href="#cb48-366" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>First 3 columns (and rows 1-20) relate to US Steel</span>
-<span id="cb48-367"><a href="#cb48-367" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Last 3 columns (and rows 21-40) relate to Diamond Match</span>
-<span id="cb48-368"><a href="#cb48-368" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Zeros ensure each firm's coefficients are estimated independently</span>
-<span id="cb48-369"><a href="#cb48-369" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-370"><a href="#cb48-370" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb48-371"><a href="#cb48-371" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-372"><a href="#cb48-372" aria-hidden="true" tabindex="-1"></a><span class="fu"># Testing for Cross-Sectional Dependence</span></span>
-<span id="cb48-373"><a href="#cb48-373" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-374"><a href="#cb48-374" aria-hidden="true" tabindex="-1"></a>Before applying SUR, we should formally test whether cross-sectional dependence exists.</span>
-<span id="cb48-375"><a href="#cb48-375" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-376"><a href="#cb48-376" aria-hidden="true" tabindex="-1"></a><span class="fu">## Examining the Covariance Matrix</span></span>
-<span id="cb48-377"><a href="#cb48-377" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-380"><a href="#cb48-380" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-381"><a href="#cb48-381" aria-hidden="true" tabindex="-1"></a><span class="co"># Residual covariance matrix</span></span>
-<span id="cb48-382"><a href="#cb48-382" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Residual Covariance Matrix (Σ):</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb48-383"><a href="#cb48-383" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">summary</span>(myOLS.sysfit)<span class="sc">$</span>residCov)</span>
-<span id="cb48-384"><a href="#cb48-384" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-385"><a href="#cb48-385" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Residual Correlation Matrix:</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb48-386"><a href="#cb48-386" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">summary</span>(myOLS.sysfit)<span class="sc">$</span>residCor)</span>
-<span id="cb48-387"><a href="#cb48-387" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-388"><a href="#cb48-388" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-389"><a href="#cb48-389" aria-hidden="true" tabindex="-1"></a>The covariance (<span class="in">`r round(summary(myOLS.sysfit)$residCov[1,2], 2)`</span>) and correlation (<span class="in">`r round(summary(myOLS.sysfit)$residCor[1,2], 3)`</span>) between residuals are both positive and substantial.</span>
-<span id="cb48-390"><a href="#cb48-390" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-391"><a href="#cb48-391" aria-hidden="true" tabindex="-1"></a><span class="fu">## Kronecker Product and Full Error Covariance</span></span>
-<span id="cb48-392"><a href="#cb48-392" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-393"><a href="#cb48-393" aria-hidden="true" tabindex="-1"></a>For SUR, we assume the full error covariance matrix $\Omega$ has a Kronecker product structure:</span>
-<span id="cb48-394"><a href="#cb48-394" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-395"><a href="#cb48-395" aria-hidden="true" tabindex="-1"></a>$$\Omega = \Sigma \otimes I_T$$</span>
-<span id="cb48-396"><a href="#cb48-396" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-397"><a href="#cb48-397" aria-hidden="true" tabindex="-1"></a>where $\Sigma$ is the $M \times M$ contemporaneous covariance matrix and $I_T$ is a $T \times T$ identity matrix.</span>
-<span id="cb48-398"><a href="#cb48-398" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-401"><a href="#cb48-401" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-402"><a href="#cb48-402" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="fu">nrow</span>(DM.data)</span>
-<span id="cb48-403"><a href="#cb48-403" aria-hidden="true" tabindex="-1"></a>sigma_hat <span class="ot">&lt;-</span> <span class="fu">summary</span>(myOLS.sysfit)<span class="sc">$</span>residCov</span>
-<span id="cb48-404"><a href="#cb48-404" aria-hidden="true" tabindex="-1"></a>omega_hat <span class="ot">&lt;-</span> sigma_hat <span class="sc">%x%</span> <span class="fu">diag</span>(N)  <span class="co"># Kronecker product</span></span>
-<span id="cb48-405"><a href="#cb48-405" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-406"><a href="#cb48-406" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb48-407"><a href="#cb48-407" aria-hidden="true" tabindex="-1"></a>  omega_hat,</span>
-<span id="cb48-408"><a href="#cb48-408" aria-hidden="true" tabindex="-1"></a>  <span class="at">format =</span> <span class="st">"pipe"</span>,</span>
-<span id="cb48-409"><a href="#cb48-409" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">1</span>,</span>
-<span id="cb48-410"><a href="#cb48-410" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">"Table 2: Estimated Error Covariance Matrix"</span></span>
-<span id="cb48-411"><a href="#cb48-411" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb48-412"><a href="#cb48-412" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-413"><a href="#cb48-413" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-414"><a href="#cb48-414" aria-hidden="true" tabindex="-1"></a><span class="fu">## Formal Tests for Cross-Sectional Dependence</span></span>
-<span id="cb48-415"><a href="#cb48-415" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-416"><a href="#cb48-416" aria-hidden="true" tabindex="-1"></a><span class="fu">### Breusch-Pagan LM Test</span></span>
-<span id="cb48-417"><a href="#cb48-417" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-420"><a href="#cb48-420" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-421"><a href="#cb48-421" aria-hidden="true" tabindex="-1"></a><span class="fu">pcdtest</span>(myOLS.pvcm, <span class="at">test =</span> <span class="st">"lm"</span>)</span>
-<span id="cb48-422"><a href="#cb48-422" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-423"><a href="#cb48-423" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-424"><a href="#cb48-424" aria-hidden="true" tabindex="-1"></a>**Interpretation:** The null hypothesis is "no cross-sectional dependence." The very small p-value means we reject the null—there IS significant cross-sectional dependence.</span>
-<span id="cb48-425"><a href="#cb48-425" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-426"><a href="#cb48-426" aria-hidden="true" tabindex="-1"></a><span class="fu">### Pesaran CD Test</span></span>
-<span id="cb48-427"><a href="#cb48-427" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-430"><a href="#cb48-430" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-431"><a href="#cb48-431" aria-hidden="true" tabindex="-1"></a><span class="fu">pcdtest</span>(myOLS.pvcm, <span class="at">test =</span> <span class="st">"cd"</span>)</span>
-<span id="cb48-432"><a href="#cb48-432" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-433"><a href="#cb48-433" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-434"><a href="#cb48-434" aria-hidden="true" tabindex="-1"></a>**Interpretation:** This test also strongly rejects the null of no cross-sectional dependence.</span>
-<span id="cb48-435"><a href="#cb48-435" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-436"><a href="#cb48-436" aria-hidden="true" tabindex="-1"></a>**Conclusion:** Both tests confirm significant contemporaneous correlation. SUR estimation is justified!</span>
-<span id="cb48-437"><a href="#cb48-437" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-438"><a href="#cb48-438" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb48-439"><a href="#cb48-439" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-440"><a href="#cb48-440" aria-hidden="true" tabindex="-1"></a><span class="fu"># Seemingly Unrelated Regression (SUR) Estimation</span></span>
-<span id="cb48-441"><a href="#cb48-441" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-442"><a href="#cb48-442" aria-hidden="true" tabindex="-1"></a>Now we're ready to estimate the system using the SUR method, which accounts for the cross-equation correlation.</span>
-<span id="cb48-443"><a href="#cb48-443" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-446"><a href="#cb48-446" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-447"><a href="#cb48-447" aria-hidden="true" tabindex="-1"></a>mySUR.sysfit <span class="ot">&lt;-</span> <span class="fu">systemfit</span>(inv <span class="sc">~</span> val <span class="sc">+</span> cap, </span>
-<span id="cb48-448"><a href="#cb48-448" aria-hidden="true" tabindex="-1"></a>                           <span class="at">method =</span> <span class="st">"SUR"</span>, </span>
-<span id="cb48-449"><a href="#cb48-449" aria-hidden="true" tabindex="-1"></a>                           <span class="at">data =</span> my.data)</span>
-<span id="cb48-450"><a href="#cb48-450" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-451"><a href="#cb48-451" aria-hidden="true" tabindex="-1"></a><span class="co"># Display SUR estimates in a formatted table</span></span>
-<span id="cb48-452"><a href="#cb48-452" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb48-453"><a href="#cb48-453" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>(mySUR.sysfit)<span class="sc">$</span>coefficients,</span>
-<span id="cb48-454"><a href="#cb48-454" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">4</span>,</span>
-<span id="cb48-455"><a href="#cb48-455" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">"SUR Estimates"</span></span>
-<span id="cb48-456"><a href="#cb48-456" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb48-457"><a href="#cb48-457" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-458"><a href="#cb48-458" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-459"><a href="#cb48-459" aria-hidden="true" tabindex="-1"></a><span class="fu">## Comparing OLS vs SUR Results</span></span>
-<span id="cb48-460"><a href="#cb48-460" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-463"><a href="#cb48-463" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-464"><a href="#cb48-464" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract coefficients and standard errors for easier comparison</span></span>
-<span id="cb48-465"><a href="#cb48-465" aria-hidden="true" tabindex="-1"></a>ols_us <span class="ot">&lt;-</span> <span class="fu">summary</span>(lm.US)<span class="sc">$</span>coefficients</span>
-<span id="cb48-466"><a href="#cb48-466" aria-hidden="true" tabindex="-1"></a>ols_dm <span class="ot">&lt;-</span> <span class="fu">summary</span>(lm.DM)<span class="sc">$</span>coefficients</span>
-<span id="cb48-467"><a href="#cb48-467" aria-hidden="true" tabindex="-1"></a>sur_all <span class="ot">&lt;-</span> <span class="fu">summary</span>(mySUR.sysfit)<span class="sc">$</span>coefficients</span>
-<span id="cb48-468"><a href="#cb48-468" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-469"><a href="#cb48-469" aria-hidden="true" tabindex="-1"></a><span class="co"># Create side-by-side comparison for US Steel</span></span>
-<span id="cb48-470"><a href="#cb48-470" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"US Steel: OLS vs SUR</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb48-471"><a href="#cb48-471" aria-hidden="true" tabindex="-1"></a>us_comparison <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb48-472"><a href="#cb48-472" aria-hidden="true" tabindex="-1"></a>  <span class="at">Coefficient =</span> <span class="fu">rownames</span>(ols_us),</span>
-<span id="cb48-473"><a href="#cb48-473" aria-hidden="true" tabindex="-1"></a>  <span class="at">OLS_Est =</span> ols_us[, <span class="st">"Estimate"</span>],</span>
-<span id="cb48-474"><a href="#cb48-474" aria-hidden="true" tabindex="-1"></a>  <span class="at">OLS_SE =</span> ols_us[, <span class="st">"Std. Error"</span>],</span>
-<span id="cb48-475"><a href="#cb48-475" aria-hidden="true" tabindex="-1"></a>  <span class="at">SUR_Est =</span> sur_all[<span class="dv">4</span><span class="sc">:</span><span class="dv">6</span>, <span class="st">"Estimate"</span>],  <span class="co"># US is rows 4-6 (alphabetically after DM)</span></span>
-<span id="cb48-476"><a href="#cb48-476" aria-hidden="true" tabindex="-1"></a>  <span class="at">SUR_SE =</span> sur_all[<span class="dv">4</span><span class="sc">:</span><span class="dv">6</span>, <span class="st">"Std. Error"</span>]</span>
-<span id="cb48-477"><a href="#cb48-477" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb48-478"><a href="#cb48-478" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(us_comparison, <span class="at">digits =</span> <span class="dv">4</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb48-479"><a href="#cb48-479" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-480"><a href="#cb48-480" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-483"><a href="#cb48-483" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-484"><a href="#cb48-484" aria-hidden="true" tabindex="-1"></a><span class="co"># Create side-by-side comparison for Diamond Match</span></span>
-<span id="cb48-485"><a href="#cb48-485" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Diamond Match: OLS vs SUR</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb48-486"><a href="#cb48-486" aria-hidden="true" tabindex="-1"></a>dm_comparison <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb48-487"><a href="#cb48-487" aria-hidden="true" tabindex="-1"></a>  <span class="at">Coefficient =</span> <span class="fu">rownames</span>(ols_dm),</span>
-<span id="cb48-488"><a href="#cb48-488" aria-hidden="true" tabindex="-1"></a>  <span class="at">OLS_Est =</span> ols_dm[, <span class="st">"Estimate"</span>],</span>
-<span id="cb48-489"><a href="#cb48-489" aria-hidden="true" tabindex="-1"></a>  <span class="at">OLS_SE =</span> ols_dm[, <span class="st">"Std. Error"</span>],</span>
-<span id="cb48-490"><a href="#cb48-490" aria-hidden="true" tabindex="-1"></a>  <span class="at">SUR_Est =</span> sur_all[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="st">"Estimate"</span>],  <span class="co"># DM is rows 1-3 (alphabetically first)</span></span>
-<span id="cb48-491"><a href="#cb48-491" aria-hidden="true" tabindex="-1"></a>  <span class="at">SUR_SE =</span> sur_all[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="st">"Std. Error"</span>]</span>
-<span id="cb48-492"><a href="#cb48-492" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb48-493"><a href="#cb48-493" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(dm_comparison, <span class="at">digits =</span> <span class="dv">4</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb48-494"><a href="#cb48-494" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-495"><a href="#cb48-495" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-496"><a href="#cb48-496" aria-hidden="true" tabindex="-1"></a><span class="fu">## Efficiency Gains</span></span>
-<span id="cb48-497"><a href="#cb48-497" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-498"><a href="#cb48-498" aria-hidden="true" tabindex="-1"></a>**Key observations from the comparison tables above:**</span>
-<span id="cb48-499"><a href="#cb48-499" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-500"><a href="#cb48-500" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Coefficient estimates** are very similar between OLS and SUR (both are consistent)</span>
-<span id="cb48-501"><a href="#cb48-501" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Point estimates remain nearly identical</span>
-<span id="cb48-502"><a href="#cb48-502" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>This confirms both methods are unbiased under our assumptions</span>
-<span id="cb48-503"><a href="#cb48-503" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Standard errors** are slightly smaller for SUR (efficiency improvement)</span>
-<span id="cb48-504"><a href="#cb48-504" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Compare <span class="in">`OLS_SE`</span> vs <span class="in">`SUR_SE`</span> columns in each table</span>
-<span id="cb48-505"><a href="#cb48-505" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>The reduction in standard errors means tighter confidence intervals</span>
-<span id="cb48-506"><a href="#cb48-506" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>More efficient inference (more powerful hypothesis tests)</span>
-<span id="cb48-507"><a href="#cb48-507" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>The efficiency gains are modest in this example because:</span>
-<span id="cb48-508"><a href="#cb48-508" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Sample size is relatively small (20 observations per equation)</span>
-<span id="cb48-509"><a href="#cb48-509" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Cross-equation correlation is moderate (ρ ≈ <span class="in">`r round(cor(lm.US$residuals, lm.DM$residuals), 3)`</span>)</span>
-<span id="cb48-510"><a href="#cb48-510" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Regressors are similar across equations</span>
-<span id="cb48-511"><a href="#cb48-511" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-512"><a href="#cb48-512" aria-hidden="true" tabindex="-1"></a>**Rule of thumb:** SUR gains are largest when:</span>
-<span id="cb48-513"><a href="#cb48-513" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-514"><a href="#cb48-514" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Cross-equation correlation is high (\|ρ\| <span class="sc">\&gt;</span> 0.5)</span>
-<span id="cb48-515"><a href="#cb48-515" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Sample size is moderate to large</span>
-<span id="cb48-516"><a href="#cb48-516" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Regressors differ substantially across equations</span>
-<span id="cb48-517"><a href="#cb48-517" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Number of equations (M) is larger</span>
-<span id="cb48-518"><a href="#cb48-518" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-519"><a href="#cb48-519" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb48-520"><a href="#cb48-520" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-521"><a href="#cb48-521" aria-hidden="true" tabindex="-1"></a><span class="fu"># Testing for Coefficient Homogeneity</span></span>
-<span id="cb48-522"><a href="#cb48-522" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-523"><a href="#cb48-523" aria-hidden="true" tabindex="-1"></a>An important question: Can we pool the data across firms, or do we need firm-specific coefficients?</span>
-<span id="cb48-524"><a href="#cb48-524" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-525"><a href="#cb48-525" aria-hidden="true" tabindex="-1"></a><span class="fu">## Pooled OLS Model</span></span>
-<span id="cb48-526"><a href="#cb48-526" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-529"><a href="#cb48-529" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-530"><a href="#cb48-530" aria-hidden="true" tabindex="-1"></a>my.Pooled.model <span class="ot">&lt;-</span> <span class="fu">plm</span>(inv <span class="sc">~</span> val <span class="sc">+</span> cap, </span>
-<span id="cb48-531"><a href="#cb48-531" aria-hidden="true" tabindex="-1"></a>                        <span class="at">data =</span> my.data, </span>
-<span id="cb48-532"><a href="#cb48-532" aria-hidden="true" tabindex="-1"></a>                        <span class="at">model =</span> <span class="st">"pooling"</span>)</span>
-<span id="cb48-533"><a href="#cb48-533" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-534"><a href="#cb48-534" aria-hidden="true" tabindex="-1"></a><span class="co"># Display pooled estimates in a formatted table</span></span>
-<span id="cb48-535"><a href="#cb48-535" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb48-536"><a href="#cb48-536" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>(my.Pooled.model)<span class="sc">$</span>coefficients,</span>
-<span id="cb48-537"><a href="#cb48-537" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">4</span>,</span>
-<span id="cb48-538"><a href="#cb48-538" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">"Pooled OLS Estimates"</span></span>
-<span id="cb48-539"><a href="#cb48-539" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb48-540"><a href="#cb48-540" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-541"><a href="#cb48-541" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-542"><a href="#cb48-542" aria-hidden="true" tabindex="-1"></a><span class="fu">## Chow Test for Poolability</span></span>
-<span id="cb48-543"><a href="#cb48-543" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-544"><a href="#cb48-544" aria-hidden="true" tabindex="-1"></a>The pooltest() performs a Chow test to see if coefficients differ across firms:</span>
-<span id="cb48-545"><a href="#cb48-545" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-548"><a href="#cb48-548" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb48-549"><a href="#cb48-549" aria-hidden="true" tabindex="-1"></a><span class="fu">pooltest</span>(my.Pooled.model, myOLS.pvcm)</span>
-<span id="cb48-550"><a href="#cb48-550" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb48-551"><a href="#cb48-551" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-552"><a href="#cb48-552" aria-hidden="true" tabindex="-1"></a>**Interpretation:**</span>
-<span id="cb48-553"><a href="#cb48-553" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-554"><a href="#cb48-554" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**Null hypothesis**: Coefficients are homogeneous across firms (pooling is appropriate)</span>
-<span id="cb48-555"><a href="#cb48-555" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**P-value**: <span class="in">`r round(pooltest(my.Pooled.model, myOLS.pvcm)$p.value, 4)`</span></span>
-<span id="cb48-556"><a href="#cb48-556" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**Decision**: We cannot reject the null hypothesis at conventional significance levels</span>
-<span id="cb48-557"><a href="#cb48-557" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-558"><a href="#cb48-558" aria-hidden="true" tabindex="-1"></a>**Implication:** While firms appear to have different coefficients, the differences are not statistically significant. We could justify using a pooled model, though the firm-specific models provide richer insights.</span>
-<span id="cb48-559"><a href="#cb48-559" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-560"><a href="#cb48-560" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb48-561"><a href="#cb48-561" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-562"><a href="#cb48-562" aria-hidden="true" tabindex="-1"></a><span class="fu"># Summary and Key Takeaways</span></span>
-<span id="cb48-563"><a href="#cb48-563" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-564"><a href="#cb48-564" aria-hidden="true" tabindex="-1"></a><span class="fu">## What We Learned</span></span>
-<span id="cb48-565"><a href="#cb48-565" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-566"><a href="#cb48-566" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**SUR exploits cross-equation correlation** in error terms to improve estimation efficiency</span>
-<span id="cb48-567"><a href="#cb48-567" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**The Grunfeld dataset** demonstrates how common macroeconomic shocks can create contemporaneous correlation across firms</span>
-<span id="cb48-568"><a href="#cb48-568" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Testing is crucial**: Always test for cross-sectional dependence before applying SUR</span>
-<span id="cb48-569"><a href="#cb48-569" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Efficiency gains vary**: In our example, gains were modest but noticeable</span>
-<span id="cb48-570"><a href="#cb48-570" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-571"><a href="#cb48-571" aria-hidden="true" tabindex="-1"></a><span class="fu">## When to Use SUR vs Alternatives</span></span>
-<span id="cb48-572"><a href="#cb48-572" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-573"><a href="#cb48-573" aria-hidden="true" tabindex="-1"></a>**Use SUR when:**</span>
-<span id="cb48-574"><a href="#cb48-574" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-575"><a href="#cb48-575" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>You have multiple related equations</span>
-<span id="cb48-576"><a href="#cb48-576" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Errors are likely correlated contemporaneously</span>
-<span id="cb48-577"><a href="#cb48-577" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>You want more efficient estimates than OLS</span>
-<span id="cb48-578"><a href="#cb48-578" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Cross-sectional dependence tests are significant</span>
-<span id="cb48-579"><a href="#cb48-579" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-580"><a href="#cb48-580" aria-hidden="true" tabindex="-1"></a>**Consider alternatives (to be discussed later in the semester):**</span>
-<span id="cb48-581"><a href="#cb48-581" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-582"><a href="#cb48-582" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**Pooled OLS**: When coefficients are truly homogeneous (after testing)</span>
-<span id="cb48-583"><a href="#cb48-583" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**Fixed Effects**: When you need to control for time-invariant heterogeneity</span>
-<span id="cb48-584"><a href="#cb48-584" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**Random Effects**: When panel-specific effects are uncorrelated with regressors</span>
-<span id="cb48-585"><a href="#cb48-585" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**3SLS**: When you have endogeneity in addition to cross-equation correlation</span>
-<span id="cb48-586"><a href="#cb48-586" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-587"><a href="#cb48-587" aria-hidden="true" tabindex="-1"></a><span class="fu">## The SUR Advantage</span></span>
-<span id="cb48-588"><a href="#cb48-588" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-589"><a href="#cb48-589" aria-hidden="true" tabindex="-1"></a>While coefficient estimates are consistent whether you use OLS or SUR, SUR provides:</span>
-<span id="cb48-590"><a href="#cb48-590" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-591"><a href="#cb48-591" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Lower standard errors (more precise estimates)\</span>
-<span id="cb48-592"><a href="#cb48-592" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>More efficient inference (narrower confidence intervals)\</span>
-<span id="cb48-593"><a href="#cb48-593" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Better utilization of information in the data\</span>
-<span id="cb48-594"><a href="#cb48-594" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>More powerful hypothesis tests</span>
-<span id="cb48-595"><a href="#cb48-595" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-596"><a href="#cb48-596" aria-hidden="true" tabindex="-1"></a><span class="fu">## Practical Recommendations</span></span>
-<span id="cb48-597"><a href="#cb48-597" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-598"><a href="#cb48-598" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Always visualize residuals** to check for patterns</span>
-<span id="cb48-599"><a href="#cb48-599" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Run formal tests** for cross-sectional dependence</span>
-<span id="cb48-600"><a href="#cb48-600" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Compare OLS and SUR results** to assess efficiency gains</span>
-<span id="cb48-601"><a href="#cb48-601" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Test coefficient homogeneity** to see if pooling is justified</span>
-<span id="cb48-602"><a href="#cb48-602" aria-hidden="true" tabindex="-1"></a><span class="ss">5.  </span>**Consider your research question**: Do you need firm-specific coefficients or pooled effects?</span>
-<span id="cb48-603"><a href="#cb48-603" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-604"><a href="#cb48-604" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb48-605"><a href="#cb48-605" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-606"><a href="#cb48-606" aria-hidden="true" tabindex="-1"></a><span class="fu"># Further Reading and Resources</span></span>
-<span id="cb48-607"><a href="#cb48-607" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-608"><a href="#cb48-608" aria-hidden="true" tabindex="-1"></a>**Classic Papers:**</span>
-<span id="cb48-609"><a href="#cb48-609" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-610"><a href="#cb48-610" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Zellner, A. (1962). "An Efficient Method of Estimating Seemingly Unrelated Regressions and Tests for Aggregation Bias." *Journal of the American Statistical Association*, 57(298), 348-368.</span>
-<span id="cb48-611"><a href="#cb48-611" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Grunfeld, Y. (1958). *The Determinants of Corporate Investment.* PhD Thesis, University of Chicago.</span>
-<span id="cb48-612"><a href="#cb48-612" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-613"><a href="#cb48-613" aria-hidden="true" tabindex="-1"></a>**Modern Treatments:**</span>
-<span id="cb48-614"><a href="#cb48-614" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-615"><a href="#cb48-615" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Greene, W. H. (2018). *Econometric Analysis* (8th ed.). Pearson. (Chapter 10)</span>
-<span id="cb48-616"><a href="#cb48-616" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Wooldridge, J. M. (2010). *Econometric Analysis of Cross Section and Panel Data* (2nd ed.). MIT Press.</span>
-<span id="cb48-617"><a href="#cb48-617" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-618"><a href="#cb48-618" aria-hidden="true" tabindex="-1"></a>**R Resources:**</span>
-<span id="cb48-619"><a href="#cb48-619" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-620"><a href="#cb48-620" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="co">[</span><span class="ot">PLM package documentation</span><span class="co">](https://cran.r-project.org/web/packages/plm/plm.pdf)</span></span>
-<span id="cb48-621"><a href="#cb48-621" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="co">[</span><span class="ot">systemfit package documentation</span><span class="co">](https://cran.r-project.org/web/packages/systemfit/systemfit.pdf)</span></span>
-<span id="cb48-622"><a href="#cb48-622" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-623"><a href="#cb48-623" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb48-624"><a href="#cb48-624" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-625"><a href="#cb48-625" aria-hidden="true" tabindex="-1"></a>**End of Lecture Notes**</span>
-<span id="cb48-626"><a href="#cb48-626" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-627"><a href="#cb48-627" aria-hidden="true" tabindex="-1"></a>*These notes were prepared for educational purposes. Questions and feedback are welcome!*</span>
-</code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
-</div></div></div></div></div>
+</script>
 </div> <!-- /content -->
 
 
