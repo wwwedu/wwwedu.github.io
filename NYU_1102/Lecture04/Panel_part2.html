@@ -1,0 +1,2211 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Dragos Ailoae">
+
+<title>Random Effects, Model Selection, and Inferences in Panel Data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Panel_part2_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Panel_part2_files/libs/quarto-html/quarto.js"></script>
+<script src="Panel_part2_files/libs/quarto-html/popper.min.js"></script>
+<script src="Panel_part2_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Panel_part2_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Panel_part2_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Panel_part2_files/libs/quarto-html/quarto-syntax-highlighting-de84f8d6bb715db06a919283c2d1e787.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Panel_part2_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Panel_part2_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Panel_part2_files/libs/bootstrap/bootstrap-cf43a150f4ed865b4eb4d60b88c21c49.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="Panel_part2_files/libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+
+<script src="Panel_part2_files/libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-full toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="-1">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#what-this-notebook-covers" id="toc-what-this-notebook-covers" class="nav-link active" data-scroll-target="#what-this-notebook-covers">What This Notebook Covers</a></li>
+  <li><a href="#review-where-we-left-off" id="toc-review-where-we-left-off" class="nav-link" data-scroll-target="#review-where-we-left-off"><span class="header-section-number">1</span> Review: Where We Left Off</a>
+  <ul class="collapse">
+  <li><a href="#fixed-effects-recap" id="toc-fixed-effects-recap" class="nav-link" data-scroll-target="#fixed-effects-recap"><span class="header-section-number">1.1</span> Fixed Effects Recap</a></li>
+  <li><a href="#the-motivation-for-random-effects" id="toc-the-motivation-for-random-effects" class="nav-link" data-scroll-target="#the-motivation-for-random-effects"><span class="header-section-number">1.2</span> The Motivation for Random Effects</a></li>
+  </ul></li>
+  <li><a href="#the-random-effects-model" id="toc-the-random-effects-model" class="nav-link" data-scroll-target="#the-random-effects-model"><span class="header-section-number">2</span> The Random Effects Model</a>
+  <ul class="collapse">
+  <li><a href="#model-specification" id="toc-model-specification" class="nav-link" data-scroll-target="#model-specification"><span class="header-section-number">2.1</span> Model Specification</a></li>
+  <li><a href="#the-composite-error" id="toc-the-composite-error" class="nav-link" data-scroll-target="#the-composite-error"><span class="header-section-number">2.2</span> The Composite Error</a></li>
+  <li><a href="#why-ols-fails" id="toc-why-ols-fails" class="nav-link" data-scroll-target="#why-ols-fails"><span class="header-section-number">2.3</span> Why OLS Fails</a></li>
+  <li><a href="#feasible-gls-estimation" id="toc-feasible-gls-estimation" class="nav-link" data-scroll-target="#feasible-gls-estimation"><span class="header-section-number">2.4</span> Feasible GLS Estimation</a></li>
+  </ul></li>
+  <li><a href="#setup-and-data-preparation" id="toc-setup-and-data-preparation" class="nav-link" data-scroll-target="#setup-and-data-preparation"><span class="header-section-number">3</span> Setup and Data Preparation</a>
+  <ul class="collapse">
+  <li><a href="#load-packages" id="toc-load-packages" class="nav-link" data-scroll-target="#load-packages"><span class="header-section-number">3.1</span> Load Packages</a></li>
+  <li><a href="#load-fatalities-data" id="toc-load-fatalities-data" class="nav-link" data-scroll-target="#load-fatalities-data"><span class="header-section-number">3.2</span> Load Fatalities Data</a></li>
+  <li><a href="#load-grunfeld-investment-data" id="toc-load-grunfeld-investment-data" class="nav-link" data-scroll-target="#load-grunfeld-investment-data"><span class="header-section-number">3.3</span> Load Grunfeld Investment Data</a></li>
+  </ul></li>
+  <li><a href="#estimating-random-effects" id="toc-estimating-random-effects" class="nav-link" data-scroll-target="#estimating-random-effects"><span class="header-section-number">4</span> Estimating Random Effects</a>
+  <ul class="collapse">
+  <li><a href="#basic-re-model-fatalities" id="toc-basic-re-model-fatalities" class="nav-link" data-scroll-target="#basic-re-model-fatalities"><span class="header-section-number">4.1</span> Basic RE Model: Fatalities</a></li>
+  <li><a href="#extracting-variance-components" id="toc-extracting-variance-components" class="nav-link" data-scroll-target="#extracting-variance-components"><span class="header-section-number">4.2</span> Extracting Variance Components</a></li>
+  </ul></li>
+  <li><a href="#the-critical-orthogonality-assumption" id="toc-the-critical-orthogonality-assumption" class="nav-link" data-scroll-target="#the-critical-orthogonality-assumption"><span class="header-section-number">5</span> The Critical Orthogonality Assumption</a>
+  <ul class="collapse">
+  <li><a href="#testing-orthogonality-the-hausman-test" id="toc-testing-orthogonality-the-hausman-test" class="nav-link" data-scroll-target="#testing-orthogonality-the-hausman-test"><span class="header-section-number">5.1</span> Testing Orthogonality: The Hausman Test</a></li>
+  <li><a href="#visualizing-fe-vs-re-estimates" id="toc-visualizing-fe-vs-re-estimates" class="nav-link" data-scroll-target="#visualizing-fe-vs-re-estimates"><span class="header-section-number">5.2</span> Visualizing FE vs RE Estimates</a></li>
+  </ul></li>
+  <li><a href="#a-case-where-re-might-work-grunfeld-investment-data" id="toc-a-case-where-re-might-work-grunfeld-investment-data" class="nav-link" data-scroll-target="#a-case-where-re-might-work-grunfeld-investment-data"><span class="header-section-number">6</span> A Case Where RE Might Work: Grunfeld Investment Data</a>
+  <ul class="collapse">
+  <li><a href="#why-grunfeld-might-satisfy-orthogonality" id="toc-why-grunfeld-might-satisfy-orthogonality" class="nav-link" data-scroll-target="#why-grunfeld-might-satisfy-orthogonality"><span class="header-section-number">6.1</span> Why Grunfeld Might Satisfy Orthogonality</a></li>
+  <li><a href="#hausman-test-grunfeld" id="toc-hausman-test-grunfeld" class="nav-link" data-scroll-target="#hausman-test-grunfeld"><span class="header-section-number">6.2</span> Hausman Test: Grunfeld</a></li>
+  <li><a href="#note-on-time-invariant-effects" id="toc-note-on-time-invariant-effects" class="nav-link" data-scroll-target="#note-on-time-invariant-effects"><span class="header-section-number">6.3</span> Note on Time-Invariant Effects</a></li>
+  </ul></li>
+  <li><a href="#complete-model-selection-workflow" id="toc-complete-model-selection-workflow" class="nav-link" data-scroll-target="#complete-model-selection-workflow"><span class="header-section-number">7</span> Complete Model Selection Workflow</a>
+  <ul class="collapse">
+  <li><a href="#the-three-key-tests" id="toc-the-three-key-tests" class="nav-link" data-scroll-target="#the-three-key-tests"><span class="header-section-number">7.1</span> The Three Key Tests</a>
+  <ul class="collapse">
+  <li><a href="#test-1-pooled-vs-fe-f-test" id="toc-test-1-pooled-vs-fe-f-test" class="nav-link" data-scroll-target="#test-1-pooled-vs-fe-f-test"><span class="header-section-number">7.1.1</span> Test 1: Pooled vs FE (F-test)</a></li>
+  <li><a href="#test-2-pooled-vs-re-breusch-pagan-lm-test" id="toc-test-2-pooled-vs-re-breusch-pagan-lm-test" class="nav-link" data-scroll-target="#test-2-pooled-vs-re-breusch-pagan-lm-test"><span class="header-section-number">7.1.2</span> Test 2: Pooled vs RE (Breusch-Pagan LM test)</a></li>
+  <li><a href="#test-3-fe-vs-re-hausman-test" id="toc-test-3-fe-vs-re-hausman-test" class="nav-link" data-scroll-target="#test-3-fe-vs-re-hausman-test"><span class="header-section-number">7.1.3</span> Test 3: FE vs RE (Hausman test)</a></li>
+  </ul></li>
+  <li><a href="#decision-flowchart-in-action" id="toc-decision-flowchart-in-action" class="nav-link" data-scroll-target="#decision-flowchart-in-action"><span class="header-section-number">7.2</span> Decision Flowchart in Action</a></li>
+  <li><a href="#when-tests-disagree-economic-reasoning" id="toc-when-tests-disagree-economic-reasoning" class="nav-link" data-scroll-target="#when-tests-disagree-economic-reasoning"><span class="header-section-number">7.3</span> When Tests Disagree: Economic Reasoning</a></li>
+  </ul></li>
+  <li><a href="#inference-cluster-robust-standard-errors" id="toc-inference-cluster-robust-standard-errors" class="nav-link" data-scroll-target="#inference-cluster-robust-standard-errors"><span class="header-section-number">8</span> Inference: Cluster-Robust Standard Errors</a>
+  <ul class="collapse">
+  <li><a href="#why-clustering-matters" id="toc-why-clustering-matters" class="nav-link" data-scroll-target="#why-clustering-matters"><span class="header-section-number">8.1</span> Why Clustering Matters</a></li>
+  <li><a href="#one-way-clustering-by-individual" id="toc-one-way-clustering-by-individual" class="nav-link" data-scroll-target="#one-way-clustering-by-individual"><span class="header-section-number">8.2</span> One-Way Clustering (by Individual)</a></li>
+  <li><a href="#two-way-clustering-individual-time" id="toc-two-way-clustering-individual-time" class="nav-link" data-scroll-target="#two-way-clustering-individual-time"><span class="header-section-number">8.3</span> Two-Way Clustering (Individual + Time)</a></li>
+  <li><a href="#do-re-models-need-clustered-ses" id="toc-do-re-models-need-clustered-ses" class="nav-link" data-scroll-target="#do-re-models-need-clustered-ses"><span class="header-section-number">8.4</span> Do RE Models Need Clustered SEs?</a></li>
+  <li><a href="#when-to-cluster-by-what" id="toc-when-to-cluster-by-what" class="nav-link" data-scroll-target="#when-to-cluster-by-what"><span class="header-section-number">8.5</span> When to Cluster By What?</a></li>
+  </ul></li>
+  <li><a href="#common-mistakes-and-how-to-avoid-them" id="toc-common-mistakes-and-how-to-avoid-them" class="nav-link" data-scroll-target="#common-mistakes-and-how-to-avoid-them"><span class="header-section-number">9</span> Common Mistakes and How to Avoid Them</a>
+  <ul class="collapse">
+  <li><a href="#mistake-1-using-re-for-convenience" id="toc-mistake-1-using-re-for-convenience" class="nav-link" data-scroll-target="#mistake-1-using-re-for-convenience"><span class="header-section-number">9.1</span> Mistake 1: Using RE for Convenience</a></li>
+  <li><a href="#mistake-2-trusting-hausman-blindly" id="toc-mistake-2-trusting-hausman-blindly" class="nav-link" data-scroll-target="#mistake-2-trusting-hausman-blindly"><span class="header-section-number">9.2</span> Mistake 2: Trusting Hausman Blindly</a></li>
+  <li><a href="#mistake-3-forgetting-to-cluster" id="toc-mistake-3-forgetting-to-cluster" class="nav-link" data-scroll-target="#mistake-3-forgetting-to-cluster"><span class="header-section-number">9.3</span> Mistake 3: Forgetting to Cluster</a></li>
+  <li><a href="#mistake-4-comparing-r²-across-models" id="toc-mistake-4-comparing-r²-across-models" class="nav-link" data-scroll-target="#mistake-4-comparing-r²-across-models"><span class="header-section-number">9.4</span> Mistake 4: Comparing R² Across Models</a></li>
+  </ul></li>
+  <li><a href="#summary-and-best-practices" id="toc-summary-and-best-practices" class="nav-link" data-scroll-target="#summary-and-best-practices"><span class="header-section-number">10</span> Summary and Best Practices</a>
+  <ul class="collapse">
+  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">10.1</span> Key Takeaways</a>
+  <ul class="collapse">
+  <li><a href="#model-comparison" id="toc-model-comparison" class="nav-link" data-scroll-target="#model-comparison"><span class="header-section-number">10.1.1</span> 1. Model Comparison</a></li>
+  <li><a href="#testing-workflow" id="toc-testing-workflow" class="nav-link" data-scroll-target="#testing-workflow"><span class="header-section-number">10.1.2</span> 2. Testing Workflow</a></li>
+  <li><a href="#inference-best-practices" id="toc-inference-best-practices" class="nav-link" data-scroll-target="#inference-best-practices"><span class="header-section-number">10.1.3</span> 3. Inference Best Practices</a></li>
+  </ul></li>
+  <li><a href="#practical-recommendations" id="toc-practical-recommendations" class="nav-link" data-scroll-target="#practical-recommendations"><span class="header-section-number">10.2</span> Practical Recommendations</a>
+  <ul class="collapse">
+  <li><a href="#for-applied-work" id="toc-for-applied-work" class="nav-link" data-scroll-target="#for-applied-work"><span class="header-section-number">10.2.1</span> For Applied Work</a></li>
+  <li><a href="#for-your-research" id="toc-for-your-research" class="nav-link" data-scroll-target="#for-your-research"><span class="header-section-number">10.2.2</span> For Your Research</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#further-resources" id="toc-further-resources" class="nav-link" data-scroll-target="#further-resources"><span class="header-section-number">11</span> Further Resources</a>
+  <ul class="collapse">
+  <li><a href="#essential-reading" id="toc-essential-reading" class="nav-link" data-scroll-target="#essential-reading"><span class="header-section-number">11.1</span> Essential Reading</a></li>
+  <li><a href="#r-resources" id="toc-r-resources" class="nav-link" data-scroll-target="#r-resources"><span class="header-section-number">11.2</span> R Resources</a></li>
+  <li><a href="#next-steps" id="toc-next-steps" class="nav-link" data-scroll-target="#next-steps"><span class="header-section-number">11.3</span> Next Steps</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content column-page-right" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Random Effects, Model Selection, and Inferences in Panel Data</h1>
+<p class="subtitle lead">NYU - Applied Statistics and Econometrics 2</p>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-right">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dragos Ailoae </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="what-this-notebook-covers" class="level1 unnumbered">
+<h1 class="unnumbered">What This Notebook Covers</h1>
+<p>This notebook explores <strong>Random Effects (RE) models</strong> and <strong>model selection</strong> in panel data analysis. Building on the Fixed Effects foundation from last week, we’ll learn when to use Random Effects, how to test model specifications, and how to get inference right.</p>
+<p>We’ll cover:</p>
+<ul>
+<li>The Random Effects model: GLS estimation and quasi-demeaning</li>
+<li>The crucial orthogonality assumption: when it holds and when it fails</li>
+<li>Complete model selection workflow: FE vs RE vs Pooled OLS</li>
+<li>Specification tests: Hausman, Breusch-Pagan, F-test</li>
+<li>Inference with cluster-robust standard errors</li>
+<li>Practical applications with real data</li>
+</ul>
+<p><strong>Key datasets:</strong> - Fatalities data (continuation from FE lecture) - Grunfeld investment data (for comparing RE and FE)</p>
+<hr>
+</section>
+<section id="review-where-we-left-off" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Review: Where We Left Off</h1>
+<section id="fixed-effects-recap" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="fixed-effects-recap"><span class="header-section-number">1.1</span> Fixed Effects Recap</h2>
+<p>Last week we learned that <strong>Fixed Effects (FE)</strong> controls for time-invariant unobservables by using only within-unit variation:</p>
+<p><span class="math display">\[y_{it} = \mathbf{x}_{it}'\boldsymbol{\beta} + \alpha_i + \varepsilon_{it}\]</span></p>
+<p><strong>The FE approach:</strong> Demean to eliminate <span class="math inline">\(\alpha_i\)</span></p>
+<p><span class="math display">\[\tilde{y}_{it} = \tilde{\mathbf{x}}_{it}'\boldsymbol{\beta} + \tilde{\varepsilon}_{it}\]</span></p>
+<p>where <span class="math inline">\(\tilde{y}_{it} = y_{it} - \bar{y}_i\)</span></p>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Allows <span class="math inline">\(\text{Cov}(\alpha_i, \mathbf{x}_{it}) \neq 0\)</span> (robust to endogeneity!)</li>
+<li>No instruments needed</li>
+<li>Controls for all time-invariant unobservables</li>
+</ul>
+<p><strong>Limitations:</strong></p>
+<ul>
+<li>Cannot estimate time-invariant effects (gender, race, education level)</li>
+<li>Throws away between-unit variation (inefficient)</li>
+<li>Loses degrees of freedom (estimates N fixed effects)</li>
+</ul>
+</section>
+<section id="the-motivation-for-random-effects" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="the-motivation-for-random-effects"><span class="header-section-number">1.2</span> The Motivation for Random Effects</h2>
+<p><strong>When FE isn’t enough:</strong></p>
+<ol type="1">
+<li><p><strong>Research questions about time-invariant effects:</strong></p>
+<ul>
+<li>Gender wage gap</li>
+<li>Returns to college quality</li>
+<li>Effect of birthplace on outcomes</li>
+</ul></li>
+<li><p><strong>Small within-unit variation:</strong></p>
+<ul>
+<li>Education rarely changes in adult panels</li>
+<li>Industry switching is rare for firms</li>
+<li>Geography is fixed for regions</li>
+</ul></li>
+<li><p><strong>Efficiency concerns:</strong></p>
+<ul>
+<li>FE discards all between variation</li>
+<li>With weak within variation, FE estimates are imprecise</li>
+</ul></li>
+</ol>
+<p><strong>The RE solution:</strong> Model <span class="math inline">\(\alpha_i\)</span> as random draws from a distribution, use both within AND between variation.</p>
+<p><strong>The price:</strong> Requires <span class="math inline">\(E[\alpha_i | \mathbf{X}_i] = 0\)</span> (orthogonality)</p>
+<hr>
+</section>
+</section>
+<section id="the-random-effects-model" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> The Random Effects Model</h1>
+<section id="model-specification" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="model-specification"><span class="header-section-number">2.1</span> Model Specification</h2>
+<p><strong>Same equation, different interpretation:</strong></p>
+<p><span class="math display">\[y_{it} = \mathbf{x}_{it}'\boldsymbol{\beta} + \alpha_i + \varepsilon_{it}\]</span></p>
+<p><strong>Fixed Effects view:</strong></p>
+<ul>
+<li><span class="math inline">\(\alpha_i\)</span> = fixed parameter (one for each unit)</li>
+<li><span class="math inline">\(N\)</span> parameters to estimate</li>
+<li>Can correlate with <span class="math inline">\(\mathbf{x}_{it}\)</span></li>
+</ul>
+<p><strong>Random Effects view:</strong></p>
+<ul>
+<li><span class="math inline">\(\alpha_i \sim \text{i.i.d.}(0, \sigma_\alpha^2)\)</span> = random variable</li>
+<li>1 parameter to estimate (<span class="math inline">\(\sigma_\alpha^2\)</span>)</li>
+<li><strong>Must be uncorrelated with <span class="math inline">\(\mathbf{x}_{it}\)</span></strong> (orthogonality!)</li>
+</ul>
+</section>
+<section id="the-composite-error" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="the-composite-error"><span class="header-section-number">2.2</span> The Composite Error</h2>
+<p><span class="math display">\[y_{it} = \mathbf{x}_{it}'\boldsymbol{\beta} + \underbrace{(\alpha_i + \varepsilon_{it})}_{u_{it}}\]</span></p>
+<p><strong>Error structure:</strong></p>
+<ul>
+<li><span class="math inline">\(\alpha_i \sim (0, \sigma_\alpha^2)\)</span> (individual effect, constant over time)</li>
+<li><span class="math inline">\(\varepsilon_{it} \sim (0, \sigma_\varepsilon^2)\)</span> (idiosyncratic shock)</li>
+<li><span class="math inline">\(u_{it} = \alpha_i + \varepsilon_{it}\)</span> (composite error)</li>
+</ul>
+<p><strong>Key property:</strong> Errors are <strong>correlated within individuals</strong>:</p>
+<p><span class="math display">\[\text{Cov}(u_{it}, u_{is}) = \sigma_\alpha^2 \quad \text{for } t \neq s\]</span></p>
+<p><strong>Intraclass correlation:</strong></p>
+<p><span class="math display">\[\rho = \frac{\sigma_\alpha^2}{\sigma_\alpha^2 + \sigma_\varepsilon^2}\]</span></p>
+<p>This measures the proportion of total variance due to individual effects.</p>
+</section>
+<section id="why-ols-fails" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="why-ols-fails"><span class="header-section-number">2.3</span> Why OLS Fails</h2>
+<p>If you run pooled OLS ignoring the correlation structure:</p>
+<ol type="1">
+<li><strong>Still consistent</strong> (if orthogonality holds)</li>
+<li><strong>But inefficient</strong> (doesn’t use correlation information)</li>
+<li><strong>Wrong standard errors</strong> (assumes independence)</li>
+</ol>
+<p><strong>Solution:</strong> Generalized Least Squares (GLS)</p>
+</section>
+<section id="feasible-gls-estimation" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="feasible-gls-estimation"><span class="header-section-number">2.4</span> Feasible GLS Estimation</h2>
+<p><strong>Step 1:</strong> Estimate variance components <span class="math inline">\(\sigma_\alpha^2\)</span> and <span class="math inline">\(\sigma_\varepsilon^2\)</span></p>
+<p><strong>Step 2:</strong> Compute transformation parameter <span class="math display">\[\theta = 1 - \sqrt{\frac{\sigma_\varepsilon^2}{\sigma_\varepsilon^2 + T\sigma_\alpha^2}}\]</span></p>
+<p><strong>Step 3:</strong> Quasi-demean the data <span class="math display">\[y_{it}^* = y_{it} - \theta\bar{y}_i\]</span> <span class="math display">\[x_{it}^* = x_{it} - \theta\bar{x}_i\]</span></p>
+<p><strong>Step 4:</strong> Run OLS on quasi-demeaned data</p>
+<p><strong>The key insight:</strong></p>
+<ul>
+<li>If <span class="math inline">\(\theta = 0\)</span> (no individual effects) → Pooled OLS</li>
+<li>If <span class="math inline">\(\theta = 1\)</span> (huge individual effects) → Within (FE)</li>
+<li>If <span class="math inline">\(0 &lt; \theta &lt; 1\)</span> → <strong>RE is weighted average of Pooled and Within!</strong></li>
+</ul>
+<p>This is why RE can estimate time-invariant effects and is more efficient.</p>
+<hr>
+</section>
+</section>
+<section id="setup-and-data-preparation" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Setup and Data Preparation</h1>
+<section id="load-packages" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="load-packages"><span class="header-section-number">3.1</span> Load Packages</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clear workspace</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Set options</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">repr.plot.width =</span> <span class="dv">8</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">repr.plot.height =</span> <span class="dv">6</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">repr.plot.res =</span> <span class="dv">150</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">warn =</span> <span class="sc">-</span><span class="dv">1</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Set CRAN mirror</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repos =</span> <span class="fu">c</span>(<span class="at">CRAN =</span> <span class="st">"https://cloud.r-project.org/"</span>))</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Required packages</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>packages <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"plm"</span>,           <span class="co"># Panel Linear Models</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">"fixest"</span>,        <span class="co"># Fixed Effects Estimation</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">"AER"</span>,           <span class="co"># Applied Econometrics with R</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">"modelsummary"</span>,  <span class="co"># Regression tables</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="st">"lmtest"</span>,        <span class="co"># Coefficient testing</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="st">"clubSandwich"</span>,  <span class="co"># Cluster-robust SEs</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="st">"knitr"</span>,         <span class="co"># Tables</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="st">"dplyr"</span>,         <span class="co"># Data manipulation</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ggplot2"</span>        <span class="co"># Plotting</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Install if needed, then load</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">lapply</span>(packages, <span class="cf">function</span>(pkg) {</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(pkg, <span class="at">character.only =</span> <span class="cn">TRUE</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">install.packages</span>(pkg, <span class="at">dependencies =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">require</span>(pkg, <span class="at">character.only =</span> <span class="cn">TRUE</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>}))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="load-fatalities-data" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="load-fatalities-data"><span class="header-section-number">3.2</span> Load Fatalities Data</h2>
+<p>We’ll continue with the Fatalities dataset to build on the FE analysis:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"Fatalities"</span>, <span class="at">package =</span> <span class="st">"AER"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create variables (same as FE lecture)</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>Fatalities<span class="sc">$</span>fatal_rate <span class="ot">&lt;-</span> Fatalities<span class="sc">$</span>fatal <span class="sc">/</span> Fatalities<span class="sc">$</span>pop <span class="sc">*</span> <span class="dv">10000</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>Fatalities<span class="sc">$</span>log_income <span class="ot">&lt;-</span> <span class="fu">log</span>(Fatalities<span class="sc">$</span>income)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Panel structure:</strong></p>
+<ul>
+<li><strong>States:</strong> 48</li>
+<li><strong>Years:</strong> 7<br>
+</li>
+<li><strong>Total observations:</strong> 336</li>
+</ul>
+</section>
+<section id="load-grunfeld-investment-data" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="load-grunfeld-investment-data"><span class="header-section-number">3.3</span> Load Grunfeld Investment Data</h2>
+<p>For comparing FE and RE, we’ll use the classic Grunfeld investment dataset where orthogonality is more plausible:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load Grunfeld data from plm package</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"Grunfeld"</span>, <span class="at">package =</span> <span class="st">"plm"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Grunfeld panel structure:</strong></p>
+<ul>
+<li><strong>Firms:</strong> 10</li>
+<li><strong>Years:</strong> 20</li>
+<li><strong>Total observations:</strong> 200</li>
+</ul>
+<p><strong>Key variables:</strong></p>
+<ul>
+<li><code>inv</code>: gross investment</li>
+<li><code>value</code>: market value of firm</li>
+<li><code>capital</code>: stock of plant and equipment</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary statistics</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Grunfeld[, <span class="fu">c</span>(<span class="st">"inv"</span>, <span class="st">"value"</span>, <span class="st">"capital"</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      inv              value            capital       
+ Min.   :   0.93   Min.   :  58.12   Min.   :   0.80  
+ 1st Qu.:  33.56   1st Qu.: 199.97   1st Qu.:  79.17  
+ Median :  57.48   Median : 517.95   Median : 205.60  
+ Mean   : 145.96   Mean   :1081.68   Mean   : 276.02  
+ 3rd Qu.: 138.04   3rd Qu.:1679.85   3rd Qu.: 358.10  
+ Max.   :1486.70   Max.   :6241.70   Max.   :2226.30  </code></pre>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="estimating-random-effects" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Estimating Random Effects</h1>
+<p>Two packages dominate panel data estimation in R, and they have different strengths:</p>
+<p><strong><code>plm</code></strong> (Panel Linear Models):</p>
+<ul>
+<li>The go-to package for <strong>Random Effects</strong> estimation — supports GLS/quasi-demeaning, variance component extraction, and the Hausman test</li>
+<li>Also handles FE, but not as well integrated with ‘modelsummary’ for presentation-ready tables</li>
+<li>Best for: RE models, specification tests (<code>phtest</code>, <code>plmtest</code>, <code>pFtest</code>)</li>
+</ul>
+<p><strong><code>fixest</code></strong> (Fixed Effects by Splitting):</p>
+<ul>
+<li>Purpose-built for <strong>Fixed Effects</strong> — extremely fast, handles high-dimensional FEs, and has native cluster-robust SEs that work seamlessly with <code>modelsummary</code></li>
+<li>Does not support RE models</li>
+<li>Best for: FE estimation, clustered SEs, presentation-ready tables</li>
+</ul>
+<section id="basic-re-model-fatalities" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="basic-re-model-fatalities"><span class="header-section-number">4.1</span> Basic RE Model: Fatalities</h2>
+<p>Let’s start by estimating a Random Effects model on the Fatalities data:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Random Effects model</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>re_fatalities <span class="ot">&lt;-</span> <span class="fu">plm</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  fatal_rate <span class="sc">~</span> beertax,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> Fatalities,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">index =</span> <span class="fu">c</span>(<span class="st">"state"</span>, <span class="st">"year"</span>),</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">"random"</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(re_fatalities)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Oneway (individual) effect Random Effect Model 
+   (Swamy-Arora's transformation)
+
+Call:
+plm(formula = fatal_rate ~ beertax, data = Fatalities, model = "random", 
+    index = c("state", "year"))
+
+Balanced Panel: n = 48, T = 7, N = 336
+
+Effects:
+                  var std.dev share
+idiosyncratic 0.03605 0.18986 0.119
+individual    0.26604 0.51579 0.881
+theta: 0.8622
+
+Residuals:
+     Min.   1st Qu.    Median   3rd Qu.      Max. 
+-0.471090 -0.120045 -0.021530  0.091011  0.964350 
+
+Coefficients:
+             Estimate Std. Error z-value Pr(&gt;|z|)    
+(Intercept)  2.067141   0.099971 20.6773   &lt;2e-16 ***
+beertax     -0.052016   0.124176 -0.4189   0.6753    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Total Sum of Squares:    12.648
+Residual Sum of Squares: 12.642
+R-Squared:      0.00052508
+Adj. R-Squared: -0.0024674
+Chisq: 0.175467 on 1 DF, p-value: 0.6753</code></pre>
+</div>
+</div>
+<p><strong>Observations:</strong></p>
+<ol type="1">
+<li><strong>Theta (transformation parameter):</strong> θ ≈ 0.88
+<ul>
+<li>Close to 1 → RE is mostly demeaning (close to FE)</li>
+<li>Individual effects are important (<span class="math inline">\(\sigma_\alpha^2\)</span> is large)</li>
+</ul></li>
+<li><strong>Coefficient on beertax:</strong> Very different than FE.</li>
+</ol>
+<p>Let’s compare all three models:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pooled OLS</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>pooled_fatalities <span class="ot">&lt;-</span> <span class="fu">lm</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  fatal_rate <span class="sc">~</span> beertax,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> Fatalities</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Fixed Effects</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>fe_fatalities <span class="ot">&lt;-</span> <span class="fu">plm</span>(</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  fatal_rate <span class="sc">~</span> beertax,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> Fatalities,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">index =</span> <span class="fu">c</span>(<span class="st">"state"</span>, <span class="st">"year"</span>),</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">"within"</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Comparison table</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="st">"Pooled OLS"</span> <span class="ot">=</span> pooled_fatalities,</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>       <span class="st">"Fixed Effects"</span> <span class="ot">=</span> fe_fatalities,</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>       <span class="st">"Random Effects"</span> <span class="ot">=</span> re_fatalities),</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">stars =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">gof_map =</span> <span class="fu">c</span>(<span class="st">"nobs"</span>, <span class="st">"r.squared"</span>)</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_zkmnm3rvb1v0h0ttg4g4(i, j, css_id) {
+          var table = document.getElementById("tinytable_zkmnm3rvb1v0h0ttg4g4");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_zkmnm3rvb1v0h0ttg4g4');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_zkmnm3rvb1v0h0ttg4g4(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_zkmnm3rvb1v0h0ttg4g4");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 6, j: 2 }, { i: 6, j: 1 }, { i: 6, j: 3 },  ], css_id: 'tinytable_css_u8t29pqhkg3z94gf5fp4',}, 
+          { positions: [ { i: 4, j: 3 }, { i: 4, j: 1 }, { i: 4, j: 2 },  ], css_id: 'tinytable_css_ngszr3s87u33n6o55x7e',}, 
+          { positions: [ { i: 1, j: 1 }, { i: 1, j: 2 }, { i: 5, j: 1 }, { i: 2, j: 1 }, { i: 3, j: 1 }, { i: 5, j: 2 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 1, j: 3 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 5, j: 3 },  ], css_id: 'tinytable_css_1l5yoq8sl7k17tv3udiv',}, 
+          { positions: [ { i: 0, j: 1 }, { i: 0, j: 3 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_2a55x0qsbb98vdl6zx7n',}, 
+          { positions: [ { i: 6, j: 0 },  ], css_id: 'tinytable_css_d8nikunwkljwps1dclm6',}, 
+          { positions: [ { i: 4, j: 0 },  ], css_id: 'tinytable_css_9elvqpc8vs3i9tenfv4y',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 5, j: 0 },  ], css_id: 'tinytable_css_hifhxbzlgtg2s38a0zm3',}, 
+          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_f7hj703del51kdp9xtki',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_zkmnm3rvb1v0h0ttg4g4(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_u8t29pqhkg3z94gf5fp4, .table th.tinytable_css_u8t29pqhkg3z94gf5fp4 { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_ngszr3s87u33n6o55x7e, .table th.tinytable_css_ngszr3s87u33n6o55x7e { text-align: center; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_1l5yoq8sl7k17tv3udiv, .table th.tinytable_css_1l5yoq8sl7k17tv3udiv { text-align: center; }
+      .table td.tinytable_css_2a55x0qsbb98vdl6zx7n, .table th.tinytable_css_2a55x0qsbb98vdl6zx7n { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_d8nikunwkljwps1dclm6, .table th.tinytable_css_d8nikunwkljwps1dclm6 { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_9elvqpc8vs3i9tenfv4y, .table th.tinytable_css_9elvqpc8vs3i9tenfv4y { text-align: left; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_hifhxbzlgtg2s38a0zm3, .table th.tinytable_css_hifhxbzlgtg2s38a0zm3 { text-align: left; }
+      .table td.tinytable_css_f7hj703del51kdp9xtki, .table th.tinytable_css_f7hj703del51kdp9xtki { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_zkmnm3rvb1v0h0ttg4g4" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col"> </th>
+                <th scope="col">Pooled OLS</th>
+                <th scope="col">Fixed Effects</th>
+                <th scope="col">Random Effects</th>
+              </tr>
+        </thead>
+        <tfoot><tr><td colspan="4">+ p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td></tr></tfoot>
+        <tbody>
+                <tr>
+                  <td>(Intercept)</td>
+                  <td>1.853***</td>
+                  <td></td>
+                  <td>2.067***</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(0.044)</td>
+                  <td></td>
+                  <td>(0.100)</td>
+                </tr>
+                <tr>
+                  <td>beertax</td>
+                  <td>0.365***</td>
+                  <td>-0.656***</td>
+                  <td>-0.052</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(0.062)</td>
+                  <td>(0.188)</td>
+                  <td>(0.124)</td>
+                </tr>
+                <tr>
+                  <td>Num.Obs.</td>
+                  <td>336</td>
+                  <td>336</td>
+                  <td>336</td>
+                </tr>
+                <tr>
+                  <td>R2</td>
+                  <td>0.093</td>
+                  <td>0.041</td>
+                  <td>0.001</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+<p><strong>Key findings:</strong></p>
+<ol type="1">
+<li><strong>Sign reversal from Pooled to FE/RE:</strong>
+<ul>
+<li>Pooled: +0.365*** (wrong sign - omitted variable bias!)</li>
+<li>FE: -0.656***</li>
+<li>RE: -0.052 (not significant, p = 0.68)</li>
+</ul></li>
+<li><strong>FE vs RE difference:</strong>
+<ul>
+<li>Estimates differ substantially (-0.656 vs -0.052)</li>
+<li>FE is negative and significant</li>
+<li>RE is near zero and insignificant</li>
+<li>This suggests orthogonality assumption is violated</li>
+<li>Hausman test will tell us which to trust</li>
+</ul></li>
+</ol>
+</section>
+<section id="extracting-variance-components" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="extracting-variance-components"><span class="header-section-number">4.2</span> Extracting Variance Components</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract variance components from RE model</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>ercomp_fatalities <span class="ot">&lt;-</span> <span class="fu">ercomp</span>(fatal_rate <span class="sc">~</span> beertax, </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                            <span class="at">data =</span> Fatalities,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                            <span class="at">index =</span> <span class="fu">c</span>(<span class="st">"state"</span>, <span class="st">"year"</span>))</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co"># The ercomp object has a different structure</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract components correctly</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>sigma2_id <span class="ot">&lt;-</span> ercomp_fatalities<span class="sc">$</span>sigma2[<span class="dv">1</span>]      <span class="co"># Between variance</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>sigma2_idios <span class="ot">&lt;-</span> ercomp_fatalities<span class="sc">$</span>sigma2[<span class="dv">2</span>]   <span class="co"># Within variance</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>theta_val <span class="ot">&lt;-</span> ercomp_fatalities<span class="sc">$</span>theta[<span class="dv">1</span>]       <span class="co"># Theta parameter</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Variance Components:</strong></p>
+<ul>
+<li>σ²_α (between states): 0.036</li>
+<li>σ²_ε (within states): 0.266</li>
+<li>Intraclass correlation (ρ): 0.1193</li>
+<li>Theta (quasi-demeaning parameter): 0.8622</li>
+</ul>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li><strong>ρ ≈ 0.12:</strong> About 12% of total variance is between states (cross-sectional)</li>
+<li>About 88% is within-state variation over time</li>
+<li><strong>High θ ≈ 0.86:</strong> RE does substantial demeaning (moving toward FE)</li>
+<li>With theta this high, RE is closer to FE than to Pooled OLS</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="the-critical-orthogonality-assumption" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> The Critical Orthogonality Assumption</h1>
+<section id="testing-orthogonality-the-hausman-test" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="testing-orthogonality-the-hausman-test"><span class="header-section-number">5.1</span> Testing Orthogonality: The Hausman Test</h2>
+<p>The <strong>Hausman test</strong> is the workhorse specification test for panel data:</p>
+<p><strong>Null hypothesis:</strong> <span class="math inline">\(E[\alpha_i | \mathbf{X}_i] = 0\)</span> (orthogonality holds)</p>
+<ul>
+<li>If true: Both FE and RE are consistent, but RE is efficient</li>
+<li>If false: Only FE is consistent, RE is biased</li>
+</ul>
+<p><strong>Test statistic:</strong> <span class="math display">\[H = (\hat{\boldsymbol{\beta}}_{FE} - \hat{\boldsymbol{\beta}}_{RE})' [\text{Var}(\hat{\boldsymbol{\beta}}_{FE}) - \text{Var}(\hat{\boldsymbol{\beta}}_{RE})]^{-1} (\hat{\boldsymbol{\beta}}_{FE} - \hat{\boldsymbol{\beta}}_{RE})\]</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Hausman test: FE vs RE</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>hausman_fatalities <span class="ot">&lt;-</span> <span class="fu">phtest</span>(fe_fatalities, re_fatalities)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(hausman_fatalities)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Hausman Test
+
+data:  fatal_rate ~ beertax
+chisq = 18.353, df = 1, p-value = 1.835e-05
+alternative hypothesis: one model is inconsistent</code></pre>
+</div>
+</div>
+<p><strong>Decision:</strong></p>
+<ul>
+<li><strong>p-value ≈ 0.0001 (&lt; 0.05):</strong> Strong rejection!</li>
+<li>Orthogonality assumption is violated</li>
+<li><strong>Conclusion: Use Fixed Effects</strong> for Fatalities data</li>
+</ul>
+<p><strong>What this means:</strong> State-level unobserved factors (culture, geography, enforcement) that affect both beer taxes and traffic fatalities. These violate the RE assumption.</p>
+</section>
+<section id="visualizing-fe-vs-re-estimates" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="visualizing-fe-vs-re-estimates"><span class="header-section-number">5.2</span> Visualizing FE vs RE Estimates</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract coefficients</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>coef_pooled <span class="ot">&lt;-</span> <span class="fu">coef</span>(pooled_fatalities)[<span class="st">"beertax"</span>]</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>coef_fe <span class="ot">&lt;-</span> <span class="fu">coef</span>(fe_fatalities)[<span class="st">"beertax"</span>]</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>coef_re <span class="ot">&lt;-</span> <span class="fu">coef</span>(re_fatalities)[<span class="st">"beertax"</span>]</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Create comparison plot</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>comparison_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model =</span> <span class="fu">c</span>(<span class="st">"Pooled OLS"</span>, <span class="st">"Random Effects"</span>, <span class="st">"Fixed Effects"</span>),</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">Estimate =</span> <span class="fu">c</span>(coef_pooled, coef_re, coef_fe),</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">Type =</span> <span class="fu">c</span>(<span class="st">"Biased"</span>, <span class="st">"Questionable"</span>, <span class="st">"Consistent"</span>)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(comparison_df, <span class="fu">aes</span>(<span class="at">x =</span> Model, <span class="at">y =</span> Estimate, <span class="at">fill =</span> Type)) <span class="sc">+</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Comparison of Estimators: Beer Tax Effect"</span>,</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Hausman test rejects RE (p &lt; 0.001)"</span>,</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Coefficient on Beer Tax"</span>,</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">""</span>) <span class="sc">+</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Panel_part2_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li>Pooled OLS is clearly biased (wrong sign!)</li>
+<li>RE is between Pooled and FE (as expected from weighted average)</li>
+<li>FE is our trusted estimate (robust to endogeneity)</li>
+<li>The large difference between FE and RE confirms Hausman rejection</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="a-case-where-re-might-work-grunfeld-investment-data" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> A Case Where RE Might Work: Grunfeld Investment Data</h1>
+<section id="why-grunfeld-might-satisfy-orthogonality" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="why-grunfeld-might-satisfy-orthogonality"><span class="header-section-number">6.1</span> Why Grunfeld Might Satisfy Orthogonality</h2>
+<p>The Grunfeld dataset studies corporate investment decisions for 10 large U.S. corporations over 20 years (1935-1954). Let’s consider whether orthogonality is plausible:</p>
+<p><strong>Why RE might work:</strong></p>
+<ol type="1">
+<li><strong>Observable determinants:</strong> Market value and capital stock are directly observed</li>
+<li><strong>Balanced sample:</strong> All large, established corporations with complete data<br>
+</li>
+<li><strong>If</strong> firm-specific effects (management quality, efficiency) are uncorrelated with investment opportunities, orthogonality could hold</li>
+</ol>
+<p><strong>Why FE might be needed:</strong></p>
+<ol type="1">
+<li><strong>Selection:</strong> Better-managed firms may systematically have different market values</li>
+<li><strong>Unobserved quality:</strong> Firm characteristics could drive both investment and valuation</li>
+<li><strong>Endogeneity:</strong> Management decisions affect both variables</li>
+</ol>
+<p>Let’s estimate both models and let the Hausman test decide:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pooled OLS  </span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>pooled_grunfeld <span class="ot">&lt;-</span> <span class="fu">lm</span>(inv <span class="sc">~</span> value <span class="sc">+</span> capital, </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> Grunfeld)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Fixed Effects</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>fe_grunfeld <span class="ot">&lt;-</span> <span class="fu">plm</span>(inv <span class="sc">~</span> value <span class="sc">+</span> capital,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data =</span> Grunfeld,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">index =</span> <span class="fu">c</span>(<span class="st">"firm"</span>, <span class="st">"year"</span>),</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">model =</span> <span class="st">"within"</span>)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Random Effects</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>re_grunfeld <span class="ot">&lt;-</span> <span class="fu">plm</span>(inv <span class="sc">~</span> value <span class="sc">+</span> capital,</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data =</span> Grunfeld,</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>                   <span class="at">index =</span> <span class="fu">c</span>(<span class="st">"firm"</span>, <span class="st">"year"</span>),</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>                   <span class="at">model =</span> <span class="st">"random"</span>)</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Comparison</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="st">"Pooled OLS"</span> <span class="ot">=</span> pooled_grunfeld,</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>       <span class="st">"Fixed Effects"</span> <span class="ot">=</span> fe_grunfeld,</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>       <span class="st">"Random Effects"</span> <span class="ot">=</span> re_grunfeld),</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">stars =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">gof_map =</span> <span class="fu">c</span>(<span class="st">"nobs"</span>, <span class="st">"r.squared"</span>)</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_0w27xvyhdceptinuzhd8(i, j, css_id) {
+          var table = document.getElementById("tinytable_0w27xvyhdceptinuzhd8");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_0w27xvyhdceptinuzhd8');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_0w27xvyhdceptinuzhd8(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_0w27xvyhdceptinuzhd8");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 8, j: 2 }, { i: 8, j: 1 }, { i: 8, j: 3 },  ], css_id: 'tinytable_css_s23duq07k9sno2fqalwn',}, 
+          { positions: [ { i: 6, j: 2 }, { i: 6, j: 1 }, { i: 6, j: 3 },  ], css_id: 'tinytable_css_ckgw0fzouh2zimx7ycne',}, 
+          { positions: [ { i: 2, j: 1 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 1, j: 3 }, { i: 7, j: 1 }, { i: 3, j: 3 }, { i: 1, j: 1 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 5, j: 2 }, { i: 5, j: 3 }, { i: 7, j: 2 }, { i: 7, j: 3 }, { i: 5, j: 1 }, { i: 2, j: 3 }, { i: 4, j: 3 },  ], css_id: 'tinytable_css_ss7c4zguzpa229k029hj',}, 
+          { positions: [ { i: 0, j: 1 }, { i: 0, j: 3 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_rcmqntjr1yvzthmgcs29',}, 
+          { positions: [ { i: 8, j: 0 },  ], css_id: 'tinytable_css_gnhjrtlzmvmi1so5x89b',}, 
+          { positions: [ { i: 6, j: 0 },  ], css_id: 'tinytable_css_escoymswiarmz3k8aga3',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 7, j: 0 },  ], css_id: 'tinytable_css_3juoxlueunbhs1lmdsd9',}, 
+          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_cpz9bfyfae588uj3012k',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_0w27xvyhdceptinuzhd8(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_s23duq07k9sno2fqalwn, .table th.tinytable_css_s23duq07k9sno2fqalwn { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_ckgw0fzouh2zimx7ycne, .table th.tinytable_css_ckgw0fzouh2zimx7ycne { text-align: center; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_ss7c4zguzpa229k029hj, .table th.tinytable_css_ss7c4zguzpa229k029hj { text-align: center; }
+      .table td.tinytable_css_rcmqntjr1yvzthmgcs29, .table th.tinytable_css_rcmqntjr1yvzthmgcs29 { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_gnhjrtlzmvmi1so5x89b, .table th.tinytable_css_gnhjrtlzmvmi1so5x89b { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_escoymswiarmz3k8aga3, .table th.tinytable_css_escoymswiarmz3k8aga3 { text-align: left; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_3juoxlueunbhs1lmdsd9, .table th.tinytable_css_3juoxlueunbhs1lmdsd9 { text-align: left; }
+      .table td.tinytable_css_cpz9bfyfae588uj3012k, .table th.tinytable_css_cpz9bfyfae588uj3012k { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_0w27xvyhdceptinuzhd8" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col"> </th>
+                <th scope="col">Pooled OLS</th>
+                <th scope="col">Fixed Effects</th>
+                <th scope="col">Random Effects</th>
+              </tr>
+        </thead>
+        <tfoot><tr><td colspan="4">+ p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td></tr></tfoot>
+        <tbody>
+                <tr>
+                  <td>(Intercept)</td>
+                  <td>-42.714***</td>
+                  <td></td>
+                  <td>-57.834*</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(9.512)</td>
+                  <td></td>
+                  <td>(28.899)</td>
+                </tr>
+                <tr>
+                  <td>value</td>
+                  <td>0.116***</td>
+                  <td>0.110***</td>
+                  <td>0.110***</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(0.006)</td>
+                  <td>(0.012)</td>
+                  <td>(0.010)</td>
+                </tr>
+                <tr>
+                  <td>capital</td>
+                  <td>0.231***</td>
+                  <td>0.310***</td>
+                  <td>0.308***</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(0.025)</td>
+                  <td>(0.017)</td>
+                  <td>(0.017)</td>
+                </tr>
+                <tr>
+                  <td>Num.Obs.</td>
+                  <td>200</td>
+                  <td>200</td>
+                  <td>200</td>
+                </tr>
+                <tr>
+                  <td>R2</td>
+                  <td>0.812</td>
+                  <td>0.767</td>
+                  <td>0.770</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+<p><strong>Key observations:</strong></p>
+<ol type="1">
+<li><p><strong>Coefficient estimates:</strong></p>
+<ul>
+<li>All three models show positive effects of value and capital on investment</li>
+<li>FE and RE estimates are relatively similar</li>
+<li>Pooled OLS differs more substantially</li>
+</ul></li>
+<li><p><strong>Model comparison:</strong></p>
+<ul>
+<li>The similarity between FE and RE suggests orthogonality might hold</li>
+<li>Hausman test will formally test this</li>
+</ul></li>
+</ol>
+</section>
+<section id="hausman-test-grunfeld" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="hausman-test-grunfeld"><span class="header-section-number">6.2</span> Hausman Test: Grunfeld</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Hausman test for Grunfeld model</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>hausman_grunfeld <span class="ot">&lt;-</span> <span class="fu">phtest</span>(fe_grunfeld, re_grunfeld)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(hausman_grunfeld)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Hausman Test
+
+data:  inv ~ value + capital
+chisq = 2.3304, df = 2, p-value = 0.3119
+alternative hypothesis: one model is inconsistent</code></pre>
+</div>
+</div>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li>p-value = 0.31187</li>
+<li>If p &gt; 0.05: Cannot reject orthogonality → RE is preferred (more efficient)</li>
+<li>If p &lt; 0.05: Reject orthogonality → FE is preferred (more consistent)</li>
+</ul>
+<p><strong>What to report:</strong></p>
+<p>If Hausman <strong>fails to reject</strong> (p &gt; 0.05):</p>
+<ul>
+<li>Use RE for efficiency</li>
+<li>Can estimate time-invariant effects (like industry, firm age)</li>
+<li>Report: “Hausman test supports RE specification (p = X.XX)”</li>
+</ul>
+<p>If Hausman <strong>rejects</strong> (p &lt; 0.05):</p>
+<ul>
+<li>Use FE for consistency</li>
+<li>Cannot estimate time-invariant effects</li>
+<li>Report: “Hausman test rejects RE in favor of FE (p &lt; 0.05)”</li>
+</ul>
+<p><strong>For Grunfeld data:</strong> The test will help us determine whether unobserved firm characteristics (management quality, efficiency) correlate with investment opportunities.</p>
+</section>
+<section id="note-on-time-invariant-effects" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="note-on-time-invariant-effects"><span class="header-section-number">6.3</span> Note on Time-Invariant Effects</h2>
+<p>While the Grunfeld dataset doesn’t have time-invariant variables in our specification, the key point is:</p>
+<p><strong>If we wanted to estimate effects of time-invariant firm characteristics:</strong></p>
+<ul>
+<li>Industry sector (manufacturing vs.&nbsp;other)</li>
+<li>Firm age or founding year</li>
+<li>Geographic location</li>
+</ul>
+<p><strong>Then:</strong></p>
+<ul>
+<li>FE cannot estimate these (no within-firm variation)</li>
+<li>RE can estimate them (uses between-firm variation)</li>
+<li>But only if orthogonality holds!</li>
+</ul>
+<p>This is why the Hausman test is crucial when you need time-invariant effects.</p>
+<hr>
+</section>
+</section>
+<section id="complete-model-selection-workflow" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Complete Model Selection Workflow</h1>
+<section id="the-three-key-tests" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="the-three-key-tests"><span class="header-section-number">7.1</span> The Three Key Tests</h2>
+<p>When analyzing panel data, run these tests in order:</p>
+<section id="test-1-pooled-vs-fe-f-test" class="level3" data-number="7.1.1">
+<h3 data-number="7.1.1" class="anchored" data-anchor-id="test-1-pooled-vs-fe-f-test"><span class="header-section-number">7.1.1</span> Test 1: Pooled vs FE (F-test)</h3>
+<p><strong>Question:</strong> Do we need individual effects at all?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># F-test: Pooled OLS vs Fixed Effects</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>pFtest_fatalities <span class="ot">&lt;-</span> <span class="fu">pFtest</span>(fe_fatalities, pooled_fatalities)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(pFtest_fatalities)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    F test for individual effects
+
+data:  fatal_rate ~ beertax
+F = 52.179, df1 = 47, df2 = 287, p-value &lt; 2.2e-16
+alternative hypothesis: significant effects</code></pre>
+</div>
+</div>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li><strong>H₀:</strong> All <span class="math inline">\(\alpha_i = 0\)</span> (no individual effects, pooled is fine)</li>
+<li><strong>H₁:</strong> At least one <span class="math inline">\(\alpha_i \neq 0\)</span> (need panel methods)</li>
+<li>p &lt; 0.05 → Reject pooled, use FE or RE</li>
+</ul>
+</section>
+<section id="test-2-pooled-vs-re-breusch-pagan-lm-test" class="level3" data-number="7.1.2">
+<h3 data-number="7.1.2" class="anchored" data-anchor-id="test-2-pooled-vs-re-breusch-pagan-lm-test"><span class="header-section-number">7.1.2</span> Test 2: Pooled vs RE (Breusch-Pagan LM test)</h3>
+<p><strong>Question:</strong> Are random effects needed?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Breusch-Pagan LM test</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: plmtest needs a plm object, so we create a pooled plm model</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>pooled_plm <span class="ot">&lt;-</span> <span class="fu">plm</span>(fatal_rate <span class="sc">~</span> beertax, </span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">data =</span> Fatalities,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">index =</span> <span class="fu">c</span>(<span class="st">"state"</span>, <span class="st">"year"</span>),</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">model =</span> <span class="st">"pooling"</span>)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Now run the test</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plmtest</span>(pooled_plm, <span class="at">type =</span> <span class="st">"bp"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Lagrange Multiplier Test - (Breusch-Pagan)
+
+data:  fatal_rate ~ beertax
+chisq = 754.57, df = 1, p-value &lt; 2.2e-16
+alternative hypothesis: significant effects</code></pre>
+</div>
+</div>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li><strong>H₀:</strong> <span class="math inline">\(\sigma_\alpha^2 = 0\)</span> (no random effects)</li>
+<li><strong>H₁:</strong> <span class="math inline">\(\sigma_\alpha^2 &gt; 0\)</span> (random effects present)</li>
+<li>p &lt; 0.05 → Reject pooled, use RE (or FE)</li>
+</ul>
+<p><strong>Note:</strong> This test is between RE and Pooled, NOT between FE and RE!</p>
+</section>
+<section id="test-3-fe-vs-re-hausman-test" class="level3" data-number="7.1.3">
+<h3 data-number="7.1.3" class="anchored" data-anchor-id="test-3-fe-vs-re-hausman-test"><span class="header-section-number">7.1.3</span> Test 3: FE vs RE (Hausman test)</h3>
+<p><strong>Question:</strong> Is orthogonality plausible?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Hausman test (already ran above)</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(hausman_fatalities)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Hausman Test
+
+data:  fatal_rate ~ beertax
+chisq = 18.353, df = 1, p-value = 1.835e-05
+alternative hypothesis: one model is inconsistent</code></pre>
+</div>
+</div>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li><strong>H₀:</strong> <span class="math inline">\(E[\alpha_i | \mathbf{X}_i] = 0\)</span> (RE is consistent and efficient)</li>
+<li><strong>H₁:</strong> <span class="math inline">\(E[\alpha_i | \mathbf{X}_i] \neq 0\)</span> (only FE is consistent)</li>
+<li>p &lt; 0.05 → Use FE</li>
+<li>p &gt; 0.05 → Use RE</li>
+</ul>
+</section>
+</section>
+<section id="decision-flowchart-in-action" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="decision-flowchart-in-action"><span class="header-section-number">7.2</span> Decision Flowchart in Action</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create decision summary for Fatalities</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>pFtest_fatalities_pval <span class="ot">&lt;-</span> pFtest_fatalities<span class="sc">$</span>p.value</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>hausman_fatalities_pval <span class="ot">&lt;-</span> hausman_fatalities<span class="sc">$</span>p.value</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>final_choice <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(hausman_fatalities_pval <span class="sc">&lt;</span> <span class="fl">0.05</span>, </span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"FIXED EFFECTS"</span>, </span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"RANDOM EFFECTS"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Model Selection for Fatalities Data</strong></p>
+<p><strong>Test 1: F-test (Pooled vs FE)</strong></p>
+<ul>
+<li>p-value: &lt; 2.22e-16</li>
+<li>Decision: Reject Pooled → Individual effects needed</li>
+</ul>
+<p><strong>Test 2: Hausman (FE vs RE)</strong></p>
+<ul>
+<li>p-value: 1.835e-05</li>
+<li>Decision: Reject RE → Use Fixed Effects</li>
+</ul>
+<p><strong>FINAL CHOICE: FIXED EFFECTS</strong></p>
+</section>
+<section id="when-tests-disagree-economic-reasoning" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="when-tests-disagree-economic-reasoning"><span class="header-section-number">7.3</span> When Tests Disagree: Economic Reasoning</h2>
+<p><strong>Important:</strong> Don’t be a slave to tests! Use economic logic:</p>
+<p><strong>Case 1: Hausman doesn’t reject, but you suspect endogeneity</strong></p>
+<ul>
+<li>Example: Studying firm performance, know better managers choose better strategies</li>
+<li><strong>Decision:</strong> Use FE despite test (orthogonality implausible)</li>
+</ul>
+<p><strong>Case 2: Hausman rejects, but you need time-invariant effects</strong></p>
+<ul>
+<li><p>Example: Studying gender wage gap (main research question)</p></li>
+<li><p><strong>Options:</strong></p>
+<ol type="1">
+<li>Report both FE and RE with caveat</li>
+<li>Use cross-sectional methods with strong controls</li>
+<li>Find better identification strategy</li>
+</ol></li>
+</ul>
+<p><strong>Case 3: Borderline p-value (0.05 &lt; p &lt; 0.10)</strong></p>
+<ul>
+<li><strong>Solution:</strong> Report both FE and RE</li>
+<li>Check if substantive conclusions differ</li>
+<li>Discuss in robustness section</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="inference-cluster-robust-standard-errors" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Inference: Cluster-Robust Standard Errors</h1>
+<section id="why-clustering-matters" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="why-clustering-matters"><span class="header-section-number">8.1</span> Why Clustering Matters</h2>
+<p>Panel data violates independence: observations within units are correlated!</p>
+<p><strong>Problem:</strong> <span class="math display">\[\text{Cov}(\varepsilon_{it}, \varepsilon_{is}) \neq 0 \text{ for } t \neq s\]</span></p>
+<p><strong>Consequence:</strong> Standard SEs are too small → inflated t-stats → false rejections</p>
+<p><strong>Solution:</strong> Cluster-robust standard errors</p>
+</section>
+<section id="one-way-clustering-by-individual" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="one-way-clustering-by-individual"><span class="header-section-number">8.2</span> One-Way Clustering (by Individual)</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare standard errors for Fixed Effects model</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This shows the typical pattern: clustered SEs &gt; naive SEs</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>fe_fatalities_naive     <span class="ot">&lt;-</span> <span class="fu">feols</span>(fatal_rate <span class="sc">~</span> beertax <span class="sc">|</span> state <span class="sc">+</span> year,</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">data =</span> Fatalities, <span class="at">vcov =</span> <span class="st">"iid"</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>fe_fatalities_clustered <span class="ot">&lt;-</span> <span class="fu">feols</span>(fatal_rate <span class="sc">~</span> beertax <span class="sc">|</span> state <span class="sc">+</span> year,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">data =</span> Fatalities, <span class="at">cluster =</span> <span class="sc">~</span>state)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>se_naive_fe     <span class="ot">&lt;-</span> <span class="fu">unname</span>(<span class="fu">se</span>(fe_fatalities_naive)[<span class="st">"beertax"</span>])</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>se_clustered_fe <span class="ot">&lt;-</span> <span class="fu">unname</span>(<span class="fu">se</span>(fe_fatalities_clustered)[<span class="st">"beertax"</span>])</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">Method =</span> <span class="fu">c</span>(<span class="st">"FE Naive SEs (Wrong!)"</span>, <span class="st">"FE Clustered SEs (Correct)"</span>),</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">Std_Error =</span> <span class="fu">c</span>(se_naive_fe, se_clustered_fe),</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">Ratio =</span> <span class="fu">c</span>(<span class="dv">1</span>, se_clustered_fe <span class="sc">/</span> se_naive_fe)</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">4</span>, <span class="at">caption =</span> <span class="st">"FE Model: Naive vs Clustered SEs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>FE Model: Naive vs Clustered SEs</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Method</th>
+<th style="text-align: right;">Std_Error</th>
+<th style="text-align: right;">Ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">FE Naive SEs (Wrong!)</td>
+<td style="text-align: right;">0.1974</td>
+<td style="text-align: right;">1.0000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FE Clustered SEs (Correct)</td>
+<td style="text-align: right;">0.3571</td>
+<td style="text-align: right;">1.8091</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><strong>Key finding:</strong> Clustered SE is <strong>1.81 times</strong> the naive SE!</p>
+<p>This means:</p>
+<ul>
+<li>Clustered SE is 81% larger than naive SE</li>
+<li>Without clustering, we <strong>understate</strong> uncertainty</li>
+<li>Naive t-statistics are <strong>too large</strong> (overconfident)</li>
+<li><strong>Always cluster at minimum by individual/entity</strong></li>
+</ul>
+<p><strong>Important:</strong> In panel data, clustered SEs are typically LARGER than naive SEs because observations within units are correlated. Ignoring this correlation gives you false confidence.</p>
+</section>
+<section id="two-way-clustering-individual-time" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="two-way-clustering-individual-time"><span class="header-section-number">8.3</span> Two-Way Clustering (Individual + Time)</h2>
+<p>When you have both:</p>
+<ol type="1">
+<li>Serial correlation within individuals</li>
+<li>Cross-sectional correlation (common time shocks)</li>
+</ol>
+<p>Use <strong>two-way clustering:</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Same model, three different SE approaches</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>fe_naive    <span class="ot">&lt;-</span> <span class="fu">feols</span>(fatal_rate <span class="sc">~</span> beertax <span class="sc">|</span> state <span class="sc">+</span> year, </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">data =</span> Fatalities, <span class="at">vcov =</span> <span class="st">"iid"</span>)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>fe_oneway   <span class="ot">&lt;-</span> <span class="fu">feols</span>(fatal_rate <span class="sc">~</span> beertax <span class="sc">|</span> state <span class="sc">+</span> year, </span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">data =</span> Fatalities, <span class="at">cluster =</span> <span class="sc">~</span>state)</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>fe_twoway   <span class="ot">&lt;-</span> <span class="fu">feols</span>(fatal_rate <span class="sc">~</span> beertax <span class="sc">|</span> state <span class="sc">+</span> year, </span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>                     <span class="at">data =</span> Fatalities, <span class="at">cluster =</span> <span class="sc">~</span>state <span class="sc">+</span> year)</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="st">"Naive (Wrong)"</span> <span class="ot">=</span> fe_naive,</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>       <span class="st">"One-Way Clustered"</span> <span class="ot">=</span> fe_oneway,</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>       <span class="st">"Two-Way Clustered"</span> <span class="ot">=</span> fe_twoway),</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">stars =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">gof_map =</span> <span class="fu">c</span>(<span class="st">"nobs"</span>, <span class="st">"r2.within"</span>),</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">notes =</span> <span class="fu">c</span>(</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"All models: FE with state and year fixed effects; Naive: iid errors ignores all panel dependence; One-Way: clustered by state, accounts for serial correlation within states; Two-Way: clustered by state + year, also accounts for cross-sectional correlation (common time shocks)."</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_01eo2044srou1tqje6ds(i, j, css_id) {
+          var table = document.getElementById("tinytable_01eo2044srou1tqje6ds");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_01eo2044srou1tqje6ds');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_01eo2044srou1tqje6ds(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_01eo2044srou1tqje6ds");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 },  ], css_id: 'tinytable_css_8j6sfybmzt92uox9yw10',}, 
+          { positions: [ { i: 2, j: 3 }, { i: 2, j: 1 }, { i: 2, j: 2 },  ], css_id: 'tinytable_css_hyqwvksuduwt07qzls9k',}, 
+          { positions: [ { i: 3, j: 1 }, { i: 3, j: 2 }, { i: 1, j: 1 }, { i: 1, j: 2 }, { i: 1, j: 3 }, { i: 3, j: 3 },  ], css_id: 'tinytable_css_k2jw8w6sc3zgxwrujqo5',}, 
+          { positions: [ { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_8luoo2q1hvu96g244hjp',}, 
+          { positions: [ { i: 4, j: 0 },  ], css_id: 'tinytable_css_uywz54kfby9i25s7lgvz',}, 
+          { positions: [ { i: 2, j: 0 },  ], css_id: 'tinytable_css_xlspdkx6bggecnsax213',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 3, j: 0 },  ], css_id: 'tinytable_css_fjpas3g12scype17jzm7',}, 
+          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_7qo8clrmnwd2lbxaqmt5',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_01eo2044srou1tqje6ds(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_8j6sfybmzt92uox9yw10, .table th.tinytable_css_8j6sfybmzt92uox9yw10 { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_hyqwvksuduwt07qzls9k, .table th.tinytable_css_hyqwvksuduwt07qzls9k { text-align: center; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_k2jw8w6sc3zgxwrujqo5, .table th.tinytable_css_k2jw8w6sc3zgxwrujqo5 { text-align: center; }
+      .table td.tinytable_css_8luoo2q1hvu96g244hjp, .table th.tinytable_css_8luoo2q1hvu96g244hjp { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_uywz54kfby9i25s7lgvz, .table th.tinytable_css_uywz54kfby9i25s7lgvz { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_xlspdkx6bggecnsax213, .table th.tinytable_css_xlspdkx6bggecnsax213 { text-align: left; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_fjpas3g12scype17jzm7, .table th.tinytable_css_fjpas3g12scype17jzm7 { text-align: left; }
+      .table td.tinytable_css_7qo8clrmnwd2lbxaqmt5, .table th.tinytable_css_7qo8clrmnwd2lbxaqmt5 { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_01eo2044srou1tqje6ds" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col"> </th>
+                <th scope="col">Naive (Wrong)</th>
+                <th scope="col">One-Way Clustered</th>
+                <th scope="col">Two-Way Clustered</th>
+              </tr>
+        </thead>
+        <tfoot><tr><td colspan="4">+ p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td></tr>
+<tr><td colspan="4">All models: FE with state and year fixed effects; Naive: iid errors ignores all panel dependence; One-Way: clustered by state, accounts for serial correlation within states; Two-Way: clustered by state + year, also accounts for cross-sectional correlation (common time shocks).</td></tr></tfoot>
+        <tbody>
+                <tr>
+                  <td>beertax</td>
+                  <td>-0.640**</td>
+                  <td>-0.640+</td>
+                  <td>-0.640+</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(0.197)</td>
+                  <td>(0.357)</td>
+                  <td>(0.320)</td>
+                </tr>
+                <tr>
+                  <td>Num.Obs.</td>
+                  <td>336</td>
+                  <td>336</td>
+                  <td>336</td>
+                </tr>
+                <tr>
+                  <td>R2 Within</td>
+                  <td>0.036</td>
+                  <td>0.036</td>
+                  <td>0.036</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li>Naive SEs (no clustering): smallest, but <strong>wrong</strong> — ignores within-state correlation entirely</li>
+<li>One-way clustering (state): larger, accounts for serial correlation within states</li>
+<li>Two-way clustering (state + year): typically largest and most conservative — use when common time shocks are a concern</li>
+<li>For Fatalities, state clustering captures most dependence; two-way is a robustness check</li>
+</ul>
+</section>
+<section id="do-re-models-need-clustered-ses" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="do-re-models-need-clustered-ses"><span class="header-section-number">8.4</span> Do RE Models Need Clustered SEs?</h2>
+<p><strong>Short answer:</strong> Yes, in practice you should cluster even with RE.</p>
+<p><strong>Why this is subtle:</strong></p>
+<p>The RE estimator (feasible GLS) <strong>already accounts</strong> for within-individual correlation in the point estimates. That’s the whole point of GLS - it models the error structure:</p>
+<p><span class="math display">\[u_{it} = \alpha_i + \varepsilon_{it}\]</span> <span class="math display">\[\text{Cov}(u_{it}, u_{is}) = \sigma_\alpha^2 \neq 0\]</span></p>
+<p>The RE standard errors are based on this modeled correlation structure.</p>
+<p><strong>However, you should still cluster because:</strong></p>
+<ol type="1">
+<li><p><strong>Misspecification protection:</strong> RE assumes a very specific error structure (homoskedastic, equicorrelated). If this is wrong (heteroskedasticity, more complex serial correlation), the RE SEs are incorrect.</p></li>
+<li><p><strong>Unbalanced panels:</strong> Standard RE SEs can be unreliable with unbalanced data.</p></li>
+<li><p><strong>Conservative practice:</strong> Clustering costs little and provides insurance. Most applied econometricians cluster even with RE.</p></li>
+<li><p><strong>Hausman test robustness:</strong> If you’re comparing FE (clustered) to RE (unclustered), you’re not comparing apples-to-apples.</p></li>
+</ol>
+<p><strong>Bottom line:</strong></p>
+<ul>
+<li>Theoretically: RE SEs are “correct” if model is perfectly specified</li>
+<li>In practice: <strong>Always cluster for robustness</strong> to misspecification</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare RE model: standard SEs vs clustered SEs</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Standard RE SEs (from GLS estimation)</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>re_standard <span class="ot">&lt;-</span> <span class="fu">summary</span>(re_grunfeld)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>se_re_standard <span class="ot">&lt;-</span> re_standard<span class="sc">$</span>coefficients[<span class="st">"value"</span>, <span class="st">"Std. Error"</span>]</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Clustered RE SEs (robust to misspecification)</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>re_clustered <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  re_grunfeld,</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">vcov =</span> <span class="fu">vcovHC</span>(re_grunfeld, <span class="at">type =</span> <span class="st">"HC1"</span>, <span class="at">cluster =</span> <span class="st">"group"</span>)</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>se_re_clustered <span class="ot">&lt;-</span> re_clustered[<span class="st">"value"</span>, <span class="st">"Std. Error"</span>]</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">Method =</span> <span class="fu">c</span>(<span class="st">"RE Standard SEs"</span>, <span class="st">"RE Clustered SEs"</span>),</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">Std_Error =</span> <span class="fu">c</span>(se_re_standard, se_re_clustered),</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">Ratio =</span> <span class="fu">c</span>(<span class="dv">1</span>, se_re_clustered <span class="sc">/</span> se_re_standard)</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">4</span>, <span class="at">caption =</span> <span class="st">"RE Model: Standard vs Clustered SEs (Grunfeld)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>RE Model: Standard vs Clustered SEs (Grunfeld)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Method</th>
+<th style="text-align: right;">Std_Error</th>
+<th style="text-align: right;">Ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">RE Standard SEs</td>
+<td style="text-align: right;">0.0105</td>
+<td style="text-align: right;">1.0000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RE Clustered SEs</td>
+<td style="text-align: right;">0.0131</td>
+<td style="text-align: right;">1.2468</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><strong>Key point:</strong> Even though RE models the correlation structure, clustered SEs can still differ because:</p>
+<ul>
+<li>RE assumes homoskedastic, equicorrelated errors</li>
+<li>Clustering is robust to violations of these assumptions</li>
+<li>The difference shows the cost of insurance against misspecification</li>
+</ul>
+</section>
+<section id="when-to-cluster-by-what" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="when-to-cluster-by-what"><span class="header-section-number">8.5</span> When to Cluster By What?</h2>
+<p><strong>One-way clustering by individual:</strong></p>
+<ul>
+<li><strong>Use when:</strong> Main concern is serial correlation</li>
+<li><strong>Example:</strong> Person-level data, firm-level data</li>
+<li><strong>Default choice</strong> for most micro panels</li>
+</ul>
+<p><strong>One-way clustering by time:</strong></p>
+<ul>
+<li><strong>Use when:</strong> Main concern is common shocks</li>
+<li><strong>Example:</strong> Macro panels with synchronized business cycles</li>
+<li><strong>Rare</strong> in practice</li>
+</ul>
+<p><strong>Two-way clustering:</strong></p>
+<ul>
+<li><strong>Use when:</strong> Both concerns present</li>
+<li><strong>Example:</strong> State-level policies (states correlated, years correlated)</li>
+<li><strong>Most conservative</strong> option</li>
+</ul>
+<p><strong>Decision rule:</strong></p>
+<ol type="1">
+<li>Always cluster by individual (minimum)</li>
+<li>Add time clustering if common shocks plausible</li>
+<li>Use two-way for conservative inference</li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="common-mistakes-and-how-to-avoid-them" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> Common Mistakes and How to Avoid Them</h1>
+<section id="mistake-1-using-re-for-convenience" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="mistake-1-using-re-for-convenience"><span class="header-section-number">9.1</span> Mistake 1: Using RE for Convenience</h2>
+<p><strong>Wrong approach:</strong> “I want to estimate the gender wage gap, so I’ll use RE without checking Hausman.”</p>
+<p><strong>Why it’s wrong:</strong></p>
+<ul>
+<li>If orthogonality fails, RE is <strong>biased and inconsistent</strong></li>
+<li>Estimates won’t converge to truth even with infinite data</li>
+</ul>
+<p><strong>Correct approach:</strong></p>
+<ol type="1">
+<li>Run Hausman test first</li>
+<li>If rejects: Use FE (can’t estimate gender, but other estimates valid)</li>
+<li>If needed, use cross-sectional methods for gender gap</li>
+</ol>
+</section>
+<section id="mistake-2-trusting-hausman-blindly" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="mistake-2-trusting-hausman-blindly"><span class="header-section-number">9.2</span> Mistake 2: Trusting Hausman Blindly</h2>
+<p><strong>Wrong approach:</strong> “Hausman p = 0.06 &gt; 0.05, so I’ll use RE.”</p>
+<p><strong>Why it’s wrong:</strong></p>
+<ul>
+<li>Test has finite-sample issues</li>
+<li>Economic logic might clearly suggest endogeneity</li>
+<li>Borderline p-values are ambiguous</li>
+</ul>
+<p><strong>Correct approach:</strong></p>
+<ol type="1">
+<li>Use economic reasoning first</li>
+<li>Test as confirmation, not decision-maker</li>
+<li>For borderline p-values: report both FE and RE</li>
+</ol>
+</section>
+<section id="mistake-3-forgetting-to-cluster" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="mistake-3-forgetting-to-cluster"><span class="header-section-number">9.3</span> Mistake 3: Forgetting to Cluster</h2>
+<p><strong>Wrong approach:</strong></p>
+<p>“I used fixed effects, so I’m controlling for heterogeneity. Standard SEs are fine.”</p>
+<p><strong>OR</strong></p>
+<p>“I used random effects, which models the error correlation via GLS. Standard SEs are fine.”</p>
+<p><strong>Why both are wrong:</strong></p>
+<p><strong>For FE:</strong></p>
+<ul>
+<li>FE removes time-invariant heterogeneity</li>
+<li>Doesn’t make errors independent over time!</li>
+<li>Serial correlation remains</li>
+</ul>
+<p><strong>For RE:</strong></p>
+<ul>
+<li>RE models correlation structure via GLS</li>
+<li>But assumes specific form (homoskedastic, equicorrelated)</li>
+<li>If violated, standard RE SEs are wrong</li>
+<li>Clustering provides robustness to misspecification</li>
+</ul>
+<p><strong>Correct approach:</strong></p>
+<ul>
+<li><strong>Always cluster by entity</strong> (minimum) for both FE and RE</li>
+<li>Consider two-way clustering</li>
+<li>Report clustered SEs in all panel models</li>
+</ul>
+<p><strong>Key observation:</strong> Naive SE understates uncertainty!</p>
+</section>
+<section id="mistake-4-comparing-r²-across-models" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="mistake-4-comparing-r²-across-models"><span class="header-section-number">9.4</span> Mistake 4: Comparing R² Across Models</h2>
+<p><strong>Wrong approach:</strong> “RE has R² = 0.15, FE has R² = 0.36. FE fits better!”</p>
+<p><strong>Why it’s wrong:</strong></p>
+<ul>
+<li>They measure different things</li>
+<li>RE uses overall R², FE uses within R²</li>
+<li>Not directly comparable</li>
+</ul>
+<p><strong>Correct approach:</strong></p>
+<ul>
+<li>Report appropriate R² for each model</li>
+<li>Don’t use R² to choose between FE and RE</li>
+<li>Use specification tests (Hausman) instead</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="summary-and-best-practices" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> Summary and Best Practices</h1>
+<section id="key-takeaways" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">10.1</span> Key Takeaways</h2>
+<section id="model-comparison" class="level3" data-number="10.1.1">
+<h3 data-number="10.1.1" class="anchored" data-anchor-id="model-comparison"><span class="header-section-number">10.1.1</span> 1. Model Comparison</h3>
+<p><strong>Pooled OLS:</strong></p>
+<ul>
+<li>✗ Ignores individual effects</li>
+<li>✗ Biased if heterogeneity correlates with X</li>
+<li>✓ Can estimate time-invariant effects</li>
+<li><strong>Use:</strong> Only when no individual effects (rare)</li>
+</ul>
+<p><strong>Fixed Effects:</strong></p>
+<ul>
+<li>✓ Robust to endogeneity (allows correlation)</li>
+<li>✓ No instruments needed</li>
+<li>✗ Cannot estimate time-invariant effects</li>
+<li>✗ Less efficient (discards between variation)</li>
+<li><strong>Use:</strong> When selection on unobservables likely (most economics applications)</li>
+</ul>
+<p><strong>Random Effects:</strong></p>
+<ul>
+<li>✓ Can estimate time-invariant effects</li>
+<li>✓ More efficient (uses both variations)</li>
+<li>✗ Requires orthogonality (strong assumption!)</li>
+<li>✗ Biased if assumption fails</li>
+<li><strong>Use:</strong> When orthogonality plausible OR time-invariant effects needed</li>
+</ul>
+</section>
+<section id="testing-workflow" class="level3" data-number="10.1.2">
+<h3 data-number="10.1.2" class="anchored" data-anchor-id="testing-workflow"><span class="header-section-number">10.1.2</span> 2. Testing Workflow</h3>
+<p><strong>Standard Testing Sequence:</strong></p>
+<ol type="1">
+<li>F-test: Pooled vs FE (usually rejects)</li>
+<li>Hausman: FE vs RE (key test)</li>
+<li>Economic reasoning: Does orthogonality make sense?</li>
+<li>Cluster standard errors: Always!</li>
+</ol>
+</section>
+<section id="inference-best-practices" class="level3" data-number="10.1.3">
+<h3 data-number="10.1.3" class="anchored" data-anchor-id="inference-best-practices"><span class="header-section-number">10.1.3</span> 3. Inference Best Practices</h3>
+<p><strong>Always:</strong></p>
+<ul>
+<li>Cluster standard errors (minimum by entity)</li>
+<li>Report which clustering you used</li>
+<li>Use robust covariance matrices</li>
+</ul>
+<p><strong>Consider:</strong></p>
+<ul>
+<li>Two-way clustering if common shocks</li>
+<li>Bootstrap for small number of clusters</li>
+<li>Report multiple specifications as robustness</li>
+</ul>
+<p><strong>Never:</strong></p>
+<ul>
+<li>Use naive standard errors</li>
+<li>Compare R² across different models</li>
+<li>Choose model based on R² or significance</li>
+</ul>
+</section>
+</section>
+<section id="practical-recommendations" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="practical-recommendations"><span class="header-section-number">10.2</span> Practical Recommendations</h2>
+<section id="for-applied-work" class="level3" data-number="10.2.1">
+<h3 data-number="10.2.1" class="anchored" data-anchor-id="for-applied-work"><span class="header-section-number">10.2.1</span> For Applied Work</h3>
+<ol type="1">
+<li><strong>Start with FE as default</strong>
+<ul>
+<li>Most economics applications have selection</li>
+<li>Orthogonality is strong assumption</li>
+<li>FE is conservative choice</li>
+</ul></li>
+<li><strong>Use RE when:</strong>
+<ul>
+<li>Need time-invariant effects (and Hausman doesn’t reject badly)</li>
+<li>Experimental setting (random assignment)</li>
+<li>Theory strongly supports orthogonality</li>
+</ul></li>
+<li><strong>Report robustness:</strong>
+<ul>
+<li>Show both FE and RE if Hausman borderline</li>
+<li>Demonstrate results aren’t sensitive to choice</li>
+<li>Be transparent about assumptions</li>
+</ul></li>
+<li><strong>Get inference right:</strong>
+<ul>
+<li>Always cluster (at least by entity)</li>
+<li>Use conservative SEs when unsure</li>
+<li>Report clustering strategy explicitly</li>
+</ul></li>
+</ol>
+</section>
+<section id="for-your-research" class="level3" data-number="10.2.2">
+<h3 data-number="10.2.2" class="anchored" data-anchor-id="for-your-research"><span class="header-section-number">10.2.2</span> For Your Research</h3>
+<p><strong>When writing a paper:</strong></p>
+<ol type="1">
+<li><strong>Model selection section:</strong>
+<ul>
+<li>Report Hausman test</li>
+<li>Justify choice with economic reasoning</li>
+<li>Show both if borderline</li>
+</ul></li>
+<li><strong>Results section:</strong>
+<ul>
+<li>Report main model with clustered SEs</li>
+<li>Note clustering method in table</li>
+<li>Robustness checks in appendix</li>
+</ul></li>
+<li><strong>Interpretation:</strong>
+<ul>
+<li>Be clear about what you can/cannot estimate</li>
+<li>FE: “controlling for time-invariant factors”</li>
+<li>RE: “assuming orthogonality between…”</li>
+</ul></li>
+</ol>
+<hr>
+</section>
+</section>
+</section>
+<section id="further-resources" class="level1" data-number="11">
+<h1 data-number="11"><span class="header-section-number">11</span> Further Resources</h1>
+<section id="essential-reading" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="essential-reading"><span class="header-section-number">11.1</span> Essential Reading</h2>
+<p><strong>Textbooks:</strong></p>
+<ul>
+<li>Wooldridge (2010). <em>Econometric Analysis of Cross Section and Panel Data</em>. Chapters 10-11</li>
+<li>Greene (2018). <em>Econometric Analysis</em>. Chapter 11</li>
+<li>Baltagi (2021). <em>Econometric Analysis of Panel Data</em>. Chapters 2-3</li>
+</ul>
+<p><strong>Classic Papers:</strong></p>
+<ul>
+<li>Hausman, J. A. (1978). “Specification Tests in Econometrics.” <em>Econometrica</em>, 46(6), 1251-1271.</li>
+<li>Mundlak, Y. (1978). “On the Pooling of Time Series and Cross Section Data.” <em>Econometrica</em>, 46(1), 69-85.</li>
+</ul>
+<p><strong>Applied Guides:</strong></p>
+<ul>
+<li>Angrist &amp; Pischke (2009). <em>Mostly Harmless Econometrics</em>. Chapter 5</li>
+<li>Cameron &amp; Trivedi (2005). <em>Microeconometrics</em>. Chapters 21-23</li>
+</ul>
+</section>
+<section id="r-resources" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="r-resources"><span class="header-section-number">11.2</span> R Resources</h2>
+<p><strong>Packages:</strong></p>
+<ul>
+<li><code>plm</code>: <a href="https://cran.r-project.org/web/packages/plm/vignettes/A_plmPackage.html">Panel Data vignette</a></li>
+<li><code>fixest</code>: <a href="https://lrberge.github.io/fixest/">Fast Fixed Effects</a></li>
+<li><code>clubSandwich</code>: <a href="https://cran.r-project.org/web/packages/clubSandwich/">Cluster-robust SEs</a></li>
+</ul>
+<p><strong>Tutorials:</strong></p>
+<ul>
+<li><a href="https://www.jstatsoft.org/article/view/v027i02">Panel Data Econometrics in R</a></li>
+<li><a href="https://www.rdocumentation.org/packages/plm/versions/2.4-0">plm examples</a></li>
+</ul>
+</section>
+<section id="next-steps" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="next-steps"><span class="header-section-number">11.3</span> Next Steps</h2>
+<p><strong>Topics to explore:</strong></p>
+<ol type="1">
+<li>Dynamic panel models (Arellano-Bond)</li>
+<li>Nonlinear panel models</li>
+<li>Difference-in-differences (TWFE)</li>
+</ol>
+<p><strong>For your research:</strong></p>
+<ol type="1">
+<li>Practice with your own data</li>
+<li>Replicate published papers</li>
+<li>Compare FE and RE systematically</li>
+<li>Build intuition about when orthogonality holds</li>
+</ol>
+<hr>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
