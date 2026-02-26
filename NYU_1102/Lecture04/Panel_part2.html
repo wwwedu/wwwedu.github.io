@@ -109,22 +109,90 @@ window.Quarto = {
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-full toc-left">
 <div id="quarto-sidebar-toc-left" class="sidebar toc-left">
-  <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="99">
+  <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
   <li><a href="#what-this-notebook-covers" id="toc-what-this-notebook-covers" class="nav-link active" data-scroll-target="#what-this-notebook-covers">What This Notebook Covers</a></li>
-  <li><a href="#review-where-we-left-off" id="toc-review-where-we-left-off" class="nav-link" data-scroll-target="#review-where-we-left-off"><span class="header-section-number">1</span> Review: Where We Left Off</a></li>
-  <li><a href="#the-random-effects-model" id="toc-the-random-effects-model" class="nav-link" data-scroll-target="#the-random-effects-model"><span class="header-section-number">2</span> The Random Effects Model</a></li>
-  <li><a href="#setup-and-data-preparation" id="toc-setup-and-data-preparation" class="nav-link" data-scroll-target="#setup-and-data-preparation"><span class="header-section-number">3</span> Setup and Data Preparation</a></li>
-  <li><a href="#estimating-random-effects" id="toc-estimating-random-effects" class="nav-link" data-scroll-target="#estimating-random-effects"><span class="header-section-number">4</span> Estimating Random Effects</a></li>
-  <li><a href="#the-critical-orthogonality-assumption" id="toc-the-critical-orthogonality-assumption" class="nav-link" data-scroll-target="#the-critical-orthogonality-assumption"><span class="header-section-number">5</span> The Critical Orthogonality Assumption</a></li>
-  <li><a href="#a-case-where-re-might-work-grunfeld-investment-data" id="toc-a-case-where-re-might-work-grunfeld-investment-data" class="nav-link" data-scroll-target="#a-case-where-re-might-work-grunfeld-investment-data"><span class="header-section-number">6</span> A Case Where RE Might Work: Grunfeld Investment Data</a></li>
-  <li><a href="#complete-model-selection-workflow" id="toc-complete-model-selection-workflow" class="nav-link" data-scroll-target="#complete-model-selection-workflow"><span class="header-section-number">7</span> Complete Model Selection Workflow</a></li>
-  <li><a href="#inference-cluster-robust-standard-errors" id="toc-inference-cluster-robust-standard-errors" class="nav-link" data-scroll-target="#inference-cluster-robust-standard-errors"><span class="header-section-number">8</span> Inference: Cluster-Robust Standard Errors</a></li>
-  <li><a href="#common-mistakes-and-how-to-avoid-them" id="toc-common-mistakes-and-how-to-avoid-them" class="nav-link" data-scroll-target="#common-mistakes-and-how-to-avoid-them"><span class="header-section-number">9</span> Common Mistakes and How to Avoid Them</a></li>
-  <li><a href="#summary-and-best-practices" id="toc-summary-and-best-practices" class="nav-link" data-scroll-target="#summary-and-best-practices"><span class="header-section-number">10</span> Summary and Best Practices</a></li>
-  <li><a href="#further-resources" id="toc-further-resources" class="nav-link" data-scroll-target="#further-resources"><span class="header-section-number">11</span> Further Resources</a></li>
+  <li><a href="#review-where-we-left-off" id="toc-review-where-we-left-off" class="nav-link" data-scroll-target="#review-where-we-left-off"><span class="header-section-number">1</span> Review: Where We Left Off</a>
+  <ul class="collapse">
+  <li><a href="#fixed-effects-recap" id="toc-fixed-effects-recap" class="nav-link" data-scroll-target="#fixed-effects-recap"><span class="header-section-number">1.1</span> Fixed Effects Recap</a></li>
+  <li><a href="#the-motivation-for-random-effects" id="toc-the-motivation-for-random-effects" class="nav-link" data-scroll-target="#the-motivation-for-random-effects"><span class="header-section-number">1.2</span> The Motivation for Random Effects</a></li>
+  </ul></li>
+  <li><a href="#the-random-effects-model" id="toc-the-random-effects-model" class="nav-link" data-scroll-target="#the-random-effects-model"><span class="header-section-number">2</span> The Random Effects Model</a>
+  <ul class="collapse">
+  <li><a href="#model-specification" id="toc-model-specification" class="nav-link" data-scroll-target="#model-specification"><span class="header-section-number">2.1</span> Model Specification</a></li>
+  <li><a href="#the-composite-error" id="toc-the-composite-error" class="nav-link" data-scroll-target="#the-composite-error"><span class="header-section-number">2.2</span> The Composite Error</a></li>
+  <li><a href="#why-ols-fails" id="toc-why-ols-fails" class="nav-link" data-scroll-target="#why-ols-fails"><span class="header-section-number">2.3</span> Why OLS Fails</a></li>
+  <li><a href="#feasible-gls-estimation" id="toc-feasible-gls-estimation" class="nav-link" data-scroll-target="#feasible-gls-estimation"><span class="header-section-number">2.4</span> Feasible GLS Estimation</a></li>
+  </ul></li>
+  <li><a href="#setup-and-data-preparation" id="toc-setup-and-data-preparation" class="nav-link" data-scroll-target="#setup-and-data-preparation"><span class="header-section-number">3</span> Setup and Data Preparation</a>
+  <ul class="collapse">
+  <li><a href="#load-packages" id="toc-load-packages" class="nav-link" data-scroll-target="#load-packages"><span class="header-section-number">3.1</span> Load Packages</a></li>
+  <li><a href="#load-fatalities-data" id="toc-load-fatalities-data" class="nav-link" data-scroll-target="#load-fatalities-data"><span class="header-section-number">3.2</span> Load Fatalities Data</a></li>
+  <li><a href="#load-grunfeld-investment-data" id="toc-load-grunfeld-investment-data" class="nav-link" data-scroll-target="#load-grunfeld-investment-data"><span class="header-section-number">3.3</span> Load Grunfeld Investment Data</a></li>
+  </ul></li>
+  <li><a href="#estimating-random-effects" id="toc-estimating-random-effects" class="nav-link" data-scroll-target="#estimating-random-effects"><span class="header-section-number">4</span> Estimating Random Effects</a>
+  <ul class="collapse">
+  <li><a href="#basic-re-model-fatalities" id="toc-basic-re-model-fatalities" class="nav-link" data-scroll-target="#basic-re-model-fatalities"><span class="header-section-number">4.1</span> Basic RE Model: Fatalities</a></li>
+  <li><a href="#extracting-variance-components" id="toc-extracting-variance-components" class="nav-link" data-scroll-target="#extracting-variance-components"><span class="header-section-number">4.2</span> Extracting Variance Components</a></li>
+  </ul></li>
+  <li><a href="#the-critical-orthogonality-assumption" id="toc-the-critical-orthogonality-assumption" class="nav-link" data-scroll-target="#the-critical-orthogonality-assumption"><span class="header-section-number">5</span> The Critical Orthogonality Assumption</a>
+  <ul class="collapse">
+  <li><a href="#testing-orthogonality-the-hausman-test" id="toc-testing-orthogonality-the-hausman-test" class="nav-link" data-scroll-target="#testing-orthogonality-the-hausman-test"><span class="header-section-number">5.1</span> Testing Orthogonality: The Hausman Test</a></li>
+  <li><a href="#visualizing-fe-vs-re-estimates" id="toc-visualizing-fe-vs-re-estimates" class="nav-link" data-scroll-target="#visualizing-fe-vs-re-estimates"><span class="header-section-number">5.2</span> Visualizing FE vs RE Estimates</a></li>
+  </ul></li>
+  <li><a href="#a-case-where-re-might-work-grunfeld-investment-data" id="toc-a-case-where-re-might-work-grunfeld-investment-data" class="nav-link" data-scroll-target="#a-case-where-re-might-work-grunfeld-investment-data"><span class="header-section-number">6</span> A Case Where RE Might Work: Grunfeld Investment Data</a>
+  <ul class="collapse">
+  <li><a href="#why-grunfeld-might-satisfy-orthogonality" id="toc-why-grunfeld-might-satisfy-orthogonality" class="nav-link" data-scroll-target="#why-grunfeld-might-satisfy-orthogonality"><span class="header-section-number">6.1</span> Why Grunfeld Might Satisfy Orthogonality</a></li>
+  <li><a href="#hausman-test-grunfeld" id="toc-hausman-test-grunfeld" class="nav-link" data-scroll-target="#hausman-test-grunfeld"><span class="header-section-number">6.2</span> Hausman Test: Grunfeld</a></li>
+  <li><a href="#note-on-time-invariant-effects" id="toc-note-on-time-invariant-effects" class="nav-link" data-scroll-target="#note-on-time-invariant-effects"><span class="header-section-number">6.3</span> Note on Time-Invariant Effects</a></li>
+  </ul></li>
+  <li><a href="#complete-model-selection-workflow" id="toc-complete-model-selection-workflow" class="nav-link" data-scroll-target="#complete-model-selection-workflow"><span class="header-section-number">7</span> Complete Model Selection Workflow</a>
+  <ul class="collapse">
+  <li><a href="#the-three-key-tests" id="toc-the-three-key-tests" class="nav-link" data-scroll-target="#the-three-key-tests"><span class="header-section-number">7.1</span> The Three Key Tests</a>
+  <ul class="collapse">
+  <li><a href="#test-1-pooled-vs-fe-f-test" id="toc-test-1-pooled-vs-fe-f-test" class="nav-link" data-scroll-target="#test-1-pooled-vs-fe-f-test"><span class="header-section-number">7.1.1</span> Test 1: Pooled vs FE (F-test)</a></li>
+  <li><a href="#test-2-pooled-vs-re-breusch-pagan-lm-test" id="toc-test-2-pooled-vs-re-breusch-pagan-lm-test" class="nav-link" data-scroll-target="#test-2-pooled-vs-re-breusch-pagan-lm-test"><span class="header-section-number">7.1.2</span> Test 2: Pooled vs RE (Breusch-Pagan LM test)</a></li>
+  <li><a href="#test-3-fe-vs-re-hausman-test" id="toc-test-3-fe-vs-re-hausman-test" class="nav-link" data-scroll-target="#test-3-fe-vs-re-hausman-test"><span class="header-section-number">7.1.3</span> Test 3: FE vs RE (Hausman test)</a></li>
+  </ul></li>
+  <li><a href="#decision-flowchart-in-action" id="toc-decision-flowchart-in-action" class="nav-link" data-scroll-target="#decision-flowchart-in-action"><span class="header-section-number">7.2</span> Decision Flowchart in Action</a></li>
+  <li><a href="#when-tests-disagree-economic-reasoning" id="toc-when-tests-disagree-economic-reasoning" class="nav-link" data-scroll-target="#when-tests-disagree-economic-reasoning"><span class="header-section-number">7.3</span> When Tests Disagree: Economic Reasoning</a></li>
+  </ul></li>
+  <li><a href="#inference-cluster-robust-standard-errors" id="toc-inference-cluster-robust-standard-errors" class="nav-link" data-scroll-target="#inference-cluster-robust-standard-errors"><span class="header-section-number">8</span> Inference: Cluster-Robust Standard Errors</a>
+  <ul class="collapse">
+  <li><a href="#why-clustering-matters" id="toc-why-clustering-matters" class="nav-link" data-scroll-target="#why-clustering-matters"><span class="header-section-number">8.1</span> Why Clustering Matters</a></li>
+  <li><a href="#one-way-clustering-by-individual" id="toc-one-way-clustering-by-individual" class="nav-link" data-scroll-target="#one-way-clustering-by-individual"><span class="header-section-number">8.2</span> One-Way Clustering (by Individual)</a></li>
+  <li><a href="#two-way-clustering-individual-time" id="toc-two-way-clustering-individual-time" class="nav-link" data-scroll-target="#two-way-clustering-individual-time"><span class="header-section-number">8.3</span> Two-Way Clustering (Individual + Time)</a></li>
+  <li><a href="#do-re-models-need-clustered-ses" id="toc-do-re-models-need-clustered-ses" class="nav-link" data-scroll-target="#do-re-models-need-clustered-ses"><span class="header-section-number">8.4</span> Do RE Models Need Clustered SEs?</a></li>
+  <li><a href="#when-to-cluster-by-what" id="toc-when-to-cluster-by-what" class="nav-link" data-scroll-target="#when-to-cluster-by-what"><span class="header-section-number">8.5</span> When to Cluster By What?</a></li>
+  </ul></li>
+  <li><a href="#common-mistakes-and-how-to-avoid-them" id="toc-common-mistakes-and-how-to-avoid-them" class="nav-link" data-scroll-target="#common-mistakes-and-how-to-avoid-them"><span class="header-section-number">9</span> Common Mistakes and How to Avoid Them</a>
+  <ul class="collapse">
+  <li><a href="#mistake-1-using-re-for-convenience" id="toc-mistake-1-using-re-for-convenience" class="nav-link" data-scroll-target="#mistake-1-using-re-for-convenience"><span class="header-section-number">9.1</span> Mistake 1: Using RE for Convenience</a></li>
+  <li><a href="#mistake-2-trusting-hausman-blindly" id="toc-mistake-2-trusting-hausman-blindly" class="nav-link" data-scroll-target="#mistake-2-trusting-hausman-blindly"><span class="header-section-number">9.2</span> Mistake 2: Trusting Hausman Blindly</a></li>
+  <li><a href="#mistake-3-forgetting-to-cluster" id="toc-mistake-3-forgetting-to-cluster" class="nav-link" data-scroll-target="#mistake-3-forgetting-to-cluster"><span class="header-section-number">9.3</span> Mistake 3: Forgetting to Cluster</a></li>
+  <li><a href="#mistake-4-comparing-r²-across-models" id="toc-mistake-4-comparing-r²-across-models" class="nav-link" data-scroll-target="#mistake-4-comparing-r²-across-models"><span class="header-section-number">9.4</span> Mistake 4: Comparing R² Across Models</a></li>
+  </ul></li>
+  <li><a href="#summary-and-best-practices" id="toc-summary-and-best-practices" class="nav-link" data-scroll-target="#summary-and-best-practices"><span class="header-section-number">10</span> Summary and Best Practices</a>
+  <ul class="collapse">
+  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">10.1</span> Key Takeaways</a>
+  <ul class="collapse">
+  <li><a href="#model-comparison" id="toc-model-comparison" class="nav-link" data-scroll-target="#model-comparison"><span class="header-section-number">10.1.1</span> 1. Model Comparison</a></li>
+  <li><a href="#testing-workflow" id="toc-testing-workflow" class="nav-link" data-scroll-target="#testing-workflow"><span class="header-section-number">10.1.2</span> 2. Testing Workflow</a></li>
+  <li><a href="#inference-best-practices" id="toc-inference-best-practices" class="nav-link" data-scroll-target="#inference-best-practices"><span class="header-section-number">10.1.3</span> 3. Inference Best Practices</a></li>
+  </ul></li>
+  <li><a href="#practical-recommendations" id="toc-practical-recommendations" class="nav-link" data-scroll-target="#practical-recommendations"><span class="header-section-number">10.2</span> Practical Recommendations</a>
+  <ul class="collapse">
+  <li><a href="#for-applied-work" id="toc-for-applied-work" class="nav-link" data-scroll-target="#for-applied-work"><span class="header-section-number">10.2.1</span> For Applied Work</a></li>
+  <li><a href="#for-your-research" id="toc-for-your-research" class="nav-link" data-scroll-target="#for-your-research"><span class="header-section-number">10.2.2</span> For Your Research</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#further-resources" id="toc-further-resources" class="nav-link" data-scroll-target="#further-resources"><span class="header-section-number">11</span> Further Resources</a>
+  <ul class="collapse">
+  <li><a href="#essential-reading" id="toc-essential-reading" class="nav-link" data-scroll-target="#essential-reading"><span class="header-section-number">11.1</span> Essential Reading</a></li>
+  <li><a href="#r-resources" id="toc-r-resources" class="nav-link" data-scroll-target="#r-resources"><span class="header-section-number">11.2</span> R Resources</a></li>
+  </ul></li>
   </ul>
 </nav>
 </div>
@@ -481,8 +549,8 @@ Chisq: 0.175467 on 1 DF, p-value: 0.6753</code></pre>
 
     <script>
 
-      function styleCell_zv1a9v1cvd958xikcoqc(i, j, css_id) {
-          var table = document.getElementById("tinytable_zv1a9v1cvd958xikcoqc");
+      function styleCell_966adclkgwuio8glmtxr(i, j, css_id) {
+          var table = document.getElementById("tinytable_966adclkgwuio8glmtxr");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -492,7 +560,7 @@ Chisq: 0.175467 on 1 DF, p-value: 0.6753</code></pre>
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_zv1a9v1cvd958xikcoqc');
+        var table = document.getElementById('tinytable_966adclkgwuio8glmtxr');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -500,8 +568,8 @@ Chisq: 0.175467 on 1 DF, p-value: 0.6753</code></pre>
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_zv1a9v1cvd958xikcoqc(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_zv1a9v1cvd958xikcoqc");
+      function spanCell_966adclkgwuio8glmtxr(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_966adclkgwuio8glmtxr");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -531,20 +599,20 @@ Chisq: 0.175467 on 1 DF, p-value: 0.6753</code></pre>
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 6, j: 2 }, { i: 6, j: 1 }, { i: 6, j: 3 },  ], css_id: 'tinytable_css_8xcmbdkhm0egnq6zku1t',}, 
-          { positions: [ { i: 4, j: 3 }, { i: 4, j: 1 }, { i: 4, j: 2 },  ], css_id: 'tinytable_css_p8f75y5jva04a9rdm11f',}, 
-          { positions: [ { i: 1, j: 1 }, { i: 1, j: 2 }, { i: 5, j: 1 }, { i: 2, j: 1 }, { i: 3, j: 1 }, { i: 5, j: 2 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 1, j: 3 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 5, j: 3 },  ], css_id: 'tinytable_css_n0kmagvw5jouct81gdhk',}, 
-          { positions: [ { i: 0, j: 1 }, { i: 0, j: 3 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_c342pwznfxphglmobuk2',}, 
-          { positions: [ { i: 6, j: 0 },  ], css_id: 'tinytable_css_wld92tut8kduwprfyyv6',}, 
-          { positions: [ { i: 4, j: 0 },  ], css_id: 'tinytable_css_uarnovgz68fqvf6x90ly',}, 
-          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 5, j: 0 },  ], css_id: 'tinytable_css_9vkgo67hu6xcdot77j46',}, 
-          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_mls8dc22pvtu37acgu0w',}, 
+          { positions: [ { i: 6, j: 2 }, { i: 6, j: 1 }, { i: 6, j: 3 },  ], css_id: 'tinytable_css_acvqripb4c8hhksro8ug',}, 
+          { positions: [ { i: 4, j: 3 }, { i: 4, j: 1 }, { i: 4, j: 2 },  ], css_id: 'tinytable_css_50m9fehxmleib5j62bbh',}, 
+          { positions: [ { i: 1, j: 1 }, { i: 1, j: 2 }, { i: 5, j: 1 }, { i: 2, j: 1 }, { i: 3, j: 1 }, { i: 5, j: 2 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 1, j: 3 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 5, j: 3 },  ], css_id: 'tinytable_css_3uuba6ic8bcb2nlv2fd3',}, 
+          { positions: [ { i: 0, j: 1 }, { i: 0, j: 3 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_u8xkzeals3pfdh4lrx4z',}, 
+          { positions: [ { i: 6, j: 0 },  ], css_id: 'tinytable_css_rirkexunu0fd1l7ll55l',}, 
+          { positions: [ { i: 4, j: 0 },  ], css_id: 'tinytable_css_jrtd75jquv1vi9msreas',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 5, j: 0 },  ], css_id: 'tinytable_css_cn9uwk896mvzlvozqyws',}, 
+          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_mpduzzc1zcx2ilvn3dr1',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_zv1a9v1cvd958xikcoqc(cell.i, cell.j, group.css_id);
+                  styleCell_966adclkgwuio8glmtxr(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -552,17 +620,17 @@ Chisq: 0.175467 on 1 DF, p-value: 0.6753</code></pre>
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_8xcmbdkhm0egnq6zku1t, .table th.tinytable_css_8xcmbdkhm0egnq6zku1t { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_p8f75y5jva04a9rdm11f, .table th.tinytable_css_p8f75y5jva04a9rdm11f { text-align: center; border-bottom: solid black 0.05em; }
-      .table td.tinytable_css_n0kmagvw5jouct81gdhk, .table th.tinytable_css_n0kmagvw5jouct81gdhk { text-align: center; }
-      .table td.tinytable_css_c342pwznfxphglmobuk2, .table th.tinytable_css_c342pwznfxphglmobuk2 { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_wld92tut8kduwprfyyv6, .table th.tinytable_css_wld92tut8kduwprfyyv6 { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_uarnovgz68fqvf6x90ly, .table th.tinytable_css_uarnovgz68fqvf6x90ly { text-align: left; border-bottom: solid black 0.05em; }
-      .table td.tinytable_css_9vkgo67hu6xcdot77j46, .table th.tinytable_css_9vkgo67hu6xcdot77j46 { text-align: left; }
-      .table td.tinytable_css_mls8dc22pvtu37acgu0w, .table th.tinytable_css_mls8dc22pvtu37acgu0w { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_acvqripb4c8hhksro8ug, .table th.tinytable_css_acvqripb4c8hhksro8ug { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_50m9fehxmleib5j62bbh, .table th.tinytable_css_50m9fehxmleib5j62bbh { text-align: center; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_3uuba6ic8bcb2nlv2fd3, .table th.tinytable_css_3uuba6ic8bcb2nlv2fd3 { text-align: center; }
+      .table td.tinytable_css_u8xkzeals3pfdh4lrx4z, .table th.tinytable_css_u8xkzeals3pfdh4lrx4z { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_rirkexunu0fd1l7ll55l, .table th.tinytable_css_rirkexunu0fd1l7ll55l { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_jrtd75jquv1vi9msreas, .table th.tinytable_css_jrtd75jquv1vi9msreas { text-align: left; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_cn9uwk896mvzlvozqyws, .table th.tinytable_css_cn9uwk896mvzlvozqyws { text-align: left; }
+      .table td.tinytable_css_mpduzzc1zcx2ilvn3dr1, .table th.tinytable_css_mpduzzc1zcx2ilvn3dr1 { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_zv1a9v1cvd958xikcoqc" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_966adclkgwuio8glmtxr" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -788,8 +856,8 @@ alternative hypothesis: one model is inconsistent</code></pre>
 
     <script>
 
-      function styleCell_cos0rgg3vk3c7f6eek85(i, j, css_id) {
-          var table = document.getElementById("tinytable_cos0rgg3vk3c7f6eek85");
+      function styleCell_wvn8vb0ttwo9b7ayreez(i, j, css_id) {
+          var table = document.getElementById("tinytable_wvn8vb0ttwo9b7ayreez");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -799,7 +867,7 @@ alternative hypothesis: one model is inconsistent</code></pre>
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_cos0rgg3vk3c7f6eek85');
+        var table = document.getElementById('tinytable_wvn8vb0ttwo9b7ayreez');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -807,8 +875,8 @@ alternative hypothesis: one model is inconsistent</code></pre>
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_cos0rgg3vk3c7f6eek85(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_cos0rgg3vk3c7f6eek85");
+      function spanCell_wvn8vb0ttwo9b7ayreez(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_wvn8vb0ttwo9b7ayreez");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -838,20 +906,20 @@ alternative hypothesis: one model is inconsistent</code></pre>
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 8, j: 2 }, { i: 8, j: 1 }, { i: 8, j: 3 },  ], css_id: 'tinytable_css_crwsdabrlhf1bdcmpe83',}, 
-          { positions: [ { i: 6, j: 2 }, { i: 6, j: 1 }, { i: 6, j: 3 },  ], css_id: 'tinytable_css_uk5j1jj6zh3brlczlg2i',}, 
-          { positions: [ { i: 2, j: 1 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 1, j: 3 }, { i: 7, j: 1 }, { i: 3, j: 3 }, { i: 1, j: 1 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 5, j: 2 }, { i: 5, j: 3 }, { i: 7, j: 2 }, { i: 7, j: 3 }, { i: 5, j: 1 }, { i: 2, j: 3 }, { i: 4, j: 3 },  ], css_id: 'tinytable_css_nj34acujmr9jgshnzk98',}, 
-          { positions: [ { i: 0, j: 1 }, { i: 0, j: 3 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_76odbjjq80oixpt5xf9a',}, 
-          { positions: [ { i: 8, j: 0 },  ], css_id: 'tinytable_css_3g83oromj10bs8digksg',}, 
-          { positions: [ { i: 6, j: 0 },  ], css_id: 'tinytable_css_boqie8qqt9nyv3cae5j6',}, 
-          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 7, j: 0 },  ], css_id: 'tinytable_css_78w37qh8dy3sr502px31',}, 
-          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_mpo02aqp2q3cwxowk4w8',}, 
+          { positions: [ { i: 8, j: 2 }, { i: 8, j: 1 }, { i: 8, j: 3 },  ], css_id: 'tinytable_css_kn7fpak3ilrzttpytglb',}, 
+          { positions: [ { i: 6, j: 2 }, { i: 6, j: 1 }, { i: 6, j: 3 },  ], css_id: 'tinytable_css_fmek0qm5lcd0cpoaxod4',}, 
+          { positions: [ { i: 2, j: 1 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 1, j: 3 }, { i: 7, j: 1 }, { i: 3, j: 3 }, { i: 1, j: 1 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 5, j: 2 }, { i: 5, j: 3 }, { i: 7, j: 2 }, { i: 7, j: 3 }, { i: 5, j: 1 }, { i: 2, j: 3 }, { i: 4, j: 3 },  ], css_id: 'tinytable_css_mv7da8ni9091lzz3dvxb',}, 
+          { positions: [ { i: 0, j: 1 }, { i: 0, j: 3 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_qzwcfvj6cca6546vmfzu',}, 
+          { positions: [ { i: 8, j: 0 },  ], css_id: 'tinytable_css_pv5jz8u8izld8yjqm2xy',}, 
+          { positions: [ { i: 6, j: 0 },  ], css_id: 'tinytable_css_l8lhq5fg6bkcjqmv50fm',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 7, j: 0 },  ], css_id: 'tinytable_css_oe6q7nwo6cinxnxanvtr',}, 
+          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_swgvhnfx1y4ic3bairvm',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_cos0rgg3vk3c7f6eek85(cell.i, cell.j, group.css_id);
+                  styleCell_wvn8vb0ttwo9b7ayreez(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -859,17 +927,17 @@ alternative hypothesis: one model is inconsistent</code></pre>
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_crwsdabrlhf1bdcmpe83, .table th.tinytable_css_crwsdabrlhf1bdcmpe83 { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_uk5j1jj6zh3brlczlg2i, .table th.tinytable_css_uk5j1jj6zh3brlczlg2i { text-align: center; border-bottom: solid black 0.05em; }
-      .table td.tinytable_css_nj34acujmr9jgshnzk98, .table th.tinytable_css_nj34acujmr9jgshnzk98 { text-align: center; }
-      .table td.tinytable_css_76odbjjq80oixpt5xf9a, .table th.tinytable_css_76odbjjq80oixpt5xf9a { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_3g83oromj10bs8digksg, .table th.tinytable_css_3g83oromj10bs8digksg { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_boqie8qqt9nyv3cae5j6, .table th.tinytable_css_boqie8qqt9nyv3cae5j6 { text-align: left; border-bottom: solid black 0.05em; }
-      .table td.tinytable_css_78w37qh8dy3sr502px31, .table th.tinytable_css_78w37qh8dy3sr502px31 { text-align: left; }
-      .table td.tinytable_css_mpo02aqp2q3cwxowk4w8, .table th.tinytable_css_mpo02aqp2q3cwxowk4w8 { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_kn7fpak3ilrzttpytglb, .table th.tinytable_css_kn7fpak3ilrzttpytglb { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_fmek0qm5lcd0cpoaxod4, .table th.tinytable_css_fmek0qm5lcd0cpoaxod4 { text-align: center; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_mv7da8ni9091lzz3dvxb, .table th.tinytable_css_mv7da8ni9091lzz3dvxb { text-align: center; }
+      .table td.tinytable_css_qzwcfvj6cca6546vmfzu, .table th.tinytable_css_qzwcfvj6cca6546vmfzu { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_pv5jz8u8izld8yjqm2xy, .table th.tinytable_css_pv5jz8u8izld8yjqm2xy { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_l8lhq5fg6bkcjqmv50fm, .table th.tinytable_css_l8lhq5fg6bkcjqmv50fm { text-align: left; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_oe6q7nwo6cinxnxanvtr, .table th.tinytable_css_oe6q7nwo6cinxnxanvtr { text-align: left; }
+      .table td.tinytable_css_swgvhnfx1y4ic3bairvm, .table th.tinytable_css_swgvhnfx1y4ic3bairvm { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_cos0rgg3vk3c7f6eek85" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_wvn8vb0ttwo9b7ayreez" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -1235,8 +1303,8 @@ alternative hypothesis: one model is inconsistent</code></pre>
 
     <script>
 
-      function styleCell_4hy7r8d65zvi4wzudqnl(i, j, css_id) {
-          var table = document.getElementById("tinytable_4hy7r8d65zvi4wzudqnl");
+      function styleCell_93xxhpoczm8d3iw6hwdo(i, j, css_id) {
+          var table = document.getElementById("tinytable_93xxhpoczm8d3iw6hwdo");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -1246,7 +1314,7 @@ alternative hypothesis: one model is inconsistent</code></pre>
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_4hy7r8d65zvi4wzudqnl');
+        var table = document.getElementById('tinytable_93xxhpoczm8d3iw6hwdo');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -1254,8 +1322,8 @@ alternative hypothesis: one model is inconsistent</code></pre>
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_4hy7r8d65zvi4wzudqnl(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_4hy7r8d65zvi4wzudqnl");
+      function spanCell_93xxhpoczm8d3iw6hwdo(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_93xxhpoczm8d3iw6hwdo");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -1285,20 +1353,20 @@ alternative hypothesis: one model is inconsistent</code></pre>
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 },  ], css_id: 'tinytable_css_t1sx3poz2lq5gqocs84c',}, 
-          { positions: [ { i: 2, j: 3 }, { i: 2, j: 1 }, { i: 2, j: 2 },  ], css_id: 'tinytable_css_2jjo0izkq7pqgbcd8pwh',}, 
-          { positions: [ { i: 3, j: 1 }, { i: 3, j: 2 }, { i: 1, j: 1 }, { i: 1, j: 2 }, { i: 1, j: 3 }, { i: 3, j: 3 },  ], css_id: 'tinytable_css_rilhvfk3ao0l0z86hies',}, 
-          { positions: [ { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_xcka357qznk52nx801h1',}, 
-          { positions: [ { i: 4, j: 0 },  ], css_id: 'tinytable_css_w9xqwmalz973c7dpe7ne',}, 
-          { positions: [ { i: 2, j: 0 },  ], css_id: 'tinytable_css_fcvkjk44v3h8sgh8yp2s',}, 
-          { positions: [ { i: 1, j: 0 }, { i: 3, j: 0 },  ], css_id: 'tinytable_css_02m5o1vqabsddgmztht9',}, 
-          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_tlgipf915qe41wuhbwgf',}, 
+          { positions: [ { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 },  ], css_id: 'tinytable_css_k1xc8iqbg1y310pcu8pp',}, 
+          { positions: [ { i: 2, j: 3 }, { i: 2, j: 1 }, { i: 2, j: 2 },  ], css_id: 'tinytable_css_y3y8amc6oqfufayfjsor',}, 
+          { positions: [ { i: 3, j: 1 }, { i: 3, j: 2 }, { i: 1, j: 1 }, { i: 1, j: 2 }, { i: 1, j: 3 }, { i: 3, j: 3 },  ], css_id: 'tinytable_css_i1dffa5hqqzwq6g8rf38',}, 
+          { positions: [ { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_rzs4fgpghswqh3y4r68z',}, 
+          { positions: [ { i: 4, j: 0 },  ], css_id: 'tinytable_css_vhen003rwvv5uwocbx73',}, 
+          { positions: [ { i: 2, j: 0 },  ], css_id: 'tinytable_css_uorjz3c69b63bzojezi5',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 3, j: 0 },  ], css_id: 'tinytable_css_j1o564wba3ibn2iomrfb',}, 
+          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_nr2prvlb8wbueekgf4px',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_4hy7r8d65zvi4wzudqnl(cell.i, cell.j, group.css_id);
+                  styleCell_93xxhpoczm8d3iw6hwdo(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -1306,17 +1374,17 @@ alternative hypothesis: one model is inconsistent</code></pre>
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_t1sx3poz2lq5gqocs84c, .table th.tinytable_css_t1sx3poz2lq5gqocs84c { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_2jjo0izkq7pqgbcd8pwh, .table th.tinytable_css_2jjo0izkq7pqgbcd8pwh { text-align: center; border-bottom: solid black 0.05em; }
-      .table td.tinytable_css_rilhvfk3ao0l0z86hies, .table th.tinytable_css_rilhvfk3ao0l0z86hies { text-align: center; }
-      .table td.tinytable_css_xcka357qznk52nx801h1, .table th.tinytable_css_xcka357qznk52nx801h1 { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_w9xqwmalz973c7dpe7ne, .table th.tinytable_css_w9xqwmalz973c7dpe7ne { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_fcvkjk44v3h8sgh8yp2s, .table th.tinytable_css_fcvkjk44v3h8sgh8yp2s { text-align: left; border-bottom: solid black 0.05em; }
-      .table td.tinytable_css_02m5o1vqabsddgmztht9, .table th.tinytable_css_02m5o1vqabsddgmztht9 { text-align: left; }
-      .table td.tinytable_css_tlgipf915qe41wuhbwgf, .table th.tinytable_css_tlgipf915qe41wuhbwgf { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_k1xc8iqbg1y310pcu8pp, .table th.tinytable_css_k1xc8iqbg1y310pcu8pp { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_y3y8amc6oqfufayfjsor, .table th.tinytable_css_y3y8amc6oqfufayfjsor { text-align: center; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_i1dffa5hqqzwq6g8rf38, .table th.tinytable_css_i1dffa5hqqzwq6g8rf38 { text-align: center; }
+      .table td.tinytable_css_rzs4fgpghswqh3y4r68z, .table th.tinytable_css_rzs4fgpghswqh3y4r68z { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_vhen003rwvv5uwocbx73, .table th.tinytable_css_vhen003rwvv5uwocbx73 { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_uorjz3c69b63bzojezi5, .table th.tinytable_css_uorjz3c69b63bzojezi5 { text-align: left; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_j1o564wba3ibn2iomrfb, .table th.tinytable_css_j1o564wba3ibn2iomrfb { text-align: left; }
+      .table td.tinytable_css_nr2prvlb8wbueekgf4px, .table th.tinytable_css_nr2prvlb8wbueekgf4px { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_4hy7r8d65zvi4wzudqnl" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_93xxhpoczm8d3iw6hwdo" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
