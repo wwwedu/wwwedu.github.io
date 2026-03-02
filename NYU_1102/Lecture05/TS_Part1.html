@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Dragos Ailoae">
+
+<title>Time Series Analysis — Part 1</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="TS_Part1_files/libs/clipboard/clipboard.min.js"></script>
+<script src="TS_Part1_files/libs/quarto-html/quarto.js"></script>
+<script src="TS_Part1_files/libs/quarto-html/popper.min.js"></script>
+<script src="TS_Part1_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="TS_Part1_files/libs/quarto-html/anchor.min.js"></script>
+<link href="TS_Part1_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="TS_Part1_files/libs/quarto-html/quarto-syntax-highlighting-de84f8d6bb715db06a919283c2d1e787.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="TS_Part1_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="TS_Part1_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="TS_Part1_files/libs/bootstrap/bootstrap-cf43a150f4ed865b4eb4d60b88c21c49.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="TS_Part1_files/libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+
+<script src="TS_Part1_files/libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-full toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#what-this-notebook-covers" id="toc-what-this-notebook-covers" class="nav-link active" data-scroll-target="#what-this-notebook-covers">What This Notebook Covers</a></li>
+  <li><a href="#the-problem-serial-correlation-in-ols-residuals" id="toc-the-problem-serial-correlation-in-ols-residuals" class="nav-link" data-scroll-target="#the-problem-serial-correlation-in-ols-residuals"><span class="header-section-number">1</span> The Problem: Serial Correlation in OLS Residuals</a>
+  <ul class="collapse">
+  <li><a href="#why-it-matters" id="toc-why-it-matters" class="nav-link" data-scroll-target="#why-it-matters"><span class="header-section-number">1.1</span> Why It Matters</a></li>
+  <li><a href="#the-ar1-error-model" id="toc-the-ar1-error-model" class="nav-link" data-scroll-target="#the-ar1-error-model"><span class="header-section-number">1.2</span> The AR(1) Error Model</a></li>
+  </ul></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup"><span class="header-section-number">2</span> Setup</a>
+  <ul class="collapse">
+  <li><a href="#load-required-packages" id="toc-load-required-packages" class="nav-link" data-scroll-target="#load-required-packages"><span class="header-section-number">2.1</span> Load Required Packages</a></li>
+  </ul></li>
+  <li><a href="#simulation-seeing-the-problem-clearly" id="toc-simulation-seeing-the-problem-clearly" class="nav-link" data-scroll-target="#simulation-seeing-the-problem-clearly"><span class="header-section-number">3</span> Simulation — Seeing the Problem Clearly</a>
+  <ul class="collapse">
+  <li><a href="#the-data-generating-process" id="toc-the-data-generating-process" class="nav-link" data-scroll-target="#the-data-generating-process"><span class="header-section-number">3.1</span> The Data Generating Process</a></li>
+  <li><a href="#ols-estimation" id="toc-ols-estimation" class="nav-link" data-scroll-target="#ols-estimation"><span class="header-section-number">3.2</span> OLS Estimation</a></li>
+  </ul></li>
+  <li><a href="#detecting-serial-correlation" id="toc-detecting-serial-correlation" class="nav-link" data-scroll-target="#detecting-serial-correlation"><span class="header-section-number">4</span> Detecting Serial Correlation</a>
+  <ul class="collapse">
+  <li><a href="#visual-inspection" id="toc-visual-inspection" class="nav-link" data-scroll-target="#visual-inspection"><span class="header-section-number">4.1</span> Visual Inspection</a></li>
+  <li><a href="#the-durbin-watson-test" id="toc-the-durbin-watson-test" class="nav-link" data-scroll-target="#the-durbin-watson-test"><span class="header-section-number">4.2</span> The Durbin-Watson Test</a></li>
+  <li><a href="#the-breusch-godfrey-lm-test" id="toc-the-breusch-godfrey-lm-test" class="nav-link" data-scroll-target="#the-breusch-godfrey-lm-test"><span class="header-section-number">4.3</span> The Breusch-Godfrey LM Test</a></li>
+  </ul></li>
+  <li><a href="#remedies-for-serial-correlation" id="toc-remedies-for-serial-correlation" class="nav-link" data-scroll-target="#remedies-for-serial-correlation"><span class="header-section-number">5</span> Remedies for Serial Correlation</a>
+  <ul class="collapse">
+  <li><a href="#newey-west-standard-errors-hac" id="toc-newey-west-standard-errors-hac" class="nav-link" data-scroll-target="#newey-west-standard-errors-hac"><span class="header-section-number">5.1</span> Newey-West Standard Errors (HAC)</a></li>
+  <li><a href="#fgls-cochrane-orcutt" id="toc-fgls-cochrane-orcutt" class="nav-link" data-scroll-target="#fgls-cochrane-orcutt"><span class="header-section-number">5.2</span> FGLS: Cochrane-Orcutt</a>
+  <ul class="collapse">
+  <li><a href="#post-estimation-check" id="toc-post-estimation-check" class="nav-link" data-scroll-target="#post-estimation-check"><span class="header-section-number">5.2.1</span> Post-Estimation Check</a></li>
+  </ul></li>
+  <li><a href="#fgls-prais-winsten" id="toc-fgls-prais-winsten" class="nav-link" data-scroll-target="#fgls-prais-winsten"><span class="header-section-number">5.3</span> FGLS: Prais-Winsten</a></li>
+  <li><a href="#comparing-all-methods" id="toc-comparing-all-methods" class="nav-link" data-scroll-target="#comparing-all-methods"><span class="header-section-number">5.4</span> Comparing All Methods</a></li>
+  </ul></li>
+  <li><a href="#real-data-application-puerto-rico-macroeconomics" id="toc-real-data-application-puerto-rico-macroeconomics" class="nav-link" data-scroll-target="#real-data-application-puerto-rico-macroeconomics"><span class="header-section-number">6</span> Real Data Application — Puerto Rico Macroeconomics</a>
+  <ul class="collapse">
+  <li><a href="#the-dataset" id="toc-the-dataset" class="nav-link" data-scroll-target="#the-dataset"><span class="header-section-number">6.1</span> The Dataset</a></li>
+  <li><a href="#the-static-model-baseline-ols" id="toc-the-static-model-baseline-ols" class="nav-link" data-scroll-target="#the-static-model-baseline-ols"><span class="header-section-number">6.2</span> The Static Model — Baseline OLS</a></li>
+  <li><a href="#visual-diagnostic" id="toc-visual-diagnostic" class="nav-link" data-scroll-target="#visual-diagnostic"><span class="header-section-number">6.3</span> Visual Diagnostic</a></li>
+  <li><a href="#formal-tests" id="toc-formal-tests" class="nav-link" data-scroll-target="#formal-tests"><span class="header-section-number">6.4</span> Formal Tests</a></li>
+  <li><a href="#applying-the-remedies" id="toc-applying-the-remedies" class="nav-link" data-scroll-target="#applying-the-remedies"><span class="header-section-number">6.5</span> Applying the Remedies</a></li>
+  </ul></li>
+  <li><a href="#summary-and-practical-decision-guide" id="toc-summary-and-practical-decision-guide" class="nav-link" data-scroll-target="#summary-and-practical-decision-guide"><span class="header-section-number">7</span> Summary and Practical Decision Guide</a>
+  <ul class="collapse">
+  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">7.1</span> Key Takeaways</a></li>
+  <li><a href="#decision-flowchart" id="toc-decision-flowchart" class="nav-link" data-scroll-target="#decision-flowchart"><span class="header-section-number">7.2</span> Decision Flowchart</a></li>
+  </ul></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading"><span class="header-section-number">8</span> Further Reading</a></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content column-page-right" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Time Series Analysis — Part 1</h1>
+<p class="subtitle lead">Serial Correlation: Detection and Remedies<br>NYU - Applied Statistics and Econometrics 2</p>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-right">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dragos Ailoae </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="what-this-notebook-covers" class="level1 unnumbered">
+<h1 class="unnumbered">What This Notebook Covers</h1>
+<p>This notebook accompanies the Part 1 time series lectures and focuses on a single, central practical question: <strong>what do you do when OLS residuals are serially correlated?</strong></p>
+<p>We work through the problem in two stages. First, we simulate data with a known AR(1) error structure — this lets us verify that every test and remedy behaves exactly as theory predicts. Second, we apply the same toolkit to real macroeconomic data, where the truth is unknown and judgment matters.</p>
+<p>Along the way we cover:</p>
+<ul>
+<li>Visual inspection of residuals as a first diagnostic</li>
+<li>The Durbin-Watson test and its limitations</li>
+<li>The Breusch-Godfrey LM test as a general-purpose alternative</li>
+<li>Newey-West HAC standard errors</li>
+<li>FGLS via Cochrane-Orcutt and Prais-Winsten</li>
+<li>A comparison of all methods on the same dataset</li>
+</ul>
+<hr>
+</section>
+<section id="the-problem-serial-correlation-in-ols-residuals" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> The Problem: Serial Correlation in OLS Residuals</h1>
+<section id="why-it-matters" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="why-it-matters"><span class="header-section-number">1.1</span> Why It Matters</h2>
+<p>In a time series regression</p>
+<p><span class="math display">\[y_t = \beta_0 + \beta_1 x_{t,1} + \beta_2 x_{t,2} + \epsilon_t\]</span></p>
+<p>the CLRM requires <span class="math inline">\(\text{Cov}(\epsilon_t, \epsilon_s) = 0\)</span> for <span class="math inline">\(t \neq s\)</span>. When this fails — when errors are <strong>serially correlated</strong> — the consequences for OLS are asymmetric and worth being precise about:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Property</th>
+<th>Holds under serial correlation?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Unbiasedness</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Consistency</td>
+<td>Yes (if no lagged <span class="math inline">\(y\)</span>)</td>
+</tr>
+<tr class="odd">
+<td>Efficiency (BLUE)</td>
+<td>No — OLS is no longer best</td>
+</tr>
+<tr class="even">
+<td>Standard errors correct</td>
+<td>No — usually understated</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(t\)</span>, <span class="math inline">\(F\)</span>, <span class="math inline">\(\chi^2\)</span> statistics valid</td>
+<td>No — inference is unreliable</td>
+</tr>
+</tbody>
+</table>
+<p>The practical consequence: <strong>significance tests can be severely misleading</strong>. A coefficient that appears significant with <span class="math inline">\(p &lt; 0.001\)</span> might not be significant at all once serial correlation is accounted for.</p>
+</section>
+<section id="the-ar1-error-model" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="the-ar1-error-model"><span class="header-section-number">1.2</span> The AR(1) Error Model</h2>
+<p>The most common model for serial correlation in errors is the first-order autoregressive process:</p>
+<p><span class="math display">\[\epsilon_t = \rho \epsilon_{t-1} + \nu_t, \quad |\rho| &lt; 1, \quad \nu_t \sim \text{i.i.d.}(0, \sigma^2)\]</span></p>
+<p>where <span class="math inline">\(\nu_t\)</span> is white noise and <span class="math inline">\(\rho\)</span> is the <strong>serial correlation parameter</strong>. When <span class="math inline">\(\rho = 0\)</span>, errors are uncorrelated and OLS is fine. When <span class="math inline">\(|\rho|\)</span> is large (close to 1), the problem is severe.</p>
+<p><strong>What does <span class="math inline">\(\rho\)</span> look like?</strong> Unrolling the AR(1):</p>
+<p><span class="math display">\[\epsilon_t = \rho \epsilon_{t-1} + \nu_t = \rho^2 \epsilon_{t-2} + \rho \nu_{t-1} + \nu_t = \cdots = \sum_{j=0}^{\infty} \rho^j \nu_{t-j}\]</span></p>
+<p>This means <span class="math inline">\(\epsilon_t\)</span> carries a weighted memory of <strong>all past shocks</strong>. When <span class="math inline">\(\rho\)</span> is large, that memory is long.</p>
+<hr>
+</section>
+</section>
+<section id="setup" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Setup</h1>
+<section id="load-required-packages" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="load-required-packages"><span class="header-section-number">2.1</span> Load Required Packages</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clear workspace</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotting options</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">repr.plot.width  =</span> <span class="dv">8</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">repr.plot.height =</span> <span class="dv">5</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">repr.plot.res    =</span> <span class="dv">150</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">warn =</span> <span class="sc">-</span><span class="dv">1</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Required packages</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>packages <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"lmtest"</span>,      <span class="co"># dwtest(), bgtest(), coeftest()</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sandwich"</span>,    <span class="co"># vcovHAC() for Newey-West SE</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"prais"</span>,       <span class="co"># prais_winsten()</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"AER"</span>,         <span class="co"># Real data: USMacroG</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">"knitr"</span>,       <span class="co"># kable() for clean tables</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">"modelsummary"</span> <span class="co"># msummary() for model comparison tables</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">lapply</span>(packages, <span class="cf">function</span>(pkg) {</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(pkg, <span class="at">character.only =</span> <span class="cn">TRUE</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">install.packages</span>(pkg, <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">require</span>(pkg, <span class="at">character.only =</span> <span class="cn">TRUE</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>}))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+</section>
+</section>
+<section id="simulation-seeing-the-problem-clearly" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Simulation — Seeing the Problem Clearly</h1>
+<p>Simulation is the best way to build intuition about serial correlation. We know the truth by construction, so we can verify exactly what each test finds and why.</p>
+<section id="the-data-generating-process" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="the-data-generating-process"><span class="header-section-number">3.1</span> The Data Generating Process</h2>
+<p>We simulate <span class="math inline">\(N = 200\)</span> observations from:</p>
+<p><span class="math display">\[y_t = \beta_0 + \beta_1 x_{t,1} + \beta_2 x_{t,2} + \epsilon_t\]</span> <span class="math display">\[\epsilon_t = \rho \epsilon_{t-1} + \nu_t, \quad \nu_t \sim N(0, 9)\]</span></p>
+<p>with <span class="math inline">\(\beta = (10, 5, -3)'\)</span> and <span class="math inline">\(\rho = 0.8\)</span> — a high level of positive serial correlation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">200</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># True parameters</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>beta_vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">5</span>, <span class="sc">-</span><span class="dv">3</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>rho_true <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Regressors</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">5</span>, <span class="at">length.out =</span> N)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>x2 <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">3</span>, <span class="at">to =</span> <span class="dv">17</span>, <span class="at">length.out =</span> <span class="dv">80</span>), <span class="at">size =</span> N, <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate AR(1) errors: start from epsilon_0 = 0</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>nu  <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">3</span>, <span class="at">n =</span> N)   <span class="co"># white noise innovations</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>eps <span class="ot">&lt;-</span> <span class="fu">numeric</span>(N)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>eps[<span class="dv">1</span>] <span class="ot">&lt;-</span> nu[<span class="dv">1</span>]</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>N) {</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  eps[i] <span class="ot">&lt;-</span> rho_true <span class="sc">*</span> eps[i <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">+</span> nu[i]</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Construct y</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>X_mat <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="dv">1</span>, x1, x2)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>y     <span class="ot">&lt;-</span> X_mat <span class="sc">%*%</span> beta_vec <span class="sc">+</span> eps</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Collect into a data frame with a time index</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>sim_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">y =</span> y, <span class="at">x1 =</span> x1, <span class="at">x2 =</span> x2, <span class="at">time =</span> <span class="dv">1</span><span class="sc">:</span>N)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>What does <span class="math inline">\(\rho = 0.8\)</span> mean in practice?</strong> The autocovariance function of an AR(1) is:</p>
+<p><span class="math display">\[\text{Cov}(\epsilon_t, \epsilon_{t-k}) = \rho^k \cdot \frac{\sigma^2}{1 - \rho^2}\]</span></p>
+<p>So with <span class="math inline">\(\rho = 0.8\)</span>, errors 5 periods apart still have correlation <span class="math inline">\(0.8^5 \approx 0.33\)</span>. This is a very persistent error process.</p>
+</section>
+<section id="ols-estimation" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="ols-estimation"><span class="header-section-number">3.2</span> OLS Estimation</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate the model ignoring serial correlation</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>mdl_ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x1 <span class="sc">+</span> x2, <span class="at">data =</span> sim_data)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mdl_ols)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ x1 + x2, data = sim_data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-9.7965 -3.2193  0.0674  2.5057 11.8135 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 10.61601    0.97983   10.84   &lt;2e-16 ***
+x1           4.89018    0.20457   23.91   &lt;2e-16 ***
+x2          -2.93686    0.07545  -38.92   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 4.182 on 197 degrees of freedom
+Multiple R-squared:  0.9198,    Adjusted R-squared:  0.919 
+F-statistic:  1129 on 2 and 197 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Notice that OLS recovers coefficients close to the true values <span class="math inline">\(\beta = (10, 5, -3)'\)</span> — <strong>OLS is unbiased</strong>. But the standard errors and <span class="math inline">\(t\)</span>-statistics are unreliable. We’ll quantify this shortly.</p>
+<hr>
+</section>
+</section>
+<section id="detecting-serial-correlation" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Detecting Serial Correlation</h1>
+<section id="visual-inspection" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="visual-inspection"><span class="header-section-number">4.1</span> Visual Inspection</h2>
+<p>The first and fastest diagnostic is always a residuals plot. With serially correlated errors, residuals from OLS will show visible runs — long stretches above zero followed by long stretches below zero (for positive <span class="math inline">\(\rho\)</span>), rather than the random scatter expected under independence.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract residuals</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>r  <span class="ot">&lt;-</span> <span class="fu">residuals</span>(mdl_ols)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>tt <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(r)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot 1: Raw residuals</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tt, r,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"p"</span>, <span class="at">pch =</span> <span class="dv">1</span>, <span class="at">cex =</span> <span class="fl">0.6</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="st">"Time"</span>, <span class="at">ylab =</span> <span class="st">"Residual"</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"OLS Residuals"</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">"steelblue"</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"gray50"</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot 2: Residuals with LOESS smoother to highlight pattern</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tt, r,</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"p"</span>, <span class="at">pch =</span> <span class="dv">1</span>, <span class="at">cex =</span> <span class="fl">0.6</span>,</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="st">"Time"</span>, <span class="at">ylab =</span> <span class="st">"Residual"</span>,</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"OLS Residuals with LOESS Smoother"</span>,</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">"steelblue"</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"gray50"</span>)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(tt, <span class="fu">predict</span>(<span class="fu">loess</span>(r <span class="sc">~</span> tt)), <span class="at">col =</span> <span class="st">"firebrick"</span>, <span class="at">lwd =</span> <span class="fl">2.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part1_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The LOESS smoother makes the pattern unmistakable: residuals move in long, smooth waves rather than oscillating randomly around zero. This is the visual signature of positive serial correlation.</p>
+</section>
+<section id="the-durbin-watson-test" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="the-durbin-watson-test"><span class="header-section-number">4.2</span> The Durbin-Watson Test</h2>
+<p>The <strong>Durbin-Watson (DW) test</strong> is the classical test for AR(1) serial correlation. It tests:</p>
+<p><span class="math display">\[H_0: \rho = 0 \qquad \text{vs.} \qquad H_1: \rho &gt; 0 \text{ (or } \rho \neq 0\text{)}\]</span></p>
+<p>The test statistic is:</p>
+<p><span class="math display">\[DW = \frac{\sum_{t=2}^T (\hat{\epsilon}_t - \hat{\epsilon}_{t-1})^2}{\sum_{t=2}^T \hat{\epsilon}_t^2} \approx 2(1 - \hat{\rho})\]</span></p>
+<p>Under no serial correlation, <span class="math inline">\(DW \approx 2\)</span>. Strong positive correlation → <span class="math inline">\(DW \to 0\)</span>. Strong negative correlation → <span class="math inline">\(DW \to 4\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Test for positive autocorrelation (one-sided)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>dw_pos <span class="ot">&lt;-</span> <span class="fu">dwtest</span>(mdl_ols, <span class="at">alternative =</span> <span class="st">"greater"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Test for negative autocorrelation (one-sided)</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>dw_neg <span class="ot">&lt;-</span> <span class="fu">dwtest</span>(mdl_ols, <span class="at">alternative =</span> <span class="st">"less"</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Two-sided test</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>dw_two <span class="ot">&lt;-</span> <span class="fu">dwtest</span>(mdl_ols, <span class="at">alternative =</span> <span class="st">"two.sided"</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Collect results</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">Alternative   =</span> <span class="fu">c</span>(<span class="st">"ρ &gt; 0 (positive)"</span>, <span class="st">"ρ &lt; 0 (negative)"</span>, <span class="st">"ρ ≠ 0 (two-sided)"</span>),</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">DW_Statistic  =</span> <span class="fu">round</span>(<span class="fu">c</span>(dw_pos<span class="sc">$</span>statistic, dw_neg<span class="sc">$</span>statistic, dw_two<span class="sc">$</span>statistic), <span class="dv">4</span>),</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">P_Value       =</span> <span class="fu">format</span>(<span class="fu">c</span>(dw_pos<span class="sc">$</span>p.value, dw_neg<span class="sc">$</span>p.value, dw_two<span class="sc">$</span>p.value), <span class="at">digits =</span> <span class="dv">3</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Durbin-Watson Test Results"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Durbin-Watson Test Results</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Alternative</th>
+<th style="text-align: right;">DW_Statistic</th>
+<th style="text-align: left;">P_Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ρ &gt; 0 (positive)</td>
+<td style="text-align: right;">0.5664</td>
+<td style="text-align: left;">5.39e-25</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ρ &lt; 0 (negative)</td>
+<td style="text-align: right;">0.5664</td>
+<td style="text-align: left;">1.00e+00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ρ ≠ 0 (two-sided)</td>
+<td style="text-align: right;">0.5664</td>
+<td style="text-align: left;">1.08e-24</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><strong>Interpretation:</strong> The DW statistic of <span class="math inline">\(\approx 0.57\)</span> is far below 2 and the one-sided test for positive autocorrelation is overwhelmingly significant (<span class="math inline">\(p &lt; 2.2 \times 10^{-16}\)</span>). The test for negative autocorrelation fails completely (<span class="math inline">\(p = 1\)</span>). This is exactly what we expect given <span class="math inline">\(\rho = 0.8\)</span>.</p>
+<p><strong>Limitations of the DW test — important in practice:</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Limitation</th>
+<th>Consequence</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Only tests AR(1)</td>
+<td>Misses higher-order autocorrelation</td>
+</tr>
+<tr class="even">
+<td>Requires no lagged <span class="math inline">\(y\)</span> as regressor</td>
+<td>Invalid for AR or ARDL models</td>
+</tr>
+<tr class="odd">
+<td>Requires normally distributed errors</td>
+<td>May not hold in practice</td>
+</tr>
+<tr class="even">
+<td>Has “zones of indecision”</td>
+<td>Inconclusive for some DW values</td>
+</tr>
+</tbody>
+</table>
+<p>Whenever any of these conditions may fail, use the Breusch-Godfrey test instead.</p>
+</section>
+<section id="the-breusch-godfrey-lm-test" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="the-breusch-godfrey-lm-test"><span class="header-section-number">4.3</span> The Breusch-Godfrey LM Test</h2>
+<p>The <strong>Breusch-Godfrey (BG) test</strong> removes all the DW restrictions. It allows for:</p>
+<ul>
+<li>Lagged dependent variables in the original model</li>
+<li>Higher-order AR error processes</li>
+<li>Any lag structure</li>
+</ul>
+<p><strong>Procedure:</strong></p>
+<ol type="1">
+<li>Estimate the model by OLS; extract residuals <span class="math inline">\(\hat{\epsilon}_t\)</span></li>
+<li>Regress <span class="math inline">\(\hat{\epsilon}_t\)</span> on all original regressors and <span class="math inline">\(p\)</span> lags of <span class="math inline">\(\hat{\epsilon}_t\)</span>: <span class="math display">\[\hat{\epsilon}_t = x_t'\theta + \rho_1\hat{\epsilon}_{t-1} + \cdots + \rho_p\hat{\epsilon}_{t-p} + v_t\]</span></li>
+<li>Test statistic: <span class="math inline">\((T - p)R^2 \sim \chi^2_p\)</span> under <span class="math inline">\(H_0: \rho_1 = \cdots = \rho_p = 0\)</span></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># BG test for serial correlation up to order p</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>bg_1 <span class="ot">&lt;-</span> <span class="fu">bgtest</span>(mdl_ols, <span class="at">order =</span> <span class="dv">1</span>)   <span class="co"># AR(1) only</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>bg_3 <span class="ot">&lt;-</span> <span class="fu">bgtest</span>(mdl_ols, <span class="at">order =</span> <span class="dv">3</span>)   <span class="co"># Up to AR(3)</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>bg_6 <span class="ot">&lt;-</span> <span class="fu">bgtest</span>(mdl_ols, <span class="at">order =</span> <span class="dv">6</span>)   <span class="co"># Up to AR(6)</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">Lags_Tested  =</span> <span class="fu">c</span>(<span class="st">"p = 1"</span>, <span class="st">"p = 3"</span>, <span class="st">"p = 6"</span>),</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">LM_Statistic =</span> <span class="fu">round</span>(<span class="fu">c</span>(bg_1<span class="sc">$</span>statistic, bg_3<span class="sc">$</span>statistic, bg_6<span class="sc">$</span>statistic), <span class="dv">2</span>),</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">DF           =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">6</span>),</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">P_Value      =</span> <span class="fu">format</span>(<span class="fu">c</span>(bg_1<span class="sc">$</span>p.value, bg_3<span class="sc">$</span>p.value, bg_6<span class="sc">$</span>p.value), <span class="at">digits =</span> <span class="dv">3</span>),</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">Decision     =</span> <span class="fu">rep</span>(<span class="st">"Reject H₀ — serial correlation detected"</span>, <span class="dv">3</span>)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> <span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">"Breusch-Godfrey LM Test Results"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Breusch-Godfrey LM Test Results</caption>
+<colgroup>
+<col style="width: 15%">
+<col style="width: 16%">
+<col style="width: 3%">
+<col style="width: 11%">
+<col style="width: 51%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Lags_Tested</th>
+<th style="text-align: right;">LM_Statistic</th>
+<th style="text-align: right;">DF</th>
+<th style="text-align: left;">P_Value</th>
+<th style="text-align: left;">Decision</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">p = 1</td>
+<td style="text-align: right;">99.73</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">1.75e-23</td>
+<td style="text-align: left;">Reject H₀ — serial correlation detected</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">p = 3</td>
+<td style="text-align: right;">100.72</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">1.09e-21</td>
+<td style="text-align: left;">Reject H₀ — serial correlation detected</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">p = 6</td>
+<td style="text-align: right;">100.81</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">1.70e-19</td>
+<td style="text-align: left;">Reject H₀ — serial correlation detected</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>All lag specifications overwhelmingly reject the null. The LM statistic of ~100 for <span class="math inline">\(p = 3\)</span> is enormous relative to the <span class="math inline">\(\chi^2_3\)</span> critical value of 7.81 at the 5% level.</p>
+<p><strong>Rule of thumb:</strong> Always run BG with <span class="math inline">\(p\)</span> set to something sensible for your data frequency — <span class="math inline">\(p = 4\)</span> for quarterly data, <span class="math inline">\(p = 12\)</span> for monthly data. If any order rejects, you have a serial correlation problem.</p>
+<hr>
+</section>
+</section>
+<section id="remedies-for-serial-correlation" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Remedies for Serial Correlation</h1>
+<p>Once serial correlation is detected, we have three main options:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Approach</th>
+<th>When to use</th>
+<th>What it fixes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Newey-West HAC SE</td>
+<td>No lagged <span class="math inline">\(y\)</span>; quick fix</td>
+<td>Standard errors only</td>
+</tr>
+<tr class="even">
+<td>Cochrane-Orcutt FGLS</td>
+<td>No lagged <span class="math inline">\(y\)</span>; want efficiency gains</td>
+<td>Coefficients + SE</td>
+</tr>
+<tr class="odd">
+<td>Prais-Winsten FGLS</td>
+<td>No lagged <span class="math inline">\(y\)</span>; want to keep first obs</td>
+<td>Coefficients + SE</td>
+</tr>
+<tr class="even">
+<td>Add lags of <span class="math inline">\(y\)</span></td>
+<td>Lagged <span class="math inline">\(y\)</span> in model; SC may reflect misspec.</td>
+<td>Addresses root cause</td>
+</tr>
+</tbody>
+</table>
+<section id="newey-west-standard-errors-hac" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="newey-west-standard-errors-hac"><span class="header-section-number">5.1</span> Newey-West Standard Errors (HAC)</h2>
+<p><strong>Heteroskedasticity-and-Autocorrelation-Consistent (HAC)</strong> standard errors — often called <strong>Newey-West</strong> standard errors — correct OLS standard errors for serial correlation without changing the coefficient estimates.</p>
+<p>Key properties: - Coefficients are <strong>identical</strong> to OLS - Standard errors are <strong>corrected</strong> — typically larger when positive autocorrelation is present - No assumption about the specific form of autocorrelation - Asymptotically valid; can be conservative in small samples</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># OLS with Newey-West standard errors</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>nw_se <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(mdl_ols, <span class="at">vcov =</span> <span class="fu">vcovHAC</span>(mdl_ols))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(nw_se)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+t test of coefficients:
+
+             Estimate Std. Error  t value  Pr(&gt;|t|)    
+(Intercept) 10.616005   1.165046   9.1121 &lt; 2.2e-16 ***
+x1           4.890185   0.413444  11.8279 &lt; 2.2e-16 ***
+x2          -2.936860   0.060834 -48.2769 &lt; 2.2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare: OLS naive SE vs Newey-West SE</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>comparison_se <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Term       =</span> <span class="fu">names</span>(<span class="fu">coef</span>(mdl_ols)),</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">OLS_coef   =</span> <span class="fu">round</span>(<span class="fu">coef</span>(mdl_ols), <span class="dv">4</span>),</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">OLS_SE     =</span> <span class="fu">round</span>(<span class="fu">coef</span>(<span class="fu">summary</span>(mdl_ols))[, <span class="st">"Std. Error"</span>], <span class="dv">4</span>),</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">NW_SE      =</span> <span class="fu">round</span>(nw_se[, <span class="st">"Std. Error"</span>], <span class="dv">4</span>),</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">SE_Ratio   =</span> <span class="fu">round</span>(nw_se[, <span class="st">"Std. Error"</span>] <span class="sc">/</span> <span class="fu">coef</span>(<span class="fu">summary</span>(mdl_ols))[, <span class="st">"Std. Error"</span>], <span class="dv">3</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(comparison_se,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Term"</span>, <span class="st">"Estimate"</span>, <span class="st">"OLS SE"</span>, <span class="st">"Newey-West SE"</span>, <span class="st">"NW/OLS Ratio"</span>),</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption   =</span> <span class="st">"OLS vs Newey-West Standard Errors"</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>OLS vs Newey-West Standard Errors</caption>
+<colgroup>
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 13%">
+<col style="width: 10%">
+<col style="width: 20%">
+<col style="width: 19%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Term</th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;">OLS SE</th>
+<th style="text-align: right;">Newey-West SE</th>
+<th style="text-align: right;">NW/OLS Ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">10.6160</td>
+<td style="text-align: right;">0.9798</td>
+<td style="text-align: right;">1.1650</td>
+<td style="text-align: right;">1.189</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">x1</td>
+<td style="text-align: left;">x1</td>
+<td style="text-align: right;">4.8902</td>
+<td style="text-align: right;">0.2046</td>
+<td style="text-align: right;">0.4134</td>
+<td style="text-align: right;">2.021</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">x2</td>
+<td style="text-align: left;">x2</td>
+<td style="text-align: right;">-2.9369</td>
+<td style="text-align: right;">0.0755</td>
+<td style="text-align: right;">0.0608</td>
+<td style="text-align: right;">0.806</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><strong>Key takeaway:</strong> Newey-West standard errors are considerably larger than the naive OLS standard errors. For <span class="math inline">\(x_1\)</span>, the SE is roughly double. This means the naive OLS <span class="math inline">\(t\)</span>-statistics were <strong>overstated by about a factor of 2</strong> — a dramatic difference for inference. Despite this, we still find statistical significance here because the true effects are large.</p>
+</section>
+<section id="fgls-cochrane-orcutt" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="fgls-cochrane-orcutt"><span class="header-section-number">5.2</span> FGLS: Cochrane-Orcutt</h2>
+<p>The <strong>Cochrane-Orcutt</strong> procedure is an iterative Feasible GLS method. It exploits the AR(1) error structure to produce more efficient estimates than OLS.</p>
+<p><strong>The GLS transformation:</strong> If <span class="math inline">\(\epsilon_t = \rho \epsilon_{t-1} + \nu_t\)</span>, then:</p>
+<p><span class="math display">\[y_t - \rho y_{t-1} = \beta_0(1-\rho) + \beta_1(x_{t,1} - \rho x_{t-1,1}) + \beta_2(x_{t,2} - \rho x_{t-1,2}) + \nu_t\]</span></p>
+<p>This quasi-differenced model has white noise errors. The algorithm:</p>
+<ol type="1">
+<li>Estimate model by OLS; obtain <span class="math inline">\(\hat{\epsilon}_t\)</span></li>
+<li>Regress <span class="math inline">\(\hat{\epsilon}_t\)</span> on <span class="math inline">\(\hat{\epsilon}_{t-1}\)</span> (no intercept); estimate <span class="math inline">\(\hat{\rho}\)</span></li>
+<li>Quasi-difference all variables: <span class="math inline">\(\tilde{y}_t = y_t - \hat{\rho}\,y_{t-1}\)</span>, etc.</li>
+<li>Run OLS on the transformed model (dropping observation 1)</li>
+<li>Repeat until <span class="math inline">\(\hat{\rho}\)</span> converges</li>
+</ol>
+<p><strong>One limitation:</strong> The first observation (<span class="math inline">\(t = 1\)</span>) cannot be quasi-differenced and is <strong>dropped</strong> — a minor cost in large samples.</p>
+<p>We implement it from scratch — the code is short and makes every step explicit:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Manual Cochrane-Orcutt implementation</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>cochrane_orcutt <span class="ot">&lt;-</span> <span class="cf">function</span>(formula, data, <span class="at">max_iter =</span> <span class="dv">100</span>, <span class="at">tol =</span> <span class="fl">1e-8</span>) {</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Pre-compute model matrices once</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  mf    <span class="ot">&lt;-</span> <span class="fu">model.frame</span>(formula, <span class="at">data =</span> data)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  y_raw <span class="ot">&lt;-</span> <span class="fu">model.response</span>(mf)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  X_raw <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(formula, <span class="at">data =</span> data)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  n     <span class="ot">&lt;-</span> <span class="fu">length</span>(y_raw)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  idx   <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">:</span>n</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 1: initial OLS to get starting beta</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  fit_ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(formula, <span class="at">data =</span> data)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  beta    <span class="ot">&lt;-</span> <span class="fu">coef</span>(fit_ols)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  rho     <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(max_iter)) {</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    rho_old <span class="ot">&lt;-</span> rho</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Step 2: original-scale residuals e = y - X*beta, then regress e_t on e_{t-1}</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Key: must use original-scale residuals, NOT residuals from the QD regression</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    e   <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(y_raw <span class="sc">-</span> X_raw <span class="sc">%*%</span> beta)</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    rho <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">lm</span>(e[<span class="sc">-</span><span class="dv">1</span>] <span class="sc">~</span> e[<span class="sc">-</span>n] <span class="sc">-</span> <span class="dv">1</span>))</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Step 3: quasi-difference y and X</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>    y_qd <span class="ot">&lt;-</span> y_raw[idx]   <span class="sc">-</span> rho <span class="sc">*</span> y_raw[idx <span class="sc">-</span> <span class="dv">1</span>]</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>    X_qd <span class="ot">&lt;-</span> X_raw[idx, ] <span class="sc">-</span> rho <span class="sc">*</span> X_raw[idx <span class="sc">-</span> <span class="dv">1</span>, ]</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Step 4: OLS on quasi-differenced data (intercept already in X_qd col)</span></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>    fit_qd <span class="ot">&lt;-</span> <span class="fu">lm</span>(y_qd <span class="sc">~</span> X_qd <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>    beta   <span class="ot">&lt;-</span> <span class="fu">coef</span>(fit_qd)</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">names</span>(beta) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(X_raw)</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">abs</span>(rho <span class="sc">-</span> rho_old) <span class="sc">&lt;</span> tol) <span class="cf">break</span></span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">coefficients =</span> beta, <span class="at">rho =</span> rho, <span class="at">fit =</span> fit_qd, <span class="at">iterations =</span> i)</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply to simulated data</span></span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>corc_sim <span class="ot">&lt;-</span> <span class="fu">cochrane_orcutt</span>(y <span class="sc">~</span> x1 <span class="sc">+</span> x2, <span class="at">data =</span> sim_data)</span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Estimated rho:"</span>, <span class="fu">round</span>(corc_sim<span class="sc">$</span>rho, <span class="dv">4</span>), <span class="st">" (true rho:"</span>, rho_true, <span class="st">")</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Estimated rho: 0.7089  (true rho: 0.8 )</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Converged in"</span>, corc_sim<span class="sc">$</span>iterations, <span class="st">"iterations</span><span class="sc">\n\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Converged in 5 iterations</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Coefficient summary for the comparison table below</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>corc_coef        <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">summary</span>(corc_sim<span class="sc">$</span>fit))</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(corc_coef) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(<span class="fu">model.matrix</span>(y <span class="sc">~</span> x1 <span class="sc">+</span> x2, sim_data))</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">round</span>(corc_coef, <span class="dv">4</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            Estimate Std. Error  t value Pr(&gt;|t|)
+(Intercept)  10.4028     1.5082   6.8973        0
+x1            5.0824     0.4888  10.3981        0
+x2           -2.9785     0.0420 -70.8792        0</code></pre>
+</div>
+</div>
+<p>The estimated <span class="math inline">\(\hat{\rho}\)</span> should be close to the true <span class="math inline">\(\rho = 0.80\)</span>. The coefficient estimates also shift slightly relative to OLS, now exploiting the full GLS efficiency.</p>
+<section id="post-estimation-check" class="level3" data-number="5.2.1">
+<h3 data-number="5.2.1" class="anchored" data-anchor-id="post-estimation-check"><span class="header-section-number">5.2.1</span> Post-Estimation Check</h3>
+<p>After applying Cochrane-Orcutt, it is good practice to check whether the quasi-differenced residuals still show signs of serial correlation. If CORC has successfully modeled the AR(1) structure, these residuals should look like white noise.</p>
+<p><strong>Important:</strong> we are testing the residuals from the <em>quasi-differenced</em> regression, not the original-scale residuals. Failing to reject here means the AR(1) correction was adequate — it does not mean the original model was well-specified. As the caveat above notes, the nonstationarity concern remains regardless of this check.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># After applying Cochrane-Orcutt, check whether the quasi-differenced</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co"># residuals still show signs of serial correlation.</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Here we test the residuals from the *quasi-differenced* regression (corc_sim$fit).</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Residuals from the final quasi-differenced regression</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>r_corc_sim <span class="ot">&lt;-</span> <span class="fu">residuals</span>(corc_sim<span class="sc">$</span>fit)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Manual BG(1): regress quasi-differenced residuals on their lag</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="co"># plus the quasi-differenced regressors (as required by the BG procedure)</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>n_corc_sim <span class="ot">&lt;-</span> <span class="fu">length</span>(r_corc_sim)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>aux_data_sim <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">e    =</span> r_corc_sim,</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">e_lag =</span> <span class="fu">c</span>(<span class="cn">NA</span>, r_corc_sim[<span class="sc">-</span>n_corc_sim]),</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">x1   =</span> sim_data<span class="sc">$</span>x1[<span class="sc">-</span><span class="dv">1</span>],</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">x2   =</span> sim_data<span class="sc">$</span>x2[<span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>aux_data_sim <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(aux_data_sim)</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>aux_mdl_sim <span class="ot">&lt;-</span> <span class="fu">lm</span>(e <span class="sc">~</span> e_lag <span class="sc">+</span> x1 <span class="sc">+</span> x2, <span class="at">data =</span> aux_data_sim)</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>r2_aux_sim  <span class="ot">&lt;-</span> <span class="fu">summary</span>(aux_mdl_sim)<span class="sc">$</span>r.squared</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>lm_stat_sim <span class="ot">&lt;-</span> <span class="fu">nrow</span>(aux_data_sim) <span class="sc">*</span> r2_aux_sim</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>p_val_sim   <span class="ot">&lt;-</span> <span class="fu">pchisq</span>(lm_stat_sim, <span class="at">df =</span> <span class="dv">1</span>, <span class="at">lower.tail =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"BG(1) on quasi-differenced residuals (simulation):  LM = %.3f,  p-value = %.4f</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>            lm_stat_sim, p_val_sim))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>BG(1) on quasi-differenced residuals (simulation):  LM = 1.620,  p-value = 0.2030</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Interpretation:</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Interpretation:</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (p_val_sim <span class="sc">&gt;</span> <span class="fl">0.05</span>) {</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"  Fail to reject H0: the quasi-differenced residuals show no remaining"</span>,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>      <span class="st">"</span><span class="sc">\n</span><span class="st">  serial correlation. The AR(1) correction appears adequate.</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"  Reject H0: serial correlation persists even after the AR(1) correction.</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"  Consider: (1) higher-order error dynamics, or (2) adding lags of y / respecifying the model.</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Fail to reject H0: the quasi-differenced residuals show no remaining 
+  serial correlation. The AR(1) correction appears adequate.</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="fgls-prais-winsten" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="fgls-prais-winsten"><span class="header-section-number">5.3</span> FGLS: Prais-Winsten</h2>
+<p>The <strong>Prais-Winsten</strong> procedure is identical to Cochrane-Orcutt except it <strong>retains the first observation</strong> using a GLS-implied transformation:</p>
+<p><span class="math display">\[\tilde{y}_1 = \sqrt{1 - \rho^2} \cdot y_1\]</span></p>
+<p>and similarly for <span class="math inline">\(x_1\)</span>. This small modification matters when <span class="math inline">\(T\)</span> is small or the first observation is influential.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prais-Winsten procedure</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>mdl_pw <span class="ot">&lt;-</span> <span class="fu">prais_winsten</span>(y <span class="sc">~</span> x1 <span class="sc">+</span> x2, <span class="at">data =</span> sim_data, <span class="at">index =</span> <span class="st">"time"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Iteration 0: rho = 0
+Iteration 1: rho = 0.7063
+Iteration 2: rho = 0.7103
+Iteration 3: rho = 0.7104
+Iteration 4: rho = 0.7104</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Coefficient table</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>pw_coef <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">summary</span>(mdl_pw))</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">round</span>(pw_coef, <span class="dv">4</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            Estimate Std. Error  t value Pr(&gt;|t|)
+(Intercept)  11.4282     1.4460   7.9035        0
+x1            4.7848     0.4742  10.0908        0
+x2           -2.9804     0.0423 -70.3875        0</code></pre>
+</div>
+</div>
+</section>
+<section id="comparing-all-methods" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="comparing-all-methods"><span class="header-section-number">5.4</span> Comparing All Methods</h2>
+<p>Now let’s put all four approaches side by side to see what each buys us.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Collect results into a clean comparison table</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>true_vals <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"(Intercept)"</span> <span class="ot">=</span> <span class="dv">10</span>, <span class="st">"x1"</span> <span class="ot">=</span> <span class="dv">5</span>, <span class="st">"x2"</span> <span class="ot">=</span> <span class="sc">-</span><span class="dv">3</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>result_tbl <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Term =</span> <span class="fu">c</span>(<span class="st">"(Intercept)"</span>, <span class="st">"x1"</span>, <span class="st">"x2"</span>),</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># True values</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">True =</span> true_vals,</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># OLS estimates and naive SE</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">OLS_est =</span> <span class="fu">round</span>(<span class="fu">coef</span>(mdl_ols), <span class="dv">4</span>),</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">OLS_SE  =</span> <span class="fu">round</span>(<span class="fu">coef</span>(<span class="fu">summary</span>(mdl_ols))[, <span class="st">"Std. Error"</span>], <span class="dv">4</span>),</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Newey-West (same estimates, different SE)</span></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">NW_SE   =</span> <span class="fu">round</span>(nw_se[, <span class="st">"Std. Error"</span>], <span class="dv">4</span>),</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Cochrane-Orcutt</span></span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">CORC_est =</span> <span class="fu">round</span>(corc_sim<span class="sc">$</span>coefficients, <span class="dv">4</span>),</span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">CORC_SE  =</span> <span class="fu">round</span>(corc_coef[, <span class="st">"Std. Error"</span>], <span class="dv">4</span>),</span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Prais-Winsten</span></span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">PW_est  =</span> <span class="fu">round</span>(<span class="fu">coef</span>(mdl_pw)[<span class="fu">c</span>(<span class="st">"(Intercept)"</span>, <span class="st">"x1"</span>, <span class="st">"x2"</span>)], <span class="dv">4</span>),</span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">PW_SE   =</span> <span class="fu">round</span>(pw_coef[, <span class="st">"Std. Error"</span>], <span class="dv">4</span>)</span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a>result_tbl <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">Term =</span> <span class="fu">c</span>(<span class="st">"(Intercept)"</span>, <span class="st">"x1"</span>, <span class="st">"x2"</span>),</span>
+<span id="cb27-28"><a href="#cb27-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-29"><a href="#cb27-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Drop names so they don't duplicate</span></span>
+<span id="cb27-30"><a href="#cb27-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">True =</span> <span class="fu">unname</span>(true_vals),</span>
+<span id="cb27-31"><a href="#cb27-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-32"><a href="#cb27-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">OLS_est =</span> <span class="fu">round</span>(<span class="fu">coef</span>(mdl_ols), <span class="dv">4</span>),</span>
+<span id="cb27-33"><a href="#cb27-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">OLS_SE  =</span> <span class="fu">round</span>(<span class="fu">coef</span>(<span class="fu">summary</span>(mdl_ols))[, <span class="st">"Std. Error"</span>], <span class="dv">4</span>),</span>
+<span id="cb27-34"><a href="#cb27-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-35"><a href="#cb27-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">NW_SE   =</span> <span class="fu">round</span>(nw_se[, <span class="st">"Std. Error"</span>], <span class="dv">4</span>),</span>
+<span id="cb27-36"><a href="#cb27-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-37"><a href="#cb27-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">CORC_est =</span> <span class="fu">round</span>(corc_sim<span class="sc">$</span>coefficients, <span class="dv">4</span>),</span>
+<span id="cb27-38"><a href="#cb27-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">CORC_SE  =</span> <span class="fu">round</span>(corc_coef[, <span class="st">"Std. Error"</span>], <span class="dv">4</span>),</span>
+<span id="cb27-39"><a href="#cb27-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-40"><a href="#cb27-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">PW_est  =</span> <span class="fu">round</span>(<span class="fu">coef</span>(mdl_pw)[<span class="fu">c</span>(<span class="st">"(Intercept)"</span>, <span class="st">"x1"</span>, <span class="st">"x2"</span>)], <span class="dv">4</span>),</span>
+<span id="cb27-41"><a href="#cb27-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">PW_SE   =</span> <span class="fu">round</span>(pw_coef[, <span class="st">"Std. Error"</span>], <span class="dv">4</span>),</span>
+<span id="cb27-42"><a href="#cb27-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-43"><a href="#cb27-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">NULL</span> </span>
+<span id="cb27-44"><a href="#cb27-44" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb27-45"><a href="#cb27-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-46"><a href="#cb27-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-47"><a href="#cb27-47" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(result_tbl,</span>
+<span id="cb27-48"><a href="#cb27-48" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">"Comparison: OLS, Newey-West, Cochrane-Orcutt, Prais-Winsten"</span></span>
+<span id="cb27-49"><a href="#cb27-49" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Comparison: OLS, Newey-West, Cochrane-Orcutt, Prais-Winsten</caption>
+<colgroup>
+<col style="width: 16%">
+<col style="width: 7%">
+<col style="width: 11%">
+<col style="width: 9%">
+<col style="width: 9%">
+<col style="width: 12%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 9%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Term</th>
+<th style="text-align: right;">True</th>
+<th style="text-align: right;">OLS_est</th>
+<th style="text-align: right;">OLS_SE</th>
+<th style="text-align: right;">NW_SE</th>
+<th style="text-align: right;">CORC_est</th>
+<th style="text-align: right;">CORC_SE</th>
+<th style="text-align: right;">PW_est</th>
+<th style="text-align: right;">PW_SE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10.6160</td>
+<td style="text-align: right;">0.9798</td>
+<td style="text-align: right;">1.1650</td>
+<td style="text-align: right;">10.4028</td>
+<td style="text-align: right;">1.5082</td>
+<td style="text-align: right;">11.4282</td>
+<td style="text-align: right;">1.4460</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">x1</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4.8902</td>
+<td style="text-align: right;">0.2046</td>
+<td style="text-align: right;">0.4134</td>
+<td style="text-align: right;">5.0824</td>
+<td style="text-align: right;">0.4888</td>
+<td style="text-align: right;">4.7848</td>
+<td style="text-align: right;">0.4742</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">x2</td>
+<td style="text-align: right;">-3</td>
+<td style="text-align: right;">-2.9369</td>
+<td style="text-align: right;">0.0755</td>
+<td style="text-align: right;">0.0608</td>
+<td style="text-align: right;">-2.9785</td>
+<td style="text-align: right;">0.0420</td>
+<td style="text-align: right;">-2.9804</td>
+<td style="text-align: right;">0.0423</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><strong>Reading the table:</strong></p>
+<ul>
+<li><strong>Estimates</strong> are similar across all methods — OLS is unbiased, so all methods recover values close to the truth.</li>
+<li><strong>OLS SE</strong> is the smallest — misleadingly so. It under-states uncertainty because it ignores serial correlation.</li>
+<li><strong>Newey-West SE</strong> corrects the OLS standard errors upward with no assumption about <span class="math inline">\(\rho\)</span>.</li>
+<li><strong>CORC and PW</strong> exploit the AR(1) structure explicitly and are asymptotically efficient among the FGLS procedures. Their standard errors reflect genuine efficiency gains from modeling <span class="math inline">\(\Omega^{-1}\)</span>.</li>
+</ul>
+<p><strong>When to use which:</strong></p>
+<ul>
+<li>OLS + Newey-West: fastest; good robustness check; appropriate when the error structure is uncertain</li>
+<li>Cochrane-Orcutt / Prais-Winsten: appropriate when you’re confident errors are AR(1) and there are no lagged <span class="math inline">\(y\)</span>’s in the model; Prais-Winsten is preferred when <span class="math inline">\(T\)</span> is small</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="real-data-application-puerto-rico-macroeconomics" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Real Data Application — Puerto Rico Macroeconomics</h1>
+<p>Simulation is clean by design. Real data is messier — we don’t know the truth and serial correlation may coexist with other issues. This section applies the same toolkit to real macroeconomic data.</p>
+<section id="the-dataset" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="the-dataset"><span class="header-section-number">6.1</span> The Dataset</h2>
+<p>We use the <strong>Puerto Rico macroeconomic data</strong> from Wooldridge’s <em>Introductory Econometrics</em> textbook. It covers annual observations from 1950 to 1987 and examines the effect of minimum wage legislation on employment.</p>
+<p><strong>Research question:</strong> Does a higher minimum wage (measured as the fraction of the average wage) reduce the employment-to-population ratio?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load Puerto Rico minimum wage data from Wooldridge (1950-1987)</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"prminwge"</span>, <span class="at">package =</span> <span class="st">"wooldridge"</span>)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>pr_data <span class="ot">&lt;-</span> prminwge</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Log-transform key variables (coefficients = % changes)</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>pr_data<span class="sc">$</span>lprepop <span class="ot">&lt;-</span> <span class="fu">log</span>(pr_data<span class="sc">$</span>prepop)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>pr_data<span class="sc">$</span>lmincov <span class="ot">&lt;-</span> <span class="fu">log</span>(pr_data<span class="sc">$</span>mincov)</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>pr_data<span class="sc">$</span>lusgnp  <span class="ot">&lt;-</span> <span class="fu">log</span>(pr_data<span class="sc">$</span>usgnp)</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Observations:"</span>, <span class="fu">nrow</span>(pr_data), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Observations: 38 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Years:"</span>, <span class="fu">min</span>(pr_data<span class="sc">$</span>year), <span class="st">"to"</span>, <span class="fu">max</span>(pr_data<span class="sc">$</span>year), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Years: 1950 to 1987 </code></pre>
+</div>
+</div>
+<p><strong>Key variables:</strong></p>
+<ul>
+<li><code>lprepop</code>: Log employment/population ratio (outcome)</li>
+<li><code>lmincov</code>: Log minimum wage coverage (% of workforce covered by min. wage law)</li>
+<li><code>lusgnp</code>: Log US GNP (controls for broader economic conditions)</li>
+</ul>
+<p>All variables are log-transformed so coefficients carry percentage-change interpretations.</p>
+</section>
+<section id="the-static-model-baseline-ols" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="the-static-model-baseline-ols"><span class="header-section-number">6.2</span> The Static Model — Baseline OLS</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Static OLS model</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>mdl_pr_ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(lprepop <span class="sc">~</span> lmincov <span class="sc">+</span> lusgnp, <span class="at">data =</span> pr_data)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mdl_pr_ols)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = lprepop ~ lmincov + lusgnp, data = pr_data)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.117133 -0.036998 -0.005943  0.028181  0.113938 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)  
+(Intercept) -1.05442    0.76541  -1.378   0.1771  
+lmincov     -0.15444    0.06490  -2.380   0.0229 *
+lusgnp      -0.01219    0.08851  -0.138   0.8913  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.0557 on 35 degrees of freedom
+Multiple R-squared:  0.6605,    Adjusted R-squared:  0.6411 
+F-statistic: 34.04 on 2 and 35 DF,  p-value: 6.17e-09</code></pre>
+</div>
+</div>
+</section>
+<section id="visual-diagnostic" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="visual-diagnostic"><span class="header-section-number">6.3</span> Visual Diagnostic</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>r_pr <span class="ot">&lt;-</span> <span class="fu">residuals</span>(mdl_pr_ols)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>t_pr <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(r_pr)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(t_pr, r_pr,</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"b"</span>, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">cex =</span> <span class="fl">0.6</span>,</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="st">"Year"</span>, <span class="at">ylab =</span> <span class="st">"Residual"</span>,</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"OLS Residuals (Puerto Rico model)"</span>,</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">"steelblue"</span></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"gray50"</span>)</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(t_pr, <span class="fu">predict</span>(<span class="fu">loess</span>(r_pr <span class="sc">~</span> t_pr)), <span class="at">col =</span> <span class="st">"firebrick"</span>, <span class="at">lwd =</span> <span class="fl">2.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part1_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The residuals show a clear wave pattern — long runs above zero followed by long runs below — rather than the random scatter expected under independence. This is the visual signature of positive serial correlation.</p>
+</section>
+<section id="formal-tests" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="formal-tests"><span class="header-section-number">6.4</span> Formal Tests</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Durbin-Watson</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>dw_pr <span class="ot">&lt;-</span> <span class="fu">dwtest</span>(mdl_pr_ols, <span class="at">alternative =</span> <span class="st">"greater"</span>)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Durbin-Watson:</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Durbin-Watson:</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"  DW ="</span>, <span class="fu">round</span>(dw_pr<span class="sc">$</span>statistic, <span class="dv">4</span>), <span class="st">"  p-value ="</span>, <span class="fu">format</span>(dw_pr<span class="sc">$</span>p.value, <span class="at">digits =</span> <span class="dv">3</span>), <span class="st">"</span><span class="sc">\n\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  DW = 0.3396   p-value = 7.63e-13 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Breusch-Godfrey for various lag orders</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)) {</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  bg_pr <span class="ot">&lt;-</span> <span class="fu">bgtest</span>(mdl_pr_ols, <span class="at">order =</span> p)</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"BG test (p = %d):  LM = %.2f,  df = %d,  p-value = %.4f</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>              p, bg_pr<span class="sc">$</span>statistic, p, bg_pr<span class="sc">$</span>p.value))</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>BG test (p = 1):  LM = 26.27,  df = 1,  p-value = 0.0000
+BG test (p = 2):  LM = 26.28,  df = 2,  p-value = 0.0000
+BG test (p = 3):  LM = 26.47,  df = 3,  p-value = 0.0000</code></pre>
+</div>
+</div>
+<p>Both tests reject the null of no serial correlation clearly. The DW statistic is well below 2, and all BG tests have <span class="math inline">\(p\)</span>-values below conventional significance levels.</p>
+</section>
+<section id="applying-the-remedies" class="level2" data-number="6.5">
+<h2 data-number="6.5" class="anchored" data-anchor-id="applying-the-remedies"><span class="header-section-number">6.5</span> Applying the Remedies</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Newey-West</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>nw_pr <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(mdl_pr_ols, <span class="at">vcov =</span> <span class="fu">vcovHAC</span>(mdl_pr_ols))</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Cochrane-Orcutt (using our manual implementation defined above)</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>mdl_pr_corc <span class="ot">&lt;-</span> <span class="fu">cochrane_orcutt</span>(lprepop <span class="sc">~</span> lmincov <span class="sc">+</span> lusgnp, <span class="at">data =</span> pr_data)</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Cochrane-Orcutt estimated rho:"</span>, <span class="fu">round</span>(mdl_pr_corc<span class="sc">$</span>rho, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Cochrane-Orcutt estimated rho: 0.952 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prais-Winsten</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>mdl_pr_pw <span class="ot">&lt;-</span> <span class="fu">prais_winsten</span>(lprepop <span class="sc">~</span> lmincov <span class="sc">+</span> lusgnp, <span class="at">data =</span> pr_data,</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">index =</span> <span class="st">"year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Iteration 0: rho = 0
+Iteration 1: rho = 0.8268
+Iteration 2: rho = 0.8319
+Iteration 3: rho = 0.8323
+Iteration 4: rho = 0.8323
+Iteration 5: rho = 0.8323
+Iteration 6: rho = 0.8323</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Comparison table: estimates and standard errors</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"(Intercept)"</span>, <span class="st">"lmincov"</span>, <span class="st">"lusgnp"</span>)</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>make_row <span class="ot">&lt;-</span> <span class="cf">function</span>(est, se) {</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="fu">round</span>(est, <span class="dv">4</span>), <span class="st">" ("</span>, <span class="fu">round</span>(se, <span class="dv">4</span>), <span class="st">")"</span>)</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>ols_est  <span class="ot">&lt;-</span> <span class="fu">coef</span>(mdl_pr_ols)[vars]</span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>ols_se   <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">summary</span>(mdl_pr_ols))[vars, <span class="st">"Std. Error"</span>]</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>nw_se_v  <span class="ot">&lt;-</span> nw_pr[vars, <span class="st">"Std. Error"</span>]</span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>corc_coef_pr <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">summary</span>(mdl_pr_corc<span class="sc">$</span>fit))</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(corc_coef_pr) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(<span class="fu">model.matrix</span>(lprepop <span class="sc">~</span> lmincov <span class="sc">+</span> lusgnp, pr_data))</span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>corc_est <span class="ot">&lt;-</span> mdl_pr_corc<span class="sc">$</span>coefficients[vars]</span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>corc_se  <span class="ot">&lt;-</span> corc_coef_pr[vars, <span class="st">"Std. Error"</span>]</span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>pw_est   <span class="ot">&lt;-</span> <span class="fu">coef</span>(mdl_pr_pw)[vars]</span>
+<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a>pw_se    <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">summary</span>(mdl_pr_pw))[vars, <span class="st">"Std. Error"</span>]</span>
+<span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-18"><a href="#cb45-18" aria-hidden="true" tabindex="-1"></a>result_pr <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb45-19"><a href="#cb45-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">Variable     =</span> vars,</span>
+<span id="cb45-20"><a href="#cb45-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">OLS          =</span> <span class="fu">make_row</span>(ols_est, ols_se),</span>
+<span id="cb45-21"><a href="#cb45-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">OLS_NW       =</span> <span class="fu">make_row</span>(ols_est, nw_se_v),</span>
+<span id="cb45-22"><a href="#cb45-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">CORC         =</span> <span class="fu">make_row</span>(corc_est, corc_se),</span>
+<span id="cb45-23"><a href="#cb45-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">PW           =</span> <span class="fu">make_row</span>(pw_est, pw_se)</span>
+<span id="cb45-24"><a href="#cb45-24" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb45-25"><a href="#cb45-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-26"><a href="#cb45-26" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(result_pr,</span>
+<span id="cb45-27"><a href="#cb45-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Variable"</span>, <span class="st">"OLS (naive SE)"</span>, <span class="st">"OLS (Newey-West SE)"</span>,</span>
+<span id="cb45-28"><a href="#cb45-28" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Cochrane-Orcutt"</span>, <span class="st">"Prais-Winsten"</span>),</span>
+<span id="cb45-29"><a href="#cb45-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption   =</span> <span class="st">"Puerto Rico model: estimates (standard errors) by method"</span></span>
+<span id="cb45-30"><a href="#cb45-30" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Puerto Rico model: estimates (standard errors) by method</caption>
+<colgroup>
+<col style="width: 14%">
+<col style="width: 20%">
+<col style="width: 24%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Variable</th>
+<th style="text-align: left;">OLS (naive SE)</th>
+<th style="text-align: left;">OLS (Newey-West SE)</th>
+<th style="text-align: left;">Cochrane-Orcutt</th>
+<th style="text-align: left;">Prais-Winsten</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: left;">-1.0544 (0.7654)</td>
+<td style="text-align: left;">-1.0544 (0.4793)</td>
+<td style="text-align: left;">-4.3708 (1.5103)</td>
+<td style="text-align: left;">-0.9774 (0.6892)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">lmincov</td>
+<td style="text-align: left;">-0.1544 (0.0649)</td>
+<td style="text-align: left;">-0.1544 (0.0178)</td>
+<td style="text-align: left;">-0.0853 (0.0477)</td>
+<td style="text-align: left;">-0.1301 (0.0486)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">lusgnp</td>
+<td style="text-align: left;">-0.0122 (0.0885)</td>
+<td style="text-align: left;">-0.0122 (0.0612)</td>
+<td style="text-align: left;">0.3884 (0.1805)</td>
+<td style="text-align: left;">-0.0172 (0.0831)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><strong>Discussion:</strong></p>
+<ul>
+<li>The <strong>coefficient on <code>lmincov</code></strong> is our parameter of interest. OLS, CORC, and PW all give broadly similar point estimates, which is expected — OLS is consistent when no lagged <span class="math inline">\(y\)</span> is included.</li>
+<li><strong>Standard errors diverge substantially</strong> across methods. The naive OLS standard errors are the smallest; Newey-West and the FGLS methods produce larger, more honest estimates of uncertainty.</li>
+</ul>
+<blockquote class="blockquote">
+<p>⚠️ <strong>Caveat — a preview of next lecture</strong></p>
+<p>Look at the series we just regressed: <code>lprepop</code>, <code>lmincov</code>, and <code>lusgnp</code> are all trending smoothly upward over time. When the dependent variable and regressors share a common trend, serial correlation in the residuals may not just be a nuisance to correct — it may be a symptom of a deeper problem called <strong>non-stationarity</strong>.</p>
+<p>If any of these series contains a <strong>unit root</strong> (i.e.&nbsp;<span class="math inline">\(\rho = 1\)</span> in its AR representation), the usual OLS asymptotics break down entirely. The results above — regardless of which standard errors we use — could be <strong>spurious</strong>: high <span class="math inline">\(R^2\)</span> and significant <span class="math inline">\(t\)</span>-statistics driven purely by shared trends, not by a genuine economic relationship.</p>
+<p><strong>Applying serial correlation remedies to a non-stationary regression does not fix the underlying problem.</strong> The correct approach is to first test for unit roots (Augmented Dickey-Fuller test) and, if present, either first-difference the series or model the long-run relationship explicitly via cointegration. We cover both next lecture.</p>
+</blockquote>
+<hr>
+</section>
+</section>
+<section id="summary-and-practical-decision-guide" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Summary and Practical Decision Guide</h1>
+<section id="key-takeaways" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">7.1</span> Key Takeaways</h2>
+<p><strong>1. Detection before remedy.</strong> Always run a visual check (residuals plot with LOESS smoother) and a formal test (BG) before concluding serial correlation is present or absent.</p>
+<p><strong>2. The DW test is limited.</strong> It’s a useful quick check, but it’s invalid with lagged dependent variables, only covers AR(1), and has zones of indecision. The BG test is superior in most practical settings.</p>
+<p><strong>3. Newey-West is your safety net.</strong> When in doubt about the form of autocorrelation, Newey-West standard errors correct inference without requiring a parametric model of the error process. Coefficients don’t change.</p>
+<p><strong>4. FGLS is more efficient — when appropriate.</strong> Cochrane-Orcutt and Prais-Winsten exploit the AR(1) structure and are asymptotically more efficient than OLS + Newey-West, but only if (a) the errors are truly AR(1) and (b) there are no lagged dependent variables in the model.</p>
+<p><strong>5. Serial correlation with a lagged <span class="math inline">\(y\)</span> is a different problem.</strong> If <span class="math inline">\(y_{t-1}\)</span> is a regressor and serial correlation is still present, FGLS is invalid (because <span class="math inline">\(y_{t-1}\)</span> correlates with the error). The fix is to add more lags of <span class="math inline">\(y\)</span> until residuals are white noise.</p>
+</section>
+<section id="decision-flowchart" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="decision-flowchart"><span class="header-section-number">7.2</span> Decision Flowchart</h2>
+<pre><code>Is y_{t-1} a regressor in the model?
+│
+├─ NO → Run DW and BG tests
+│        │
+│        ├─ Serial correlation detected?
+│        │   ├─ YES → Use Newey-West SE (fast) OR Cochrane-Orcutt/Prais-Winsten (efficient)
+│        │   └─ NO  → OLS with standard SE is fine
+│        │
+│        └─ Always: plot residuals with LOESS smoother as first check
+│
+└─ YES → Run BG test only (DW is invalid)
+          │
+          ├─ Serial correlation detected?
+          │   ├─ YES → Add more lags of y until BG fails to reject
+          │   └─ NO  → OLS with standard SE (or NW for robustness)
+          │
+          └─ Note: OLS is biased but consistent when |ρ| &lt; 1</code></pre>
+<p><strong>One big caveat:</strong> everything we did today (DW/BG tests, Newey–West, and AR(1) FGLS like Cochrane–Orcutt/Prais–Winsten) assumes the underlying process is stationary (i.e.&nbsp;mean-reverting). If the series have unit roots or the regression is spurious because of shared trends, “fixing” serial correlation doesn’t fix the real problem. Next lecture we’ll test for unit roots (Dickey-Fuller test) and discuss differencing and cointegration.</p>
+<hr>
+</section>
+</section>
+<section id="further-reading" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Further Reading</h1>
+<p><strong>Textbooks:</strong></p>
+<ul>
+<li>Greene, W. H. (2018). <em>Econometric Analysis</em> (8th ed.). Pearson. Chapter 20.</li>
+<li>Enders, W. (2014). <em>Applied Econometric Time Series</em> (4th ed.). Wiley. Chapters 1–2.</li>
+<li>Wooldridge, J. M. (2016). <em>Introductory Econometrics: A Modern Approach</em> (6th ed.). Cengage. Chapters 11–12.</li>
+</ul>
+<p><strong>Classic Papers:</strong></p>
+<ul>
+<li>Durbin, J., &amp; Watson, G. S. (1950, 1951). “Testing for Serial Correlation in Least Squares Regression.” <em>Biometrika</em>.</li>
+<li>Breusch, T. S. (1978). “Testing for Autocorrelation in Dynamic Linear Models.” <em>Australian Economic Papers</em>.</li>
+<li>Newey, W. K., &amp; West, K. D. (1987). “A Simple, Positive Semi-Definite, Heteroskedasticity and Autocorrelation Consistent Covariance Matrix.” <em>Econometrica</em>, 55(3), 703–708.</li>
+<li>Cochrane, D., &amp; Orcutt, G. H. (1949). “Application of Least Squares Regression to Relationships Containing Auto-Correlated Error Terms.” <em>Journal of the American Statistical Association</em>.</li>
+</ul>
+<p><strong>R Packages Used:</strong></p>
+<ul>
+<li><code>lmtest</code>: Zeileis &amp; Hothorn (2002). <a href="https://cran.r-project.org/package=lmtest">CRAN</a></li>
+<li><code>sandwich</code>: Zeileis et al.&nbsp;<a href="https://cran.r-project.org/package=sandwich">CRAN</a></li>
+<li><code>prais</code>: <a href="https://cran.r-project.org/package=prais">CRAN</a></li>
+</ul>
+<hr>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
