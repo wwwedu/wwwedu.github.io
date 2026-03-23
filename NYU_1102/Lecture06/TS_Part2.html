@@ -1,0 +1,2403 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Dragos Ailoae">
+
+<title>Time Series Analysis Part 2</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="TS_Part2_files/libs/clipboard/clipboard.min.js"></script>
+<script src="TS_Part2_files/libs/quarto-html/quarto.js"></script>
+<script src="TS_Part2_files/libs/quarto-html/popper.min.js"></script>
+<script src="TS_Part2_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="TS_Part2_files/libs/quarto-html/anchor.min.js"></script>
+<link href="TS_Part2_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="TS_Part2_files/libs/quarto-html/quarto-syntax-highlighting-de84f8d6bb715db06a919283c2d1e787.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="TS_Part2_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="TS_Part2_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="TS_Part2_files/libs/bootstrap/bootstrap-cf43a150f4ed865b4eb4d60b88c21c49.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="TS_Part2_files/libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+
+<script src="TS_Part2_files/libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-full toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#what-this-notebook-covers" id="toc-what-this-notebook-covers" class="nav-link active" data-scroll-target="#what-this-notebook-covers">What This Notebook Covers</a></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup"><span class="header-section-number">1</span> Setup</a></li>
+  <li><a href="#non-stationarity-and-unit-roots" id="toc-non-stationarity-and-unit-roots" class="nav-link" data-scroll-target="#non-stationarity-and-unit-roots"><span class="header-section-number">2</span> Non-Stationarity and Unit Roots</a>
+  <ul class="collapse">
+  <li><a href="#motivating-example-gdp-and-inflation" id="toc-motivating-example-gdp-and-inflation" class="nav-link" data-scroll-target="#motivating-example-gdp-and-inflation"><span class="header-section-number">2.1</span> Motivating Example: GDP and Inflation</a></li>
+  <li><a href="#reference-dataset-us-interest-rates" id="toc-reference-dataset-us-interest-rates" class="nav-link" data-scroll-target="#reference-dataset-us-interest-rates"><span class="header-section-number">2.2</span> Reference Dataset: US Interest Rates</a></li>
+  <li><a href="#three-types-of-non-stationarity" id="toc-three-types-of-non-stationarity" class="nav-link" data-scroll-target="#three-types-of-non-stationarity"><span class="header-section-number">2.3</span> Three Types of Non-Stationarity</a></li>
+  <li><a href="#the-augmented-dickey-fuller-test" id="toc-the-augmented-dickey-fuller-test" class="nav-link" data-scroll-target="#the-augmented-dickey-fuller-test"><span class="header-section-number">2.4</span> The Augmented Dickey-Fuller Test</a>
+  <ul class="collapse">
+  <li><a href="#setup-1" id="toc-setup-1" class="nav-link" data-scroll-target="#setup-1"><span class="header-section-number">2.4.1</span> Setup</a></li>
+  <li><a href="#handrolled-adf" id="toc-handrolled-adf" class="nav-link" data-scroll-target="#handrolled-adf"><span class="header-section-number">2.4.2</span> Handrolled ADF</a></li>
+  <li><a href="#adf-with-urca" id="toc-adf-with-urca" class="nav-link" data-scroll-target="#adf-with-urca"><span class="header-section-number">2.4.3</span> ADF with <code>urca</code></a></li>
+  <li><a href="#adf-with-cadftest-provides-p-values" id="toc-adf-with-cadftest-provides-p-values" class="nav-link" data-scroll-target="#adf-with-cadftest-provides-p-values"><span class="header-section-number">2.4.4</span> ADF with <code>CADFtest</code> (provides p-values)</a></li>
+  </ul></li>
+  <li><a href="#other-unit-root-tests" id="toc-other-unit-root-tests" class="nav-link" data-scroll-target="#other-unit-root-tests"><span class="header-section-number">2.5</span> Other Unit Root Tests</a></li>
+  <li><a href="#reporting-unit-root-tests" id="toc-reporting-unit-root-tests" class="nav-link" data-scroll-target="#reporting-unit-root-tests"><span class="header-section-number">2.6</span> Reporting Unit Root Tests</a></li>
+  </ul></li>
+  <li><a href="#ols-with-non-stationary-data" id="toc-ols-with-non-stationary-data" class="nav-link" data-scroll-target="#ols-with-non-stationary-data"><span class="header-section-number">3</span> OLS with Non-Stationary Data</a>
+  <ul class="collapse">
+  <li><a href="#housing-investment-vs.-prices" id="toc-housing-investment-vs.-prices" class="nav-link" data-scroll-target="#housing-investment-vs.-prices"><span class="header-section-number">3.1</span> Housing Investment vs.&nbsp;Prices</a>
+  <ul class="collapse">
+  <li><a href="#naive-regression-potentially-spurious" id="toc-naive-regression-potentially-spurious" class="nav-link" data-scroll-target="#naive-regression-potentially-spurious"><span class="header-section-number">3.1.1</span> Naive regression (potentially spurious)</a></li>
+  <li><a href="#stationarity-test" id="toc-stationarity-test" class="nav-link" data-scroll-target="#stationarity-test"><span class="header-section-number">3.1.2</span> Stationarity test</a></li>
+  <li><a href="#trend-stationary-model" id="toc-trend-stationary-model" class="nav-link" data-scroll-target="#trend-stationary-model"><span class="header-section-number">3.1.3</span> Trend-stationary model</a></li>
+  <li><a href="#r²-with-trending-variables" id="toc-r²-with-trending-variables" class="nav-link" data-scroll-target="#r²-with-trending-variables"><span class="header-section-number">3.1.4</span> R² with trending variables</a></li>
+  <li><a href="#difference-stationary-model" id="toc-difference-stationary-model" class="nav-link" data-scroll-target="#difference-stationary-model"><span class="header-section-number">3.1.5</span> Difference-stationary model</a></li>
+  </ul></li>
+  <li><a href="#spurious-regression-simulation" id="toc-spurious-regression-simulation" class="nav-link" data-scroll-target="#spurious-regression-simulation"><span class="header-section-number">3.2</span> Spurious Regression Simulation</a></li>
+  </ul></li>
+  <li><a href="#cointegration" id="toc-cointegration" class="nav-link" data-scroll-target="#cointegration"><span class="header-section-number">4</span> Cointegration</a>
+  <ul class="collapse">
+  <li><a href="#what-cointegration-means" id="toc-what-cointegration-means" class="nav-link" data-scroll-target="#what-cointegration-means"><span class="header-section-number">4.1</span> What Cointegration Means</a></li>
+  <li><a href="#test-independent-random-walks-non-cointegrated" id="toc-test-independent-random-walks-non-cointegrated" class="nav-link" data-scroll-target="#test-independent-random-walks-non-cointegrated"><span class="header-section-number">4.2</span> Test: Independent Random Walks (Non-Cointegrated)</a></li>
+  <li><a href="#test-us-interest-rates-cointegrated" id="toc-test-us-interest-rates-cointegrated" class="nav-link" data-scroll-target="#test-us-interest-rates-cointegrated"><span class="header-section-number">4.3</span> Test: US Interest Rates (Cointegrated)</a></li>
+  </ul></li>
+  <li><a href="#univariate-time-series-arima" id="toc-univariate-time-series-arima" class="nav-link" data-scroll-target="#univariate-time-series-arima"><span class="header-section-number">5</span> Univariate Time Series: ARIMA</a>
+  <ul class="collapse">
+  <li><a href="#acf-and-pacf-reading-the-correlogram" id="toc-acf-and-pacf-reading-the-correlogram" class="nav-link" data-scroll-target="#acf-and-pacf-reading-the-correlogram"><span class="header-section-number">5.1</span> ACF and PACF: Reading the Correlogram</a></li>
+  <li><a href="#non-seasonal-arima-us-3-year-t-note-rate" id="toc-non-seasonal-arima-us-3-year-t-note-rate" class="nav-link" data-scroll-target="#non-seasonal-arima-us-3-year-t-note-rate"><span class="header-section-number">5.2</span> Non-Seasonal ARIMA: US 3-Year T-Note Rate</a></li>
+  <li><a href="#seasonal-arima-airpassengers" id="toc-seasonal-arima-airpassengers" class="nav-link" data-scroll-target="#seasonal-arima-airpassengers"><span class="header-section-number">5.3</span> Seasonal ARIMA: AirPassengers</a>
+  <ul class="collapse">
+  <li><a href="#exploration" id="toc-exploration" class="nav-link" data-scroll-target="#exploration"><span class="header-section-number">5.3.1</span> Exploration</a></li>
+  <li><a href="#identification" id="toc-identification" class="nav-link" data-scroll-target="#identification"><span class="header-section-number">5.3.2</span> Identification</a></li>
+  <li><a href="#estimation" id="toc-estimation" class="nav-link" data-scroll-target="#estimation"><span class="header-section-number">5.3.3</span> Estimation</a></li>
+  <li><a href="#diagnostics" id="toc-diagnostics" class="nav-link" data-scroll-target="#diagnostics"><span class="header-section-number">5.3.4</span> Diagnostics</a></li>
+  <li><a href="#forecast" id="toc-forecast" class="nav-link" data-scroll-target="#forecast"><span class="header-section-number">5.3.5</span> Forecast</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#dynamic-panels-arellano-bond-bonus" id="toc-dynamic-panels-arellano-bond-bonus" class="nav-link" data-scroll-target="#dynamic-panels-arellano-bond-bonus"><span class="header-section-number">6</span> Dynamic Panels: Arellano-Bond (Bonus)</a>
+  <ul class="collapse">
+  <li><a href="#check-for-serial-correlation-in-fe-residuals" id="toc-check-for-serial-correlation-in-fe-residuals" class="nav-link" data-scroll-target="#check-for-serial-correlation-in-fe-residuals"><span class="header-section-number">6.0.1</span> Check for serial correlation in FE residuals</a></li>
+  <li><a href="#static-two-way-fe-baseline" id="toc-static-two-way-fe-baseline" class="nav-link" data-scroll-target="#static-two-way-fe-baseline"><span class="header-section-number">6.0.2</span> Static two-way FE (baseline)</a></li>
+  <li><a href="#arellano-bond-gmm-ar2-dynamic-model" id="toc-arellano-bond-gmm-ar2-dynamic-model" class="nav-link" data-scroll-target="#arellano-bond-gmm-ar2-dynamic-model"><span class="header-section-number">6.0.3</span> Arellano-Bond GMM (AR(2) dynamic model)</a></li>
+  </ul></li>
+  <li><a href="#summary-and-key-takeaways" id="toc-summary-and-key-takeaways" class="nav-link" data-scroll-target="#summary-and-key-takeaways"><span class="header-section-number">7</span> Summary and Key Takeaways</a>
+  <ul class="collapse">
+  <li><a href="#the-non-stationarity-checklist" id="toc-the-non-stationarity-checklist" class="nav-link" data-scroll-target="#the-non-stationarity-checklist"><span class="header-section-number">7.1</span> The Non-Stationarity Checklist</a></li>
+  <li><a href="#arima-box-jenkins-workflow" id="toc-arima-box-jenkins-workflow" class="nav-link" data-scroll-target="#arima-box-jenkins-workflow"><span class="header-section-number">7.2</span> ARIMA Box-Jenkins Workflow</a></li>
+  </ul></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading"><span class="header-section-number">8</span> Further Reading</a></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content column-page-right" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Time Series Analysis Part 2</h1>
+<p class="subtitle lead">Non-Stationarity, Cointegration, ARIMA, and Volatility<br>NYU - Applied Statistics and Econometrics 2</p>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-right">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dragos Ailoae </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="what-this-notebook-covers" class="level1 unnumbered">
+<h1 class="unnumbered">What This Notebook Covers</h1>
+<p>This notebook accompanies <strong>Time Series Part 2</strong>, covering the tools needed to handle the most common pathologies in economic and financial time series. The central problem is <strong>non-stationarity</strong>: when a series has no stable mean or variance, standard OLS inference collapses entirely, and applying OLS to trending series produces <strong>spurious regressions</strong> with high <span class="math inline">\(R^2\)</span> and significant <span class="math inline">\(t\)</span>-statistics that are economically meaningless.</p>
+<p>We’ll cover:</p>
+<ul>
+<li>Three types of non-stationarity and why the correct remedy differs for each</li>
+<li>Unit root testing: Dickey-Fuller, ADF, Phillips-Perron, KPSS</li>
+<li>Spurious regression: what it looks like and why it happens</li>
+<li><strong>Cointegration</strong>: when two I(1) series share a genuine long-run relationship</li>
+<li><strong>ARIMA</strong> modelling from scratch: identification, estimation, diagnostics, forecasting</li>
+<li><strong>Seasonal ARIMA (SARIMA)</strong> using the classic AirPassengers dataset</li>
+<li>Bonus: <strong>Arellano-Bond</strong> dynamic panel GMM</li>
+</ul>
+<hr>
+</section>
+<section id="setup" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Setup</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">repr.plot.width  =</span> <span class="dv">6</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">repr.plot.height =</span> <span class="dv">6</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">repr.plot.res    =</span> <span class="dv">150</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">warn =</span> <span class="sc">-</span><span class="dv">1</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>packages <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"tidyverse"</span>,     <span class="co"># data manipulation and ggplot2</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"AER"</span>,           <span class="co"># Applied Econometrics with R</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"dynlm"</span>,         <span class="co"># dynamic linear models (lag/diff operators)</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"modelsummary"</span>,  <span class="co"># regression tables</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"stargazer"</span>,     <span class="co"># regression tables (text output)</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"xts"</span>,           <span class="co"># time series objects</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"wooldridge"</span>,    <span class="co"># Wooldridge textbook datasets</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">"PoEdata"</span>,       <span class="co"># Principles of Econometrics datasets</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">"urca"</span>,          <span class="co"># unit root and cointegration tests</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">"tseries"</span>,       <span class="co"># time series tools (pp.test, po.test, garch)</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="st">"CADFtest"</span>,      <span class="co"># ADF with p-values</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="st">"forecast"</span>,      <span class="co"># ARIMA modelling, auto.arima, forecasting</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="st">"lmtest"</span>,        <span class="co"># coeftest</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="st">"plm"</span>            <span class="co"># panel linear models (Arellano-Bond section)</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">lapply</span>(packages, <span class="cf">function</span>(pkg) {</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(pkg, <span class="at">character.only =</span> <span class="cn">TRUE</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">install.packages</span>(pkg)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">require</span>(pkg, <span class="at">character.only =</span> <span class="cn">TRUE</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>}))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+</section>
+<section id="non-stationarity-and-unit-roots" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Non-Stationarity and Unit Roots</h1>
+<section id="motivating-example-gdp-and-inflation" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="motivating-example-gdp-and-inflation"><span class="header-section-number">2.1</span> Motivating Example: GDP and Inflation</h2>
+<p>Before examining interest rates, consider two core macroeconomic series from the <code>usa</code> dataset: real GDP and inflation (change in CPI). Both are textbook examples of <strong>I(1)</strong> processes — they wander without a stable mean, but their first differences are stationary.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"usa"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>usa.ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(usa, <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1984</span>, <span class="dv">1</span>), <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2009</span>, <span class="dv">4</span>), <span class="at">frequency =</span> <span class="dv">4</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Build first differences</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>Dgdp <span class="ot">&lt;-</span> <span class="fu">diff</span>(usa.ts[, <span class="st">"gdp"</span>])</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>Dinf <span class="ot">&lt;-</span> <span class="fu">diff</span>(usa.ts[, <span class="st">"inf"</span>])</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>Df   <span class="ot">&lt;-</span> <span class="fu">diff</span>(usa.ts[, <span class="st">"f"</span>])</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>Db   <span class="ot">&lt;-</span> <span class="fu">diff</span>(usa.ts[, <span class="st">"b"</span>])</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>usa.ts.df <span class="ot">&lt;-</span> <span class="fu">ts.union</span>(</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">gdp =</span> usa.ts[, <span class="st">"gdp"</span>],</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">inf =</span> usa.ts[, <span class="st">"inf"</span>],</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">f   =</span> usa.ts[, <span class="st">"f"</span>],</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">b   =</span> usa.ts[, <span class="st">"b"</span>],</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  Dgdp, Dinf, Df, Db,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">dframe =</span> <span class="cn">TRUE</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repr.plot.width =</span> <span class="dv">10</span>, <span class="at">repr.plot.height =</span> <span class="dv">8</span>, <span class="at">repr.plot.res =</span> <span class="dv">150</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(usa.ts.df<span class="sc">$</span>gdp,  <span class="at">main =</span> <span class="st">"GDP"</span>)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(usa.ts.df<span class="sc">$</span>Dgdp, <span class="at">main =</span> <span class="st">"GDP: First Difference"</span>)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(usa.ts.df<span class="sc">$</span>inf,  <span class="at">main =</span> <span class="st">"Inflation (Change in CPI)"</span>)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(usa.ts.df<span class="sc">$</span>Dinf, <span class="at">main =</span> <span class="st">"Inflation: First Difference"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>What to notice:</strong> Both GDP and inflation drift persistently over time with no tendency to revert to a fixed mean — the hallmark of a non-stationary, I(1) process. Once we take first differences, however, both series fluctuate around a stable mean: <span class="math inline">\(\Delta\text{GDP}_t\)</span> and <span class="math inline">\(\Delta\Delta\text{CPI}_t\)</span> are visually consistent with stationarity. This is the core motivation for unit root testing and the Box-Jenkins approach to ARIMA modelling — work in differences, not levels.</p>
+</section>
+<section id="reference-dataset-us-interest-rates" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="reference-dataset-us-interest-rates"><span class="header-section-number">2.2</span> Reference Dataset: US Interest Rates</h2>
+<p>We use quarterly US interest rate data from 1960 Q1 through 2008 Q1. The dataset is loaded directly from the UTM server — no package dependency required.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load directly from UTM — no package dependency</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>quarterly_raw <span class="ot">&lt;-</span> <span class="fu">read.table</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"https://mcs.utm.utoronto.ca/~nosedal/data/quarterly.txt"</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">"</span><span class="sc">\t</span><span class="st">"</span>, <span class="at">na.strings =</span> <span class="st">"na"</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to quarterly ts object: 1960 Q1 – 2008 Q2</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>data.ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(quarterly_raw[, <span class="sc">-</span><span class="dv">1</span>],   <span class="co"># drop the Date column</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>              <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1960</span>, <span class="dv">1</span>), <span class="at">frequency =</span> <span class="dv">4</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Key series used throughout this notebook</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: 2008 Q2 has NAs for all interest rate columns — drop with na.omit / window</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>tbill <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(data.ts[, <span class="st">"Tbill"</span>])   <span class="co"># 3-month T-bill rate (% p.a.), 1960Q1–2008Q1</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>ffr   <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(data.ts[, <span class="st">"ffr"</span>])     <span class="co"># Federal Funds rate</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>r3    <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(data.ts[, <span class="st">"r3"</span>])      <span class="co"># 3-year Treasury note</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>r10   <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(data.ts[, <span class="st">"r10"</span>])     <span class="co"># 10-year Treasury bond</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Dimensions:"</span>, <span class="fu">nrow</span>(quarterly_raw), <span class="st">"quarters x"</span>, <span class="fu">ncol</span>(quarterly_raw) <span class="sc">-</span> <span class="dv">1</span>, <span class="st">"series</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Dimensions: 194 quarters x 15 series</code></pre>
+</div>
+</div>
+<p>Plot all four interest rate series together:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repr.plot.width =</span> <span class="dv">6</span>, <span class="at">repr.plot.height =</span> <span class="dv">6</span>, <span class="at">repr.plot.res =</span> <span class="dv">150</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">merge</span>(<span class="fu">as.zoo</span>(tbill), <span class="fu">as.zoo</span>(r3), <span class="fu">as.zoo</span>(r10)),</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">plot.type =</span> <span class="st">"single"</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"red"</span>, <span class="st">"steelblue"</span>),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Date"</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Percent per annum"</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Interest Rates"</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topright"</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"3M Tbill"</span>, <span class="st">"3Yr Note"</span>, <span class="st">"10yr Note"</span>),</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"red"</span>, <span class="st">"steelblue"</span>),</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>What to notice:</strong> All three rates trend upward through the 1970s–early 1980s and then trend downward, with no return to a stable mean over the full sample — a signature of non-stationarity. Their shared co-movement will motivate the cointegration analysis in Section 3.</p>
+</section>
+<section id="three-types-of-non-stationarity" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="three-types-of-non-stationarity"><span class="header-section-number">2.3</span> Three Types of Non-Stationarity</h2>
+<p>The lecture distinguishes three data-generating processes that all have a unit root but require different fixes:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 37%">
+<col style="width: 31%">
+<col style="width: 31%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>DGP</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Random walk</td>
+<td><span class="math inline">\(y_t = y_{t-1} + \varepsilon_t\)</span></td>
+<td>First difference</td>
+</tr>
+<tr class="even">
+<td>Random walk with drift</td>
+<td><span class="math inline">\(y_t = \mu + y_{t-1} + \varepsilon_t\)</span></td>
+<td>First difference</td>
+</tr>
+<tr class="odd">
+<td>Deterministic trend</td>
+<td><span class="math inline">\(y_t = \mu + bt + \varepsilon_t\)</span></td>
+<td>Detrend</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key asymmetry:</strong> Applying first-differencing to a trend-stationary series introduces a spurious MA(1) component (over-differencing). Detrending a random walk leaves the stochastic trend intact — the residuals are still non-stationary.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>N   <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>rho <span class="ot">&lt;-</span> <span class="fl">0.7</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>a   <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>l   <span class="ot">&lt;-</span> <span class="fl">0.01</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">246810</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>v <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="fu">rnorm</span>(N, <span class="dv">0</span>, <span class="dv">1</span>))</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>))</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Stationary about zero</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="fu">rep</span>(<span class="dv">0</span>, N))</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>N) y[t] <span class="ot">&lt;-</span> rho <span class="sc">*</span> y[t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">+</span> v[t]</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y, <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">main =</span> <span class="fu">c</span>(<span class="st">"Stationary about zero:"</span>, <span class="st">"y[t] = 0.7*y[t-1] + v[t]"</span>))</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Stationary about non-zero mean</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="fu">rep</span>(<span class="dv">0</span>, N))</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>N) y[t] <span class="ot">&lt;-</span> a <span class="sc">+</span> rho <span class="sc">*</span> y[t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">+</span> v[t]</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y, <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">main =</span> <span class="fu">c</span>(<span class="st">"Stationary about non-zero:"</span>, <span class="st">"y[t] = 1 + 0.7*y[t-1] + v[t]"</span>))</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Stationary about deterministic trend</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="fu">rep</span>(<span class="dv">0</span>, N))</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>N) y[t] <span class="ot">&lt;-</span> a <span class="sc">+</span> l <span class="sc">*</span> <span class="fu">time</span>(y)[t] <span class="sc">+</span> rho <span class="sc">*</span> y[t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">+</span> v[t]</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y, <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">main =</span> <span class="fu">c</span>(<span class="st">"Stationary about deterministic trend:"</span>, <span class="st">"y[t] = 1 + t + 0.7*y[t-1] + v[t]"</span>))</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>)</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Random walk</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="fu">rep</span>(<span class="dv">0</span>, N))</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>N) y[t] <span class="ot">&lt;-</span> y[t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">+</span> v[t]</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y, <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">main =</span> <span class="fu">c</span>(<span class="st">"Random walk:"</span>, <span class="st">"y[t] = y[t-1] + v[t]"</span>))</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>)</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Random walk with drift</span></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="fu">rep</span>(<span class="dv">0</span>, N))</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>N) y[t] <span class="ot">&lt;-</span> <span class="fl">0.1</span> <span class="sc">+</span> y[t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">+</span> v[t]</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y, <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">main =</span> <span class="fu">c</span>(<span class="st">"Random walk with drift:"</span>, <span class="st">"y[t] = 0.1 + y[t-1] + v[t]"</span>))</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>)</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a><span class="co"># 6. Random walk about deterministic trend</span></span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="fu">rep</span>(<span class="dv">0</span>, N))</span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>N) y[t] <span class="ot">&lt;-</span> <span class="fl">0.1</span> <span class="sc">+</span> l <span class="sc">*</span> <span class="fu">time</span>(y)[t] <span class="sc">+</span> y[t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">+</span> v[t]</span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y, <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">main =</span> <span class="fu">c</span>(<span class="st">"Random walk about deterministic trend:"</span>, <span class="st">"y[t] = 0.1 + t + y[t-1] + v[t]"</span>))</span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note the similarity between the deterministic trend stationary process (top-right) and segments of the random walk (middle-left). Because shocks accumulate without bound in the random walk, the series exhibits <strong>long pseudo-trends</strong> — this is why we call them processes with a “stochastic trend.”</p>
+</section>
+<section id="the-augmented-dickey-fuller-test" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="the-augmented-dickey-fuller-test"><span class="header-section-number">2.4</span> The Augmented Dickey-Fuller Test</h2>
+<section id="setup-1" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="setup-1"><span class="header-section-number">2.4.1</span> Setup</h3>
+<p>The DF test reparameterises the AR(1) as:</p>
+<p><span class="math display">\[\Delta Y_t = \beta_0 + \delta Y_{t-1} + u_t, \qquad \delta \equiv \phi - 1\]</span></p>
+<p>Test: <span class="math inline">\(H_0: \delta = 0\)</span> (unit root) vs.&nbsp;<span class="math inline">\(H_1: \delta &lt; 0\)</span> (stationary). The ADF augments with lagged differences to absorb any higher-order serial correlation:</p>
+<p><span class="math display">\[\Delta Y_t = \beta_0 + \delta Y_{t-1} + \gamma_1 \Delta Y_{t-1} + \cdots + \gamma_p \Delta Y_{t-p} + u_t\]</span></p>
+<p><strong>Critical values are non-standard</strong> (biased left relative to <span class="math inline">\(t\)</span> distribution) and must be obtained by simulation.</p>
+<p>We work with the <strong>3-month T-bill rate</strong> (<code>tbill</code>) as our reference series — the same series used in the lecture.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>test.ts <span class="ot">&lt;-</span> tbill</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repr.plot.width =</span> <span class="dv">6</span>, <span class="at">repr.plot.height =</span> <span class="dv">6</span>, <span class="at">repr.plot.res =</span> <span class="dv">150</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(test.ts, <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"%"</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Date"</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"TBill Rate"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repr.plot.width =</span> <span class="dv">6</span>, <span class="at">repr.plot.height =</span> <span class="dv">6</span>, <span class="at">repr.plot.res =</span> <span class="dv">150</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(test.ts, <span class="at">main =</span> <span class="st">"Sample Autocorrelation for Tbill Data"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pacf</span>(test.ts, <span class="at">main =</span> <span class="st">"Sample Partial Autocorrelation for Tbill Data"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The ACF decays very slowly and barely reaches zero — a textbook signature of a near-unit-root process. The PACF has a large spike at lag 1 with rapid decay, consistent with an AR(1) or unit root.</p>
+</section>
+<section id="handrolled-adf" class="level3" data-number="2.4.2">
+<h3 data-number="2.4.2" class="anchored" data-anchor-id="handrolled-adf"><span class="header-section-number">2.4.2</span> Handrolled ADF</h3>
+<p>We start with 8 lags and drop down, stopping when the last lag remains significant. The procedure is top-down: start large, drop insignificant lags from the top.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 8-lag ADF (handrolled via dynlm)</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dynlm</span>(<span class="fu">diff</span>(test.ts) <span class="sc">~</span> <span class="fu">L</span>(test.ts)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        <span class="sc">+</span> <span class="fu">diff</span>(<span class="fu">L</span>(test.ts))   <span class="sc">+</span> <span class="fu">diff</span>(<span class="fu">L</span>(test.ts), <span class="dv">2</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        <span class="sc">+</span> <span class="fu">diff</span>(<span class="fu">L</span>(test.ts), <span class="dv">3</span>) <span class="sc">+</span> <span class="fu">diff</span>(<span class="fu">L</span>(test.ts), <span class="dv">4</span>) <span class="sc">+</span> <span class="fu">diff</span>(<span class="fu">L</span>(test.ts), <span class="dv">5</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        <span class="sc">+</span> <span class="fu">diff</span>(<span class="fu">L</span>(test.ts), <span class="dv">6</span>) <span class="sc">+</span> <span class="fu">diff</span>(<span class="fu">L</span>(test.ts), <span class="dv">7</span>) <span class="sc">+</span> <span class="fu">diff</span>(<span class="fu">L</span>(test.ts), <span class="dv">8</span>))</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+t test of coefficients:
+
+                     Estimate Std. Error t value  Pr(&gt;|t|)    
+(Intercept)          0.244085   0.125971  1.9376  0.054288 .  
+L(test.ts)          -0.044002   0.020569 -2.1392  0.033811 *  
+diff(L(test.ts))     0.743143   0.126509  5.8742 2.110e-08 ***
+diff(L(test.ts), 2) -0.711943   0.137778 -5.1673 6.459e-07 ***
+diff(L(test.ts), 3)  0.482626   0.147005  3.2831  0.001241 ** 
+diff(L(test.ts), 4) -0.279216   0.150062 -1.8607  0.064478 .  
+diff(L(test.ts), 5)  0.224752   0.147177  1.5271  0.128555    
+diff(L(test.ts), 6)  0.178066   0.137827  1.2920  0.198087    
+diff(L(test.ts), 7) -0.310144   0.126648 -2.4489  0.015323 *  
+diff(L(test.ts), 8)  0.084353   0.076126  1.1081  0.269358    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>Eighth lag is insignificant — drop to 7:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dynlm</span>(<span class="fu">diff</span>(test.ts) <span class="sc">~</span> <span class="fu">L</span>(test.ts)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>        <span class="sc">+</span> <span class="fu">diff</span>(<span class="fu">L</span>(test.ts))   <span class="sc">+</span> <span class="fu">diff</span>(<span class="fu">L</span>(test.ts), <span class="dv">2</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        <span class="sc">+</span> <span class="fu">diff</span>(<span class="fu">L</span>(test.ts), <span class="dv">3</span>) <span class="sc">+</span> <span class="fu">diff</span>(<span class="fu">L</span>(test.ts), <span class="dv">4</span>) <span class="sc">+</span> <span class="fu">diff</span>(<span class="fu">L</span>(test.ts), <span class="dv">5</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        <span class="sc">+</span> <span class="fu">diff</span>(<span class="fu">L</span>(test.ts), <span class="dv">6</span>) <span class="sc">+</span> <span class="fu">diff</span>(<span class="fu">L</span>(test.ts), <span class="dv">7</span>))</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+t test of coefficients:
+
+                     Estimate Std. Error t value  Pr(&gt;|t|)    
+(Intercept)          0.222370   0.123941  1.7942 0.0745029 .  
+L(test.ts)          -0.040257   0.020237 -1.9892 0.0482254 *  
+diff(L(test.ts))     0.732722   0.125902  5.8198 2.730e-08 ***
+diff(L(test.ts), 2) -0.735691   0.135804 -5.4173 1.966e-07 ***
+diff(L(test.ts), 3)  0.509241   0.144702  3.5192 0.0005509 ***
+diff(L(test.ts), 4) -0.321408   0.144838 -2.2191 0.0277595 *  
+diff(L(test.ts), 5)  0.286061   0.135813  2.1063 0.0365969 *  
+diff(L(test.ts), 6)  0.116780   0.126025  0.9266 0.3553821    
+diff(L(test.ts), 7) -0.196200   0.074512 -2.6331 0.0092128 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>The coefficient on <code>L(test.ts)</code> (<span class="math inline">\(\hat{\delta}\)</span>) is small and negative. However, <strong>OLS <span class="math inline">\(t\)</span>-statistics are invalid</strong> under the null of a unit root — we must use the Dickey-Fuller critical values.</p>
+</section>
+<section id="adf-with-urca" class="level3" data-number="2.4.3">
+<h3 data-number="2.4.3" class="anchored" data-anchor-id="adf-with-urca"><span class="header-section-number">2.4.3</span> ADF with <code>urca</code></h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">ur.df</span>(test.ts,</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">type       =</span> <span class="st">"drift"</span>,   <span class="co"># include intercept, no trend</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">lags       =</span> <span class="dv">7</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">selectlags =</span> <span class="st">"Fixed"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+############################################### 
+# Augmented Dickey-Fuller Test Unit Root Test # 
+############################################### 
+
+Test regression drift 
+
+
+Call:
+lm(formula = z.diff ~ z.lag.1 + 1 + z.diff.lag)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.9691 -0.2679  0.0245  0.2810  3.4479 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  0.22237    0.12394   1.794  0.07450 .  
+z.lag.1     -0.04026    0.02024  -1.989  0.04823 *  
+z.diff.lag1  0.39150    0.07332   5.340 2.85e-07 ***
+z.diff.lag2 -0.34122    0.07862  -4.340 2.40e-05 ***
+z.diff.lag3  0.39447    0.08173   4.826 3.00e-06 ***
+z.diff.lag4 -0.11477    0.08624  -1.331  0.18500    
+z.diff.lag5  0.20664    0.08249   2.505  0.01315 *  
+z.diff.lag6 -0.07942    0.07872  -1.009  0.31441    
+z.diff.lag7 -0.19620    0.07451  -2.633  0.00921 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.6707 on 176 degrees of freedom
+Multiple R-squared:  0.289, Adjusted R-squared:  0.2567 
+F-statistic: 8.941 on 8 and 176 DF,  p-value: 2.946e-10
+
+
+Value of test-statistic is: -1.9892 1.9815 
+
+Critical values for test statistics: 
+      1pct  5pct 10pct
+tau2 -3.46 -2.88 -2.57
+phi1  6.52  4.63  3.81</code></pre>
+</div>
+</div>
+<p>The test-statistic must be compared to the DF critical values reported (<code>tau2</code>), not to ±1.96. A test statistic less negative than the 5% critical value (<code>-2.88</code>) means we <strong>fail to reject</strong> the null of a unit root.</p>
+</section>
+<section id="adf-with-cadftest-provides-p-values" class="level3" data-number="2.4.4">
+<h3 data-number="2.4.4" class="anchored" data-anchor-id="adf-with-cadftest-provides-p-values"><span class="header-section-number">2.4.4</span> ADF with <code>CADFtest</code> (provides p-values)</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fixed 7 lags, matching handrolled result above</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">CADFtest</span>(test.ts, <span class="at">max.lag.y =</span> <span class="dv">7</span>, <span class="at">type =</span> <span class="st">"drift"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    ADF test
+
+data:  test.ts
+ADF(7) = -1.9892, p-value = 0.2915
+alternative hypothesis: true delta is less than 0
+sample estimates:
+      delta 
+-0.04025687 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># BIC-selected lag length as a cross-check</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">CADFtest</span>(test.ts, <span class="at">max.lag.y =</span> <span class="dv">10</span>, <span class="at">criterion =</span> <span class="st">"BIC"</span>, <span class="at">type =</span> <span class="st">"drift"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Augmented DF test 
+                                             ADF test
+t-test statistic:                          -1.9958400
+p-value:                                    0.2885655
+Max lag of the diff. dependent variable:    7.0000000
+
+Call:
+dynlm(formula = formula(model), start = obs.1, end = obs.T)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.9665 -0.2646  0.0241  0.2892  3.4531 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  0.22924    0.12689   1.807  0.07256 .  
+L(y, 1)     -0.04109    0.02059  -1.996  0.28857    
+L(d(y), 1)   0.39243    0.07392   5.309 3.35e-07 ***
+L(d(y), 2)  -0.34013    0.07933  -4.288 2.99e-05 ***
+L(d(y), 3)   0.39449    0.08238   4.789 3.59e-06 ***
+L(d(y), 4)  -0.11378    0.08695  -1.309  0.19242    
+L(d(y), 5)   0.20620    0.08314   2.480  0.01409 *  
+L(d(y), 6)  -0.07897    0.07943  -0.994  0.32149    
+L(d(y), 7)  -0.19907    0.07530  -2.644  0.00896 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.6759 on 173 degrees of freedom
+Multiple R-squared:  0.2896,    Adjusted R-squared:  0.2568 
+F-statistic: 9.403 on 7 and 173 DF,  p-value: 7.314e-10</code></pre>
+</div>
+</div>
+<p>The p-value from <code>CADFtest</code> confirms: we cannot reject the null of a unit root at standard significance levels. The T-bill rate is <strong>I(1)</strong>.</p>
+<p>Now verify the first difference is stationary:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">CADFtest</span>(<span class="fu">diff</span>(test.ts), <span class="at">max.lag.y =</span> <span class="dv">8</span>, <span class="at">criterion =</span> <span class="st">"BIC"</span>, <span class="at">type =</span> <span class="st">"drift"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    ADF test
+
+data:  diff(test.ts)
+ADF(6) = -5.915, p-value = 6.261e-07
+alternative hypothesis: true delta is less than 0
+sample estimates:
+    delta 
+-0.874118 </code></pre>
+</div>
+</div>
+<p>The first difference strongly rejects the null — <span class="math inline">\(\Delta \text{tbill}_t\)</span> is <strong>I(0)</strong>. The series is integrated of order 1.</p>
+</section>
+</section>
+<section id="other-unit-root-tests" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="other-unit-root-tests"><span class="header-section-number">2.5</span> Other Unit Root Tests</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Phillips-Perron (non-parametric correction for serial correlation)</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pp.test</span>(test.ts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Phillips-Perron Unit Root Test
+
+data:  test.ts
+Dickey-Fuller Z(alpha) = -10.2, Truncation lag parameter = 4, p-value =
+0.5328
+alternative hypothesis: stationary</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># KPSS — null is STATIONARITY (reversed logic!)</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">ur.kpss</span>(test.ts, <span class="at">type =</span> <span class="st">"mu"</span>, <span class="at">lags =</span> <span class="st">"short"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+####################### 
+# KPSS Unit Root Test # 
+####################### 
+
+Test is of type: mu with 4 lags. 
+
+Value of test-statistic is: 0.6802 
+
+Critical value for a significance level of: 
+                10pct  5pct 2.5pct  1pct
+critical values 0.347 0.463  0.574 0.739</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Elliott-Rothenberg-Stock DF-GLS (higher power)</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">ur.ers</span>(test.ts, <span class="at">model =</span> <span class="st">"constant"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+############################################### 
+# Elliot, Rothenberg and Stock Unit Root Test # 
+############################################### 
+
+Test of type DF-GLS 
+detrending of series with intercept 
+
+
+Call:
+lm(formula = dfgls.form, data = data.dfgls)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-3.1051 -0.1811  0.0316  0.3321  3.5371 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+yd.lag       -0.03763    0.01749  -2.151   0.0328 *  
+yd.diff.lag1  0.37786    0.07342   5.146 6.81e-07 ***
+yd.diff.lag2 -0.30539    0.07611  -4.012 8.75e-05 ***
+yd.diff.lag3  0.30440    0.07512   4.052 7.49e-05 ***
+yd.diff.lag4 -0.05460    0.07428  -0.735   0.4632    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.7011 on 183 degrees of freedom
+Multiple R-squared:  0.1923,    Adjusted R-squared:  0.1702 
+F-statistic: 8.713 on 5 and 183 DF,  p-value: 1.981e-07
+
+
+Value of test-statistic is: -2.1512 
+
+Critical values of DF-GLS are:
+                 1pct  5pct 10pct
+critical values -2.58 -1.94 -1.62</code></pre>
+</div>
+</div>
+<p><strong>Note on KPSS:</strong> Unlike ADF/PP, the null hypothesis of KPSS is <em>stationarity</em>. A test statistic that exceeds the critical value leads us to <em>reject stationarity</em>. Use it as a complement to ADF rather than a replacement.</p>
+</section>
+<section id="reporting-unit-root-tests" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="reporting-unit-root-tests"><span class="header-section-number">2.6</span> Reporting Unit Root Tests</h2>
+<p>When reporting results, include multiple series and specifications in a compact table — as in the lecture slides.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ADF on levels and first differences for the three interest rate series</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>adf_results <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">tbill  =</span> <span class="fu">CADFtest</span>(tbill,       <span class="at">max.lag.y =</span> <span class="dv">7</span>, <span class="at">criterion =</span> <span class="st">"BIC"</span>, <span class="at">type =</span> <span class="st">"drift"</span>),</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Dtbill =</span> <span class="fu">CADFtest</span>(<span class="fu">diff</span>(tbill), <span class="at">max.lag.y =</span> <span class="dv">7</span>, <span class="at">criterion =</span> <span class="st">"BIC"</span>, <span class="at">type =</span> <span class="st">"drift"</span>),</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">r3     =</span> <span class="fu">CADFtest</span>(r3,          <span class="at">max.lag.y =</span> <span class="dv">7</span>, <span class="at">criterion =</span> <span class="st">"BIC"</span>, <span class="at">type =</span> <span class="st">"drift"</span>),</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Dr3    =</span> <span class="fu">CADFtest</span>(<span class="fu">diff</span>(r3),    <span class="at">max.lag.y =</span> <span class="dv">7</span>, <span class="at">criterion =</span> <span class="st">"BIC"</span>, <span class="at">type =</span> <span class="st">"drift"</span>),</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">r10    =</span> <span class="fu">CADFtest</span>(r10,         <span class="at">max.lag.y =</span> <span class="dv">7</span>, <span class="at">criterion =</span> <span class="st">"BIC"</span>, <span class="at">type =</span> <span class="st">"drift"</span>),</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">Dr10   =</span> <span class="fu">CADFtest</span>(<span class="fu">diff</span>(r10),   <span class="at">max.lag.y =</span> <span class="dv">7</span>, <span class="at">criterion =</span> <span class="st">"BIC"</span>, <span class="at">type =</span> <span class="st">"drift"</span>)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>tbl <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">Variable   =</span> <span class="fu">c</span>(<span class="st">"T-bill (3m)"</span>, <span class="st">"ΔT-bill"</span>, <span class="st">"T-note (3y)"</span>, <span class="st">"ΔT-note"</span>,</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"T-bond (10y)"</span>, <span class="st">"ΔT-bond"</span>),</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">Det_terms  =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"constant"</span>, <span class="st">"constant"</span>), <span class="dv">3</span>),</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">Lags       =</span> <span class="fu">sapply</span>(adf_results, <span class="cf">function</span>(x) x<span class="sc">$</span>max.lag.y),</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">Test_stat  =</span> <span class="fu">round</span>(<span class="fu">sapply</span>(adf_results, <span class="cf">function</span>(x) x<span class="sc">$</span>statistic), <span class="dv">3</span>),</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">p_value    =</span> <span class="fu">round</span>(<span class="fu">sapply</span>(adf_results, <span class="cf">function</span>(x) x<span class="sc">$</span>p.value), <span class="dv">3</span>),</span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">Conclusion =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"Unit root"</span>, <span class="st">"Stationary"</span>), <span class="dv">3</span>)</span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(tbl,</span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Variable"</span>, <span class="st">"Det. terms"</span>, <span class="st">"Lags*"</span>,</span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"ADF stat"</span>, <span class="st">"p-value"</span>, <span class="st">"Conclusion"</span>),</span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>             <span class="at">caption   =</span> <span class="st">"ADF Unit Root Test Results (H₀: series has a unit root). * Selected by BIC."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>ADF Unit Root Test Results (H₀: series has a unit root). * Selected by BIC.</caption>
+<colgroup>
+<col style="width: 10%">
+<col style="width: 20%">
+<col style="width: 16%">
+<col style="width: 9%">
+<col style="width: 13%">
+<col style="width: 12%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Variable</th>
+<th style="text-align: left;">Det. terms</th>
+<th style="text-align: right;">Lags*</th>
+<th style="text-align: right;">ADF stat</th>
+<th style="text-align: right;">p-value</th>
+<th style="text-align: left;">Conclusion</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">tbill</td>
+<td style="text-align: left;">T-bill (3m)</td>
+<td style="text-align: left;">constant</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">-1.989</td>
+<td style="text-align: right;">0.291</td>
+<td style="text-align: left;">Unit root</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dtbill</td>
+<td style="text-align: left;">ΔT-bill</td>
+<td style="text-align: left;">constant</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">-5.924</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: left;">Stationary</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">r3</td>
+<td style="text-align: left;">T-note (3y)</td>
+<td style="text-align: left;">constant</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">-1.982</td>
+<td style="text-align: right;">0.295</td>
+<td style="text-align: left;">Unit root</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dr3</td>
+<td style="text-align: left;">ΔT-note</td>
+<td style="text-align: left;">constant</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">-6.206</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: left;">Stationary</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">r10</td>
+<td style="text-align: left;">T-bond (10y)</td>
+<td style="text-align: left;">constant</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">-1.667</td>
+<td style="text-align: right;">0.446</td>
+<td style="text-align: left;">Unit root</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dr10</td>
+<td style="text-align: left;">ΔT-bond</td>
+<td style="text-align: left;">constant</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-10.470</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: left;">Stationary</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="ols-with-non-stationary-data" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> OLS with Non-Stationary Data</h1>
+<section id="housing-investment-vs.-prices" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="housing-investment-vs.-prices"><span class="header-section-number">3.1</span> Housing Investment vs.&nbsp;Prices</h2>
+<p>The Wooldridge dataset <code>hseinv</code> contains annual US data on real housing investment per capita and a housing price index.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"hseinv"</span>, <span class="at">package =</span> <span class="st">"wooldridge"</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>tsdata <span class="ot">&lt;-</span> <span class="fu">ts</span>(hseinv, <span class="at">start =</span> <span class="dv">1947</span>)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repr.plot.width =</span> <span class="dv">4</span>, <span class="at">repr.plot.height =</span> <span class="dv">4</span>, <span class="at">repr.plot.res =</span> <span class="dv">150</span>)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tsdata[, <span class="st">"price"</span>],  <span class="at">main =</span> <span class="st">"Real Housing Price Index"</span>,</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Year"</span>, <span class="at">ylab =</span> <span class="st">"Index (1982 = 1)"</span>)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tsdata[, <span class="st">"invpc"</span>],  <span class="at">main =</span> <span class="st">"Real Housing Investment Per Capita"</span>,</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Year"</span>, <span class="at">ylab =</span> <span class="st">"$1,000 / capita"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Both series are trending. Let’s first run the naive regression.</p>
+<section id="naive-regression-potentially-spurious" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="naive-regression-potentially-spurious"><span class="header-section-number">3.1.1</span> Naive regression (potentially spurious)</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>mdl1 <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(<span class="fu">log</span>(invpc) <span class="sc">~</span> <span class="fu">log</span>(price), <span class="at">data =</span> tsdata)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(mdl1, <span class="at">type =</span> <span class="st">"text"</span>,</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">"Naive Regression: log(invpc) on log(price)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Naive Regression: log(invpc) on log(price)
+===============================================
+                        Dependent variable:    
+                    ---------------------------
+                            log(invpc)         
+-----------------------------------------------
+log(price)                   1.241***          
+                              (0.382)          
+                                               
+Constant                     -0.550***         
+                              (0.043)          
+                                               
+-----------------------------------------------
+Observations                    42             
+R2                             0.208           
+Adjusted R2                    0.189           
+Residual Std. Error       0.155 (df = 40)      
+F Statistic           10.530*** (df = 1; 40)   
+===============================================
+Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p>High <span class="math inline">\(R^2\)</span>, significant price coefficient. But are both series I(1)?</p>
+</section>
+<section id="stationarity-test" class="level3" data-number="3.1.2">
+<h3 data-number="3.1.2" class="anchored" data-anchor-id="stationarity-test"><span class="header-section-number">3.1.2</span> Stationarity test</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp.test</span>(<span class="fu">log</span>(tsdata[, <span class="st">"price"</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Phillips-Perron Unit Root Test
+
+data:  log(tsdata[, "price"])
+Dickey-Fuller Z(alpha) = -9.9053, Truncation lag parameter = 3, p-value
+= 0.5079
+alternative hypothesis: stationary</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp.test</span>(<span class="fu">log</span>(tsdata[, <span class="st">"invpc"</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Phillips-Perron Unit Root Test
+
+data:  log(tsdata[, "invpc"])
+Dickey-Fuller Z(alpha) = -20.572, Truncation lag parameter = 3, p-value
+= 0.03473
+alternative hypothesis: stationary</code></pre>
+</div>
+</div>
+<p><code>log(price)</code> has a high p-value → fail to reject unit root → <strong>I(1)</strong>. <code>log(invpc)</code> borderline, but let’s check further with ADF:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">CADFtest</span>(<span class="fu">log</span>(tsdata[, <span class="st">"price"</span>]), <span class="at">max.lag.y =</span> <span class="dv">4</span>, <span class="at">criterion =</span> <span class="st">"BIC"</span>, <span class="at">type =</span> <span class="st">"trend"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    ADF test
+
+data:  log(tsdata[, "price"])
+ADF(1) = -2.7185, p-value = 0.2354
+alternative hypothesis: true delta is less than 0
+sample estimates:
+     delta 
+-0.2182761 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">CADFtest</span>(<span class="fu">log</span>(tsdata[, <span class="st">"invpc"</span>]), <span class="at">max.lag.y =</span> <span class="dv">4</span>, <span class="at">criterion =</span> <span class="st">"BIC"</span>, <span class="at">type =</span> <span class="st">"trend"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    ADF test
+
+data:  log(tsdata[, "invpc"])
+ADF(1) = -4.7735, p-value = 0.002447
+alternative hypothesis: true delta is less than 0
+sample estimates:
+    delta 
+-0.689245 </code></pre>
+</div>
+</div>
+<p><strong>Conclusion</strong></p>
+<p>log(price): clearly non-stationary (I(1)) log(invpc): evidence suggests trend-stationary (not I(1)), rather than a unit root process</p>
+<p>Since log(price) is non-stationary, regressing it in levels on another series risks <strong>spurious regression</strong>.</p>
+</section>
+<section id="trend-stationary-model" class="level3" data-number="3.1.3">
+<h3 data-number="3.1.3" class="anchored" data-anchor-id="trend-stationary-model"><span class="header-section-number">3.1.3</span> Trend-stationary model</h3>
+<p>Add a time trend to capture common trending behaviour:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>mdl2 <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(<span class="fu">log</span>(invpc) <span class="sc">~</span> <span class="fu">log</span>(price) <span class="sc">+</span> <span class="fu">trend</span>(tsdata), <span class="at">data =</span> tsdata)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(mdl2, <span class="at">type =</span> <span class="st">"text"</span>,</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">"Trend-Stationary: log(invpc) on log(price) + trend"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Trend-Stationary: log(invpc) on log(price) + trend
+===============================================
+                        Dependent variable:    
+                    ---------------------------
+                            log(invpc)         
+-----------------------------------------------
+log(price)                    -0.381           
+                              (0.679)          
+                                               
+trend(tsdata)                0.010***          
+                              (0.004)          
+                                               
+Constant                     -0.913***         
+                              (0.136)          
+                                               
+-----------------------------------------------
+Observations                    42             
+R2                             0.341           
+Adjusted R2                    0.307           
+Residual Std. Error       0.144 (df = 39)      
+F Statistic           10.080*** (df = 2; 39)   
+===============================================
+Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p>The story reverses: price elasticity is now <strong>negative and statistically insignificant</strong>. The significant time trend captures the common upward movement in both series that was previously being attributed to prices.</p>
+</section>
+<section id="r²-with-trending-variables" class="level3" data-number="3.1.4">
+<h3 data-number="3.1.4" class="anchored" data-anchor-id="r²-with-trending-variables"><span class="header-section-number">3.1.4</span> R² with trending variables</h3>
+<p>Standard <span class="math inline">\(R^2\)</span> is inflated when both variables trend. We can correct by first detrending the dependent variable:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Detrend log(invpc) first, then regress on log(price) + trend</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>mdl_detrend_y    <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(<span class="fu">log</span>(invpc) <span class="sc">~</span> <span class="fu">trend</span>(tsdata), <span class="at">data =</span> tsdata)</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>log_invpc_dt     <span class="ot">&lt;-</span> <span class="fu">residuals</span>(mdl_detrend_y)</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>mdl_detrended_r2 <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(log_invpc_dt <span class="sc">~</span> <span class="fu">log</span>(price) <span class="sc">+</span> <span class="fu">trend</span>(tsdata), <span class="at">data =</span> tsdata)</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(mdl2, mdl_detrended_r2, <span class="at">type =</span> <span class="st">"text"</span>,</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">"Comparing R² with and without pre-detrending"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Comparing R² with and without pre-detrending
+==========================================================
+                                  Dependent variable:     
+                              ----------------------------
+                                log(invpc)   log_invpc_dt 
+                                   (1)            (2)     
+----------------------------------------------------------
+log(price)                        -0.381        -0.381    
+                                 (0.679)        (0.679)   
+                                                          
+trend(tsdata)                    0.010***        0.002    
+                                 (0.004)        (0.004)   
+                                                          
+Constant                        -0.913***       -0.072    
+                                 (0.136)        (0.136)   
+                                                          
+----------------------------------------------------------
+Observations                        42            42      
+R2                                0.341          0.008    
+Adjusted R2                       0.307         -0.043    
+Residual Std. Error (df = 39)     0.144          0.144    
+F Statistic (df = 2; 39)        10.080***        0.157    
+==========================================================
+Note:                          *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p>The detrended <span class="math inline">\(R^2\)</span> collapses from 34.1% to under 1%, and the adjusted <span class="math inline">\(R^2\)</span> is negative. Price changes around trend explain virtually nothing about investment changes around trend.</p>
+</section>
+<section id="difference-stationary-model" class="level3" data-number="3.1.5">
+<h3 data-number="3.1.5" class="anchored" data-anchor-id="difference-stationary-model"><span class="header-section-number">3.1.5</span> Difference-stationary model</h3>
+<p>If the series are I(1), first differencing is the appropriate fix under the stochastic trend assumption:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>mdl3 <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(<span class="fu">diff</span>(<span class="fu">log</span>(invpc)) <span class="sc">~</span> <span class="fu">diff</span>(<span class="fu">log</span>(price)), <span class="at">data =</span> tsdata)</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(mdl1, mdl2, mdl3, <span class="at">type =</span> <span class="st">"text"</span>,</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">"Three Specifications: Housing Investment vs. Prices"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Three Specifications: Housing Investment vs. Prices
+====================================================================================
+                                          Dependent variable:                       
+                    ----------------------------------------------------------------
+                                     log(invpc)                    diff(log(invpc)) 
+                             (1)                    (2)                  (3)        
+------------------------------------------------------------------------------------
+log(price)                 1.241***                -0.381                           
+                           (0.382)                (0.679)                           
+                                                                                    
+trend(tsdata)                                     0.010***                          
+                                                  (0.004)                           
+                                                                                    
+diff(log(price))                                                        1.565       
+                                                                       (1.123)      
+                                                                                    
+Constant                  -0.550***              -0.913***              0.007       
+                           (0.043)                (0.136)              (0.023)      
+                                                                                    
+------------------------------------------------------------------------------------
+Observations                  42                     42                   41        
+R2                          0.208                  0.341                0.047       
+Adjusted R2                 0.189                  0.307                0.023       
+Residual Std. Error    0.155 (df = 40)        0.144 (df = 39)      0.142 (df = 39)  
+F Statistic         10.530*** (df = 1; 40) 10.080*** (df = 2; 39) 1.944 (df = 1; 39)
+====================================================================================
+Note:                                                    *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p>Both specifications agree that once we account for the common trend (whether deterministic or stochastic), there is no statistically significant relationship between housing prices and investment.</p>
+</section>
+</section>
+<section id="spurious-regression-simulation" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="spurious-regression-simulation"><span class="header-section-number">3.2</span> Spurious Regression Simulation</h2>
+<p>To drive home the danger, we simulate two completely independent random walk processes and regress one on the other.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">321</span>)</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>vy <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="fu">rnorm</span>(T)); y <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="fu">rep</span>(<span class="dv">0</span>, T))</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>T) y[t] <span class="ot">&lt;-</span> <span class="fl">0.2</span> <span class="sc">+</span> y[t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">+</span> vy[t]</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>vx <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="fu">rnorm</span>(T)); x <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="fu">rep</span>(<span class="dv">0</span>, T))</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>T) x[t] <span class="ot">&lt;-</span> <span class="fl">0.1</span> <span class="sc">+</span> x[t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">+</span> vx[t]</span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repr.plot.width =</span> <span class="dv">6</span>, <span class="at">repr.plot.height =</span> <span class="dv">6</span>, <span class="at">repr.plot.res =</span> <span class="dv">150</span>)</span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ts.plot</span>(y, x, <span class="at">ylab =</span> <span class="st">"y and x"</span>,</span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">main =</span> <span class="st">"Two independent random walks with drift"</span>,</span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">col  =</span> <span class="fu">c</span>(<span class="st">"steelblue"</span>, <span class="st">"tomato"</span>), <span class="at">lwd =</span> <span class="fl">1.5</span>)</span>
+<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>, <span class="fu">c</span>(<span class="st">"y (drift 0.2)"</span>, <span class="st">"x (drift 0.1)"</span>),</span>
+<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"steelblue"</span>, <span class="st">"tomato"</span>), <span class="at">lwd =</span> <span class="fl">1.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>spurious_ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x)</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(spurious_ols, <span class="at">type =</span> <span class="st">"text"</span>,</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">"Spurious Regression: unrelated random walks"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Spurious Regression: unrelated random walks
+===============================================
+                        Dependent variable:    
+                    ---------------------------
+                                 y             
+-----------------------------------------------
+x                            2.157***          
+                              (0.017)          
+                                               
+Constant                    -20.781***         
+                              (1.273)          
+                                               
+-----------------------------------------------
+Observations                   1,000           
+R2                             0.939           
+Adjusted R2                    0.939           
+Residual Std. Error      17.314 (df = 998)     
+F Statistic         15,281.510*** (df = 1; 998)
+===============================================
+Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p><span class="math inline">\(R^2 \approx 0.94\)</span>, <span class="math inline">\(t\)</span>-stat on <span class="math inline">\(x\)</span> is enormous — purely an artifact. The OLS estimator converges to <span class="math inline">\(\hat{\beta} \to \alpha_y / \alpha_x = 0.2/0.1 = 2\)</span> as <span class="math inline">\(T \to \infty\)</span>, not to any meaningful parameter.</p>
+<p><strong>Takeaway:</strong> Always test for unit roots before running a regression with time series data.</p>
+<hr>
+</section>
+</section>
+<section id="cointegration" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Cointegration</h1>
+<section id="what-cointegration-means" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="what-cointegration-means"><span class="header-section-number">4.1</span> What Cointegration Means</h2>
+<p>Two I(1) series <span class="math inline">\(y_t\)</span> and <span class="math inline">\(x_t\)</span> are <strong>cointegrated</strong> if there exists <span class="math inline">\(\beta\)</span> such that:</p>
+<p><span class="math display">\[y_t - \beta x_t \sim I(0)\]</span></p>
+<p>The linear combination is stationary even though both series individually wander. Economically, this means the two series share a <strong>common stochastic trend</strong> — they can deviate in the short run but cannot drift apart permanently.</p>
+<p><strong>Engle-Granger two-step procedure:</strong></p>
+<ol type="1">
+<li>Regress <span class="math inline">\(y_t\)</span> on <span class="math inline">\(x_t\)</span> (the cointegrating regression)</li>
+<li>Test the residuals <span class="math inline">\(\hat{u}_t\)</span> for a unit root using ADF or PP</li>
+</ol>
+<p>If residuals are stationary → cointegration. Critical values are more negative than standard ADF critical values (non-standard, depends on number of variables).</p>
+</section>
+<section id="test-independent-random-walks-non-cointegrated" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="test-independent-random-walks-non-cointegrated"><span class="header-section-number">4.2</span> Test: Independent Random Walks (Non-Cointegrated)</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Residuals from spurious regression</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repr.plot.width =</span> <span class="dv">6</span>, <span class="at">repr.plot.height =</span> <span class="dv">6</span>, <span class="at">repr.plot.res =</span> <span class="dv">150</span>)</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ts.plot</span>(<span class="fu">residuals</span>(spurious_ols),</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">ylab =</span> <span class="st">"Residuals"</span>,</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">main =</span> <span class="st">"Residuals from spurious regression (should look like RW)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp.test</span>(<span class="fu">residuals</span>(spurious_ols))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Phillips-Perron Unit Root Test
+
+data:  residuals(spurious_ols)
+Dickey-Fuller Z(alpha) = -12.13, Truncation lag parameter = 7, p-value
+= 0.4331
+alternative hypothesis: stationary</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>bfx <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">cbind</span>(y, x), <span class="at">demean =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">po.test</span>(bfx)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Phillips-Ouliaris Cointegration Test
+
+data:  bfx
+Phillips-Ouliaris demeaned = -11.356, Truncation lag parameter = 9,
+p-value = 0.15</code></pre>
+</div>
+</div>
+<p>Both tests fail to reject the null of no cointegration — as expected, since <span class="math inline">\(y\)</span> and <span class="math inline">\(x\)</span> are independent.</p>
+</section>
+<section id="test-us-interest-rates-cointegrated" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="test-us-interest-rates-cointegrated"><span class="header-section-number">4.3</span> Test: US Interest Rates (Cointegrated)</h2>
+<p>The Fed funds rate (<code>ffr</code>) and 3-year T-note (<code>r3</code>) both appear to be I(1). Economic theory (expectations hypothesis of the term structure) suggests they should share a common stochastic trend — short and medium rates are both anchored to expectations of future monetary policy.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repr.plot.width =</span> <span class="dv">6</span>, <span class="at">repr.plot.height =</span> <span class="dv">6</span>, <span class="at">repr.plot.res =</span> <span class="dv">150</span>)</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">merge</span>(<span class="fu">as.zoo</span>(r3), <span class="fu">as.zoo</span>(ffr)),</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">plot.type =</span> <span class="st">"single"</span>,</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"red"</span>),</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Date"</span>,</span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Percent per annum"</span>,</span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Interest Rates"</span>)</span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topright"</span>,</span>
+<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"3y Note"</span>, <span class="st">"Fed Funds"</span>),</span>
+<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"red"</span>),</span>
+<span id="cb56-13"><a href="#cb56-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb56-14"><a href="#cb56-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: cointegrating regression</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>fb_coint <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(r3 <span class="sc">~</span> ffr)</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: plot and test residuals</span></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repr.plot.width =</span> <span class="dv">6</span>, <span class="at">repr.plot.height =</span> <span class="dv">6</span>, <span class="at">repr.plot.res =</span> <span class="dv">150</span>)</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ts.plot</span>(<span class="fu">residuals</span>(fb_coint),</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">ylab =</span> <span class="st">"Residuals"</span>,</span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">main =</span> <span class="st">"Residuals: regression 3yr TSY Note Yield ~ Fed Funds Rate"</span>)</span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">col =</span> <span class="st">"grey50"</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp.test</span>(<span class="fu">residuals</span>(fb_coint))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Phillips-Perron Unit Root Test
+
+data:  residuals(fb_coint)
+Dickey-Fuller Z(alpha) = -33.736, Truncation lag parameter = 4, p-value
+= 0.01
+alternative hypothesis: stationary</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>bfx2 <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">cbind</span>(r3, ffr), <span class="at">demean =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">po.test</span>(bfx2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Phillips-Ouliaris Cointegration Test
+
+data:  bfx2
+Phillips-Ouliaris demeaned = -31.137, Truncation lag parameter = 1,
+p-value = 0.01</code></pre>
+</div>
+</div>
+<p>Both tests reject the null of no cointegration. The two rates are cointegrated — they share a common stochastic trend, consistent with the expectations hypothesis.</p>
+</section>
+</section>
+<section id="univariate-time-series-arima" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Univariate Time Series: ARIMA</h1>
+<section id="acf-and-pacf-reading-the-correlogram" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="acf-and-pacf-reading-the-correlogram"><span class="header-section-number">5.1</span> ACF and PACF: Reading the Correlogram</h2>
+<p>Before fitting an ARIMA model, we use the <strong>autocorrelation function (ACF)</strong> and <strong>partial autocorrelation function (PACF)</strong> to identify plausible model orders. The identification table from the lecture:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>ACF</th>
+<th>PACF</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>AR(<span class="math inline">\(p\)</span>)</td>
+<td>Decays geometrically</td>
+<td>Cuts off sharply at lag <span class="math inline">\(p\)</span></td>
+</tr>
+<tr class="even">
+<td>MA(<span class="math inline">\(q\)</span>)</td>
+<td>Cuts off sharply at lag <span class="math inline">\(q\)</span></td>
+<td>Decays geometrically</td>
+</tr>
+<tr class="odd">
+<td>ARMA(<span class="math inline">\(p,q\)</span>)</td>
+<td>Decays after lag <span class="math inline">\(q\)</span></td>
+<td>Decays after lag <span class="math inline">\(p\)</span></td>
+</tr>
+<tr class="even">
+<td>I(1) (unit root)</td>
+<td>Barely decays, near 1</td>
+<td>Large spike at lag 1 only</td>
+</tr>
+<tr class="odd">
+<td>White noise</td>
+<td>All near zero</td>
+<td>All near zero</td>
+</tr>
+</tbody>
+</table>
+<p>In practice, ACF/PACF patterns are rarely textbook-clean. Use them as a starting point for candidate models, then select using <strong>AIC/BIC</strong>.</p>
+</section>
+<section id="non-seasonal-arima-us-3-year-t-note-rate" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="non-seasonal-arima-us-3-year-t-note-rate"><span class="header-section-number">5.2</span> Non-Seasonal ARIMA: US 3-Year T-Note Rate</h2>
+<p><strong>Step 1 — Confirm integration order</strong></p>
+<p>We established in Section 1.5 that <code>r3</code> (the 3-year T-note) is I(1). We fit ARIMA(<span class="math inline">\(p\)</span>, 1, <span class="math inline">\(q\)</span>) models directly to the series in levels, letting <code>Arima()</code> handle the differencing internally via <code>d = 1</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ACF and PACF of the first difference to identify p and q</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>dr3 <span class="ot">&lt;-</span> <span class="fu">diff</span>(r3)</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repr.plot.width =</span> <span class="dv">6</span>, <span class="at">repr.plot.height =</span> <span class="dv">6</span>, <span class="at">repr.plot.res =</span> <span class="dv">150</span>)</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(dr3,  <span class="at">main =</span> <span class="st">"Sample Autocorrelation for r3 Data"</span>,  <span class="at">lag.max =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pacf</span>(dr3, <span class="at">main =</span> <span class="st">"Sample Partial Autocorrelation for r3 Data"</span>, <span class="at">lag.max =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Reading the plots:</strong></p>
+<ul>
+<li><strong>ACF</strong>: significant negative spike at lag 1 with rapid decay — consistent with an MA(1) component, though the pattern is not definitive</li>
+<li><strong>PACF</strong>: significant spikes at lags 1 through 4, decaying gradually — suggests AR terms up to order 4 may be needed; this also hints that a pure MA(1) may leave some structure in the residuals</li>
+<li>Candidate models: ARIMA(1,1,0), ARIMA(0,1,1), ARIMA(1,1,1), ARIMA(4,1,0)</li>
+</ul>
+<p><strong>Step 2 — Estimate candidates and compare</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># r3 as a ts object (already quarterly from data load)</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>r3_ts <span class="ot">&lt;-</span> r3</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>m_ar1  <span class="ot">&lt;-</span> <span class="fu">Arima</span>(r3_ts, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>m_ma1  <span class="ot">&lt;-</span> <span class="fu">Arima</span>(r3_ts, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a>m_arma <span class="ot">&lt;-</span> <span class="fu">Arima</span>(r3_ts, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb64-7"><a href="#cb64-7" aria-hidden="true" tabindex="-1"></a>m_ar4  <span class="ot">&lt;-</span> <span class="fu">Arima</span>(r3_ts, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb64-8"><a href="#cb64-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb64-9"><a href="#cb64-9" aria-hidden="true" tabindex="-1"></a>ic_table <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb64-10"><a href="#cb64-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model  =</span> <span class="fu">c</span>(<span class="st">"ARIMA(1,1,0)"</span>, <span class="st">"ARIMA(0,1,1)"</span>, <span class="st">"ARIMA(1,1,1)"</span>, <span class="st">"ARIMA(4,1,0)"</span>),</span>
+<span id="cb64-11"><a href="#cb64-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">AIC    =</span> <span class="fu">round</span>(<span class="fu">c</span>(<span class="fu">AIC</span>(m_ar1), <span class="fu">AIC</span>(m_ma1), <span class="fu">AIC</span>(m_arma), <span class="fu">AIC</span>(m_ar4)), <span class="dv">2</span>),</span>
+<span id="cb64-12"><a href="#cb64-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">BIC    =</span> <span class="fu">round</span>(<span class="fu">c</span>(<span class="fu">BIC</span>(m_ar1), <span class="fu">BIC</span>(m_ma1), <span class="fu">BIC</span>(m_arma), <span class="fu">BIC</span>(m_ar4)), <span class="dv">2</span>),</span>
+<span id="cb64-13"><a href="#cb64-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">LogLik =</span> <span class="fu">round</span>(<span class="fu">c</span>(<span class="fu">logLik</span>(m_ar1), <span class="fu">logLik</span>(m_ma1), <span class="fu">logLik</span>(m_arma), <span class="fu">logLik</span>(m_ar4)), <span class="dv">2</span>)</span>
+<span id="cb64-14"><a href="#cb64-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb64-15"><a href="#cb64-15" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(ic_table, <span class="at">caption =</span> <span class="st">"ARIMA model comparison: US 3-Year T-Note Rate"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>ARIMA model comparison: US 3-Year T-Note Rate</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Model</th>
+<th style="text-align: right;">AIC</th>
+<th style="text-align: right;">BIC</th>
+<th style="text-align: right;">LogLik</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ARIMA(1,1,0)</td>
+<td style="text-align: right;">378.16</td>
+<td style="text-align: right;">384.67</td>
+<td style="text-align: right;">-187.08</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ARIMA(0,1,1)</td>
+<td style="text-align: right;">372.49</td>
+<td style="text-align: right;">379.00</td>
+<td style="text-align: right;">-184.24</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ARIMA(1,1,1)</td>
+<td style="text-align: right;">369.65</td>
+<td style="text-align: right;">379.42</td>
+<td style="text-align: right;">-181.83</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ARIMA(4,1,0)</td>
+<td style="text-align: right;">367.84</td>
+<td style="text-align: right;">384.12</td>
+<td style="text-align: right;">-178.92</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><strong>ARIMA(0,1,1) wins on BIC (379.00)</strong> among the four candidates and is the most parsimonious. ARIMA(4,1,0) has the lowest AIC (367.84) but its BIC (384.12) is the highest of the group, penalising the four AR parameters heavily. ARIMA(1,1,1) splits the difference but neither dominates.</p>
+<p>As a benchmark, <code>auto.arima</code> with an exhaustive search selects:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>m_auto <span class="ot">&lt;-</span> <span class="fu">auto.arima</span>(r3_ts, <span class="at">d =</span> <span class="dv">1</span>, <span class="at">stepwise =</span> <span class="cn">FALSE</span>, <span class="at">approximation =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"auto.arima selection:</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>auto.arima selection:</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(m_auto)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: r3_ts 
+ARIMA(3,1,2) 
+
+Coefficients:
+          ar1      ar2     ar3     ma1     ma2
+      -0.8705  -0.5899  0.1673  1.1984  0.7535
+s.e.   0.1288   0.1017  0.1054  0.1113  0.1044
+
+sigma^2 = 0.3753:  log likelihood = -176.09
+AIC=364.19   AICc=364.64   BIC=383.73</code></pre>
+</div>
+</div>
+<p><code>auto.arima</code> selects ARIMA(3,1,2) with AIC = 364.19 — lower than all four hand-specified candidates — but its BIC (383.73) exceeds ARIMA(0,1,1)’s BIC of 379.00, because the five-parameter model incurs a heavy parsimony penalty.</p>
+<p><strong>Step 3 — Diagnostics</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>best_model <span class="ot">&lt;-</span> m_auto   <span class="co"># ARIMA(3,1,2)</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repr.plot.width =</span> <span class="dv">8</span>, <span class="at">repr.plot.height =</span> <span class="dv">8</span>, <span class="at">repr.plot.res =</span> <span class="dv">150</span>)</span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a><span class="fu">checkresiduals</span>(best_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Ljung-Box test
+
+data:  Residuals from ARIMA(3,1,2)
+Q* = 5.2862, df = 3, p-value = 0.152
+
+Model df: 5.   Total lags used: 8</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ljung-Box at multiple lags (fitdf = 1 for the one MA parameter)</span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>lb_tests <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">12</span>, <span class="dv">16</span>), <span class="cf">function</span>(lag) {</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">Box.test</span>(<span class="fu">residuals</span>(best_model), <span class="at">lag =</span> lag, <span class="at">type =</span> <span class="st">"Ljung-Box"</span>,</span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">fitdf =</span> <span class="fu">sum</span>(best_model<span class="sc">$</span>arma[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]))<span class="sc">$</span>p.value</span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb71-7"><a href="#cb71-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">Lag =</span> <span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">12</span>, <span class="dv">16</span>), <span class="at">p_value =</span> <span class="fu">round</span>(lb_tests, <span class="dv">4</span>)),</span>
+<span id="cb71-8"><a href="#cb71-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">"Ljung-Box test p-values — ARIMA(3,1,2) residuals (H₀: white noise)"</span></span>
+<span id="cb71-9"><a href="#cb71-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Ljung-Box test p-values — ARIMA(3,1,2) residuals (H₀: white noise)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Lag</th>
+<th style="text-align: right;">p_value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0.1520</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0.4200</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">0.5507</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>P-values are above 0.05 at all tested lags, indicating no <strong>residual serial correlation</strong>.</p>
+<p><strong>Step 4 — Forecast</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repr.plot.width =</span> <span class="dv">6</span>, <span class="at">repr.plot.height =</span> <span class="dv">6</span>, <span class="at">repr.plot.res =</span> <span class="dv">150</span>)</span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>fc <span class="ot">&lt;-</span> <span class="fu">forecast</span>(best_model, <span class="at">h =</span> <span class="dv">8</span>)</span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fc,</span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">main  =</span> <span class="st">"8-Quarter Ahead Forecast: US 3-Year T-Note Rate"</span>,</span>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab  =</span> <span class="st">"Percent per annum"</span>,</span>
+<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab  =</span> <span class="st">"Date"</span>,</span>
+<span id="cb72-7"><a href="#cb72-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">fcol  =</span> <span class="st">"tomato"</span>,</span>
+<span id="cb72-8"><a href="#cb72-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">flcol =</span> <span class="st">"lightsalmon"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="seasonal-arima-airpassengers" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="seasonal-arima-airpassengers"><span class="header-section-number">5.3</span> Seasonal ARIMA: AirPassengers</h2>
+<p>The <code>AirPassengers</code> dataset (Box &amp; Jenkins 1976) records monthly international airline passengers from 1949 to 1960. It is the canonical seasonal time series example.</p>
+<section id="exploration" class="level3" data-number="5.3.1">
+<h3 data-number="5.3.1" class="anchored" data-anchor-id="exploration"><span class="header-section-number">5.3.1</span> Exploration</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"AirPassengers"</span>)</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repr.plot.width =</span> <span class="dv">6</span>, <span class="at">repr.plot.height =</span> <span class="dv">6</span>, <span class="at">repr.plot.res =</span> <span class="dv">150</span>)</span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(AirPassengers,</span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Monthly International Airline Passengers (1949–1960)"</span>,</span>
+<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Passengers (thousands)"</span>,</span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Two problems are immediately visible:</p>
+<ol type="1">
+<li><strong>Trend</strong>: passengers grow over time → need differencing or log transformation</li>
+<li><strong>Multiplicative seasonality</strong>: the seasonal swings grow proportionally with the level → log transformation stabilises variance</li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repr.plot.width =</span> <span class="dv">6</span>, <span class="at">repr.plot.height =</span> <span class="dv">6</span>, <span class="at">repr.plot.res =</span> <span class="dv">150</span>)</span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>lnAP <span class="ot">&lt;-</span> <span class="fu">log</span>(AirPassengers)</span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lnAP, <span class="at">main =</span> <span class="st">"log(AirPassengers)"</span>, <span class="at">ylab =</span> <span class="st">"log(Passengers)"</span>, <span class="at">xlab =</span> <span class="st">"Year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="identification" class="level3" data-number="5.3.2">
+<h3 data-number="5.3.2" class="anchored" data-anchor-id="identification"><span class="header-section-number">5.3.2</span> Identification</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check ACF/PACF of log series in levels</span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repr.plot.width =</span> <span class="dv">6</span>, <span class="at">repr.plot.height =</span> <span class="dv">6</span>, <span class="at">repr.plot.res =</span> <span class="dv">150</span>)</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(lnAP,  <span class="at">lag.max =</span> <span class="dv">36</span>, <span class="at">main =</span> <span class="st">"ACF: log(AP) in levels"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pacf</span>(lnAP, <span class="at">lag.max =</span> <span class="dv">36</span>, <span class="at">main =</span> <span class="st">"PACF: log(AP) in levels"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The slow ACF decay confirms I(1). The spikes at lags 12, 24 in the ACF confirm <strong>seasonal I(1)</strong> as well.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply regular + seasonal differencing</span></span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>d12_lnAP <span class="ot">&lt;-</span> <span class="fu">diff</span>(<span class="fu">diff</span>(lnAP, <span class="at">lag =</span> <span class="dv">12</span>))  <span class="co"># seasonal diff first, then regular diff</span></span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repr.plot.width =</span> <span class="dv">6</span>, <span class="at">repr.plot.height =</span> <span class="dv">6</span>, <span class="at">repr.plot.res =</span> <span class="dv">150</span>)</span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(d12_lnAP,  <span class="at">lag.max =</span> <span class="dv">36</span>, <span class="at">main =</span> <span class="st">"ACF:log(AP)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-41-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pacf</span>(d12_lnAP, <span class="at">lag.max =</span> <span class="dv">36</span>, <span class="at">main =</span> <span class="st">"PACF:log(AP)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-42-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>After both regular and seasonal differencing:</p>
+<ul>
+<li><strong>ACF</strong>: negative spike at lag 12 (MA(1) seasonal term)</li>
+<li>Suggested model: <strong>SARIMA(0,1,1)(0,1,1)[12]</strong> — the classic “airline model”</li>
+</ul>
+</section>
+<section id="estimation" class="level3" data-number="5.3.3">
+<h3 data-number="5.3.3" class="anchored" data-anchor-id="estimation"><span class="header-section-number">5.3.3</span> Estimation</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The classic airline model</span></span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>m_sarima <span class="ot">&lt;-</span> <span class="fu">Arima</span>(lnAP,</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">order          =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">seasonal       =</span> <span class="fu">list</span>(<span class="at">order =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>), <span class="at">period =</span> <span class="dv">12</span>))</span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m_sarima)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: lnAP 
+ARIMA(0,1,1)(0,1,1)[12] 
+
+Coefficients:
+          ma1     sma1
+      -0.4018  -0.5569
+s.e.   0.0896   0.0731
+
+sigma^2 = 0.001371:  log likelihood = 244.7
+AIC=-483.4   AICc=-483.21   BIC=-474.77
+
+Training set error measures:
+                       ME       RMSE        MAE        MPE      MAPE      MASE
+Training set 0.0005730622 0.03504883 0.02626034 0.01098898 0.4752815 0.2169522
+                   ACF1
+Training set 0.01443892</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="co"># auto.arima for comparison</span></span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>m_auto_sarima <span class="ot">&lt;-</span> <span class="fu">auto.arima</span>(lnAP, <span class="at">stepwise =</span> <span class="cn">FALSE</span>, <span class="at">approximation =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">auto.arima selection:</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+auto.arima selection:</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(m_auto_sarima)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: lnAP 
+ARIMA(0,1,1)(0,1,1)[12] 
+
+Coefficients:
+          ma1     sma1
+      -0.4018  -0.5569
+s.e.   0.0896   0.0731
+
+sigma^2 = 0.001371:  log likelihood = 244.7
+AIC=-483.4   AICc=-483.21   BIC=-474.77</code></pre>
+</div>
+</div>
+</section>
+<section id="diagnostics" class="level3" data-number="5.3.4">
+<h3 data-number="5.3.4" class="anchored" data-anchor-id="diagnostics"><span class="header-section-number">5.3.4</span> Diagnostics</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repr.plot.width =</span> <span class="dv">8</span>, <span class="at">repr.plot.height =</span> <span class="dv">8</span>, <span class="at">repr.plot.res =</span> <span class="dv">150</span>)</span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a><span class="fu">checkresiduals</span>(m_sarima)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-45-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Ljung-Box test
+
+data:  Residuals from ARIMA(0,1,1)(0,1,1)[12]
+Q* = 26.446, df = 22, p-value = 0.233
+
+Model df: 2.   Total lags used: 24</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ljung-Box</span></span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>lb_sarima <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">c</span>(<span class="dv">12</span>, <span class="dv">24</span>, <span class="dv">36</span>), <span class="cf">function</span>(lag) {</span>
+<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">Box.test</span>(<span class="fu">residuals</span>(m_sarima), <span class="at">lag =</span> lag, <span class="at">type =</span> <span class="st">"Ljung-Box"</span>,</span>
+<span id="cb87-4"><a href="#cb87-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">fitdf =</span> <span class="dv">2</span>)<span class="sc">$</span>p.value   <span class="co"># 2 estimated parameters (theta, Theta)</span></span>
+<span id="cb87-5"><a href="#cb87-5" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb87-6"><a href="#cb87-6" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(<span class="at">Lag =</span> <span class="fu">c</span>(<span class="dv">12</span>, <span class="dv">24</span>, <span class="dv">36</span>), <span class="at">p_value =</span> <span class="fu">round</span>(lb_sarima, <span class="dv">4</span>)),</span>
+<span id="cb87-7"><a href="#cb87-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">caption =</span> <span class="st">"Ljung-Box: SARIMA(0,1,1)(0,1,1)[12] residuals"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Ljung-Box: SARIMA(0,1,1)(0,1,1)[12] residuals</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Lag</th>
+<th style="text-align: right;">p_value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0.5101</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">0.2330</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">0.2969</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="forecast" class="level3" data-number="5.3.5">
+<h3 data-number="5.3.5" class="anchored" data-anchor-id="forecast"><span class="header-section-number">5.3.5</span> Forecast</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repr.plot.width =</span> <span class="dv">6</span>, <span class="at">repr.plot.height =</span> <span class="dv">6</span>, <span class="at">repr.plot.res =</span> <span class="dv">150</span>)</span>
+<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a>fc_sarima <span class="ot">&lt;-</span> <span class="fu">forecast</span>(m_sarima, <span class="at">h =</span> <span class="dv">24</span>)</span>
+<span id="cb88-3"><a href="#cb88-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb88-4"><a href="#cb88-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fc_sarima,</span>
+<span id="cb88-5"><a href="#cb88-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">main  =</span> <span class="st">"24-Month Forecast: International Airline Passengers"</span>,</span>
+<span id="cb88-6"><a href="#cb88-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab  =</span> <span class="st">"log(Passengers)"</span>,</span>
+<span id="cb88-7"><a href="#cb88-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab  =</span> <span class="st">"Year"</span>,</span>
+<span id="cb88-8"><a href="#cb88-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">fcol  =</span> <span class="st">"tomato"</span>,</span>
+<span id="cb88-9"><a href="#cb88-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">flcol =</span> <span class="st">"lightsalmon"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-47-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot on original scale</span></span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>fc_orig        <span class="ot">&lt;-</span> fc_sarima</span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a>fc_orig<span class="sc">$</span>mean   <span class="ot">&lt;-</span> <span class="fu">exp</span>(fc_sarima<span class="sc">$</span>mean)</span>
+<span id="cb89-4"><a href="#cb89-4" aria-hidden="true" tabindex="-1"></a>fc_orig<span class="sc">$</span>lower  <span class="ot">&lt;-</span> <span class="fu">exp</span>(fc_sarima<span class="sc">$</span>lower)</span>
+<span id="cb89-5"><a href="#cb89-5" aria-hidden="true" tabindex="-1"></a>fc_orig<span class="sc">$</span>upper  <span class="ot">&lt;-</span> <span class="fu">exp</span>(fc_sarima<span class="sc">$</span>upper)</span>
+<span id="cb89-6"><a href="#cb89-6" aria-hidden="true" tabindex="-1"></a>fc_orig<span class="sc">$</span>x      <span class="ot">&lt;-</span> AirPassengers</span>
+<span id="cb89-7"><a href="#cb89-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb89-8"><a href="#cb89-8" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repr.plot.width =</span> <span class="dv">6</span>, <span class="at">repr.plot.height =</span> <span class="dv">6</span>, <span class="at">repr.plot.res =</span> <span class="dv">150</span>)</span>
+<span id="cb89-9"><a href="#cb89-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fc_orig,</span>
+<span id="cb89-10"><a href="#cb89-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">main  =</span> <span class="st">"24-Month Forecast: International Airline Passengers (original scale)"</span>,</span>
+<span id="cb89-11"><a href="#cb89-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab  =</span> <span class="st">"Passengers (thousands)"</span>,</span>
+<span id="cb89-12"><a href="#cb89-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab  =</span> <span class="st">"Year"</span>,</span>
+<span id="cb89-13"><a href="#cb89-13" aria-hidden="true" tabindex="-1"></a>     <span class="at">fcol  =</span> <span class="st">"tomato"</span>,</span>
+<span id="cb89-14"><a href="#cb89-14" aria-hidden="true" tabindex="-1"></a>     <span class="at">flcol =</span> <span class="st">"lightsalmon"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TS_Part2_files/figure-html/unnamed-chunk-48-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The model captures both the upward trend and the seasonal pattern, and the forecast intervals widen appropriately at longer horizons.</p>
+<hr>
+</section>
+</section>
+</section>
+<section id="dynamic-panels-arellano-bond-bonus" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Dynamic Panels: Arellano-Bond (Bonus)</h1>
+<p>When the panel model itself includes a lagged dependent variable:</p>
+<p><span class="math display">\[y_{it} = \rho y_{i,t-1} + \mathbf{x}_{it}'\boldsymbol{\beta} + \mu_i + \varepsilon_{it}\]</span></p>
+<p>the within (FE) transformation does not solve endogeneity because <span class="math inline">\(y_{i,t-1} - \bar{y}_i\)</span> remains correlated with the demeaned error. <strong>Arellano-Bond (1991)</strong> addresses this with first-differencing to eliminate <span class="math inline">\(\mu_i\)</span>, then using deeper lags of <span class="math inline">\(y_{it}\)</span> as GMM instruments for the differenced lagged variable.</p>
+<p>We illustrate using the <code>EmplUK</code> dataset (Arellano-Bond’s original application): employment dynamics for 140 UK firms, 1976–1984.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"EmplUK"</span>, <span class="at">package =</span> <span class="st">"plm"</span>)</span>
+<span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(EmplUK)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   1031 obs. of  7 variables:
+ $ firm   : num  1 1 1 1 1 1 1 2 2 2 ...
+ $ year   : num  1977 1978 1979 1980 1981 ...
+ $ sector : num  7 7 7 7 7 7 7 7 7 7 ...
+ $ emp    : num  5.04 5.6 5.01 4.72 4.09 ...
+ $ wage   : num  13.2 12.3 12.8 13.8 14.3 ...
+ $ capital: num  0.589 0.632 0.677 0.617 0.508 ...
+ $ output : num  95.7 97.4 99.6 100.6 99.6 ...</code></pre>
+</div>
+</div>
+<section id="check-for-serial-correlation-in-fe-residuals" class="level3" data-number="6.0.1">
+<h3 data-number="6.0.1" class="anchored" data-anchor-id="check-for-serial-correlation-in-fe-residuals"><span class="header-section-number">6.0.1</span> Check for serial correlation in FE residuals</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>formula_emp <span class="ot">&lt;-</span> <span class="fu">log</span>(emp) <span class="sc">~</span> <span class="fu">log</span>(wage) <span class="sc">+</span> <span class="fu">log</span>(capital) <span class="sc">+</span> <span class="fu">log</span>(output)</span>
+<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pwartest</span>(formula_emp, <span class="at">data =</span> EmplUK)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Wooldridge's test for serial correlation in FE panels
+
+data:  plm.model
+F = 248.87, df1 = 1, df2 = 889, p-value &lt; 2.2e-16
+alternative hypothesis: serial correlation</code></pre>
+</div>
+</div>
+<p>Strong rejection of no serial correlation → standard FE standard errors are misleading, and a dynamic specification may be warranted.</p>
+</section>
+<section id="static-two-way-fe-baseline" class="level3" data-number="6.0.2">
+<h3 data-number="6.0.2" class="anchored" data-anchor-id="static-two-way-fe-baseline"><span class="header-section-number">6.0.2</span> Static two-way FE (baseline)</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>fe_static <span class="ot">&lt;-</span> <span class="fu">plm</span>(formula_emp,</span>
+<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">index  =</span> <span class="fu">c</span>(<span class="st">"firm"</span>, <span class="st">"year"</span>),</span>
+<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">model  =</span> <span class="st">"within"</span>,</span>
+<span id="cb94-4"><a href="#cb94-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">effect =</span> <span class="st">"twoways"</span>,</span>
+<span id="cb94-5"><a href="#cb94-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data   =</span> EmplUK)</span>
+<span id="cb94-6"><a href="#cb94-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe_static)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Twoways effects Within Model
+
+Call:
+plm(formula = formula_emp, data = EmplUK, effect = "twoways", 
+    model = "within", index = c("firm", "year"))
+
+Unbalanced Panel: n = 140, T = 7-9, N = 1031
+
+Residuals:
+       Min.     1st Qu.      Median     3rd Qu.        Max. 
+-0.54207146 -0.06968774  0.00071644  0.06986551  0.59598998 
+
+Coefficients:
+              Estimate Std. Error t-value  Pr(&gt;|t|)    
+log(wage)    -0.296877   0.055347 -5.3639 1.042e-07 ***
+log(capital)  0.547560   0.021773 25.1482 &lt; 2.2e-16 ***
+log(output)   0.264825   0.081999  3.2296  0.001286 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Total Sum of Squares:    26.47
+Residual Sum of Squares: 14.347
+R-Squared:      0.45798
+Adj. R-Squared: 0.36558
+F-statistic: 247.848 on 3 and 880 DF, p-value: &lt; 2.22e-16</code></pre>
+</div>
+</div>
+</section>
+<section id="arellano-bond-gmm-ar2-dynamic-model" class="level3" data-number="6.0.3">
+<h3 data-number="6.0.3" class="anchored" data-anchor-id="arellano-bond-gmm-ar2-dynamic-model"><span class="header-section-number">6.0.3</span> Arellano-Bond GMM (AR(2) dynamic model)</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a>ab_gmm <span class="ot">&lt;-</span> <span class="fu">pgmm</span>(</span>
+<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log</span>(emp) <span class="sc">~</span> <span class="fu">lag</span>(<span class="fu">log</span>(emp), <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">lag</span>(<span class="fu">log</span>(wage), <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>)</span>
+<span id="cb96-3"><a href="#cb96-3" aria-hidden="true" tabindex="-1"></a>           <span class="sc">+</span> <span class="fu">log</span>(capital) <span class="sc">+</span> <span class="fu">lag</span>(<span class="fu">log</span>(output), <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>)</span>
+<span id="cb96-4"><a href="#cb96-4" aria-hidden="true" tabindex="-1"></a>           <span class="sc">|</span> <span class="fu">lag</span>(<span class="fu">log</span>(emp), <span class="dv">2</span><span class="sc">:</span><span class="dv">99</span>),</span>
+<span id="cb96-5"><a href="#cb96-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">data   =</span> EmplUK,</span>
+<span id="cb96-6"><a href="#cb96-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">effect =</span> <span class="st">"twoways"</span>,</span>
+<span id="cb96-7"><a href="#cb96-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">model  =</span> <span class="st">"twosteps"</span></span>
+<span id="cb96-8"><a href="#cb96-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb96-9"><a href="#cb96-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ab_gmm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Twoways effects Two-steps model Difference GMM 
+
+Call:
+pgmm(formula = log(emp) ~ lag(log(emp), 1:2) + lag(log(wage), 
+    0:1) + log(capital) + lag(log(output), 0:1) | lag(log(emp), 
+    2:99), data = EmplUK, effect = "twoways", model = "twosteps")
+
+Unbalanced Panel: n = 140, T = 7-9, N = 1031
+
+Number of Observations Used: 611
+Residuals:
+      Min.    1st Qu.     Median       Mean    3rd Qu.       Max. 
+-0.6190677 -0.0255683  0.0000000 -0.0001339  0.0332013  0.6410272 
+
+Coefficients:
+                        Estimate Std. Error z-value  Pr(&gt;|z|)    
+lag(log(emp), 1:2)1     0.474151   0.185398  2.5575 0.0105437 *  
+lag(log(emp), 1:2)2    -0.052967   0.051749 -1.0235 0.3060506    
+lag(log(wage), 0:1)0   -0.513205   0.145565 -3.5256 0.0004225 ***
+lag(log(wage), 0:1)1    0.224640   0.141950  1.5825 0.1135279    
+log(capital)            0.292723   0.062627  4.6741 2.953e-06 ***
+lag(log(output), 0:1)0  0.609775   0.156263  3.9022 9.530e-05 ***
+lag(log(output), 0:1)1 -0.446373   0.217302 -2.0542 0.0399605 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Sargan test: chisq(25) = 30.11247 (p-value = 0.22011)
+Autocorrelation test (1): normal = -1.53845 (p-value = 0.12394)
+Autocorrelation test (2): normal = -0.2796829 (p-value = 0.77972)
+Wald test for coefficients: chisq(7) = 142.0353 (p-value = &lt; 2.22e-16)
+Wald test for time dummies: chisq(6) = 16.97046 (p-value = 0.0093924)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Autocorrelation tests (Arellano-Bond m-tests)</span></span>
+<span id="cb98-2"><a href="#cb98-2" aria-hidden="true" tabindex="-1"></a><span class="co"># AR(1) is expected in first-differenced residuals; AR(2) should NOT be present</span></span>
+<span id="cb98-3"><a href="#cb98-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mtest</span>(ab_gmm, <span class="at">order =</span> <span class="dv">1</span>L, <span class="at">vcov =</span> vcovHC)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Arellano-Bond autocorrelation test of degree 1, vcov: vcovHC
+
+data:  log(emp) ~ lag(log(emp), 1:2) + lag(log(wage), 0:1) + log(capital) +  ...
+normal = -1.5385, p-value = 0.1239
+alternative hypothesis: autocorrelation present</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mtest</span>(ab_gmm, <span class="at">order =</span> <span class="dv">2</span>L, <span class="at">vcov =</span> vcovHC)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Arellano-Bond autocorrelation test of degree 2, vcov: vcovHC
+
+data:  log(emp) ~ lag(log(emp), 1:2) + lag(log(wage), 0:1) + log(capital) +  ...
+normal = -0.27968, p-value = 0.7797
+alternative hypothesis: autocorrelation present</code></pre>
+</div>
+</div>
+<p><strong>Key diagnostics:</strong></p>
+<ul>
+<li><strong>Sargan-Hansen test</strong>: tests overidentifying restrictions. Failure to reject → instruments appear valid.</li>
+<li><strong>AR(1) test</strong>: first-order autocorrelation in first-differenced residuals is expected by construction — not a problem.</li>
+<li><strong>AR(2) test</strong>: second-order autocorrelation would invalidate the lag-2 instruments. We want to <em>fail to reject</em> here.</li>
+</ul>
+<p><strong>Important caveat:</strong> Arellano-Bond is sensitive to the choice of instrument lag range. Proliferating instruments (using too many lags) weakens the Sargan test and can bias GMM estimates. Always run robustness checks with different lag depths.</p>
+<hr>
+</section>
+</section>
+<section id="summary-and-key-takeaways" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Summary and Key Takeaways</h1>
+<section id="the-non-stationarity-checklist" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="the-non-stationarity-checklist"><span class="header-section-number">7.1</span> The Non-Stationarity Checklist</h2>
+<ol type="1">
+<li><strong>Plot the series</strong> — does it trend? Does it mean-revert?</li>
+<li><strong>Test for structural breaks</strong> (Quandt-Andrews/Bai-Perron) if suspected</li>
+<li><strong>Run ADF</strong> (with trend if the series trends)
+<ul>
+<li>Reject <span class="math inline">\(H_0\)</span> → stationary, work in levels</li>
+<li>Fail to reject → proceed</li>
+</ul></li>
+<li><strong>Determine type</strong>: stochastic vs deterministic trend</li>
+<li><strong>Apply correct fix</strong>: difference I(1) series; detrend trend-stationary series</li>
+<li><strong>If multiple I(1) series</strong>: test cointegration before differencing — you may throw away a real long-run relationship</li>
+</ol>
+</section>
+<section id="arima-box-jenkins-workflow" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="arima-box-jenkins-workflow"><span class="header-section-number">7.2</span> ARIMA Box-Jenkins Workflow</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 38%">
+<col style="width: 61%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Stage</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Identification</strong></td>
+<td>Plot, unit root test, determine <span class="math inline">\(d\)</span>; ACF/PACF for <span class="math inline">\(p\)</span>, <span class="math inline">\(q\)</span></td>
+</tr>
+<tr class="even">
+<td><strong>Estimation</strong></td>
+<td>Estimate candidates via ML; compare AIC/BIC</td>
+</tr>
+<tr class="odd">
+<td><strong>Diagnostics</strong></td>
+<td>Ljung-Box on residuals; ACF/PACF of residuals</td>
+</tr>
+<tr class="even">
+<td><strong>Forecasting</strong></td>
+<td>Generate forecasts + intervals; evaluate out-of-sample</td>
+</tr>
+</tbody>
+</table>
+<p>ARIMA selection is <strong>iterative</strong>, not linear: cycle back through identification and estimation if diagnostics fail.</p>
+</section>
+</section>
+<section id="further-reading" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Further Reading</h1>
+<p><strong>Online resources:</strong></p>
+<ul>
+<li>Colonescu, <em>Principles of Econometrics with R</em>: <a href="https://bookdown.org/ccolonescu/RPoE4/time-series-stationary-variables.html" class="uri">https://bookdown.org/ccolonescu/RPoE4/time-series-stationary-variables.html</a></li>
+<li>Hyndman &amp; Athanasopoulos, <em>Forecasting: Principles and Practice</em> (free online): <a href="https://OTexts.com/fpp3" class="uri">https://OTexts.com/fpp3</a></li>
+<li>Holmes, E. E., M. D. Scheuerell, and E. J. Ward. Applied time series analysis for fisheries and environmental data. Edition 2021. <a href="https://atsa-es.github.io/atsa-labs/" class="uri">https://atsa-es.github.io/atsa-labs/</a></li>
+<li>Arellano &amp; Bond (1991), original paper: <a href="https://doi.org/10.2307/2297968" class="uri">https://doi.org/10.2307/2297968</a></li>
+</ul>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
