@@ -5192,8 +5192,8 @@ Number of Fisher Scoring iterations: 4</code></pre>
 
     <script>
 
-      function styleCell_fs9z3fpl6cpi6lijhr7y(i, j, css_id) {
-          var table = document.getElementById("tinytable_fs9z3fpl6cpi6lijhr7y");
+      function styleCell_c84sbj2d4m3r3m5yceqp(i, j, css_id) {
+          var table = document.getElementById("tinytable_c84sbj2d4m3r3m5yceqp");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -5203,7 +5203,7 @@ Number of Fisher Scoring iterations: 4</code></pre>
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_fs9z3fpl6cpi6lijhr7y');
+        var table = document.getElementById('tinytable_c84sbj2d4m3r3m5yceqp');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -5211,8 +5211,8 @@ Number of Fisher Scoring iterations: 4</code></pre>
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_fs9z3fpl6cpi6lijhr7y(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_fs9z3fpl6cpi6lijhr7y");
+      function spanCell_c84sbj2d4m3r3m5yceqp(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_c84sbj2d4m3r3m5yceqp");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -5242,18 +5242,18 @@ Number of Fisher Scoring iterations: 4</code></pre>
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 16, j: 1 }, { i: 16, j: 2 }, { i: 16, j: 3 },  ], css_id: 'tinytable_css_nje9r1ncebuiqol9pag8',}, 
-          { positions: [ { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 3, j: 1 }, { i: 5, j: 1 }, { i: 6, j: 1 }, { i: 7, j: 1 }, { i: 9, j: 1 }, { i: 10, j: 1 }, { i: 11, j: 1 }, { i: 12, j: 1 }, { i: 13, j: 1 }, { i: 14, j: 1 }, { i: 15, j: 1 }, { i: 12, j: 2 }, { i: 4, j: 1 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 8, j: 1 }, { i: 5, j: 2 }, { i: 6, j: 2 }, { i: 7, j: 2 }, { i: 8, j: 2 }, { i: 9, j: 2 }, { i: 10, j: 2 }, { i: 11, j: 2 }, { i: 8, j: 3 }, { i: 13, j: 2 }, { i: 14, j: 2 }, { i: 15, j: 2 }, { i: 12, j: 3 }, { i: 4, j: 2 }, { i: 1, j: 3 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 5, j: 3 }, { i: 6, j: 3 }, { i: 7, j: 3 }, { i: 9, j: 3 }, { i: 10, j: 3 }, { i: 11, j: 3 }, { i: 13, j: 3 }, { i: 14, j: 3 }, { i: 15, j: 3 },  ], css_id: 'tinytable_css_eizi1rjxt8w9g5st7f2p',}, 
-          { positions: [ { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_x72cgllbg29p3jh4bvwu',}, 
-          { positions: [ { i: 16, j: 0 },  ], css_id: 'tinytable_css_vbrpm34et8q4r5gf6epo',}, 
-          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 6, j: 0 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 }, { i: 12, j: 0 }, { i: 13, j: 0 }, { i: 14, j: 0 }, { i: 15, j: 0 },  ], css_id: 'tinytable_css_27g1myncfo31md88ah6q',}, 
-          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_8d85k23flt0yp6wkc353',}, 
+          { positions: [ { i: 16, j: 1 }, { i: 16, j: 2 }, { i: 16, j: 3 },  ], css_id: 'tinytable_css_okwyc2lkblqsdkc7qlww',}, 
+          { positions: [ { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 3, j: 1 }, { i: 5, j: 1 }, { i: 6, j: 1 }, { i: 7, j: 1 }, { i: 9, j: 1 }, { i: 10, j: 1 }, { i: 11, j: 1 }, { i: 12, j: 1 }, { i: 13, j: 1 }, { i: 14, j: 1 }, { i: 15, j: 1 }, { i: 12, j: 2 }, { i: 4, j: 1 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 8, j: 1 }, { i: 5, j: 2 }, { i: 6, j: 2 }, { i: 7, j: 2 }, { i: 8, j: 2 }, { i: 9, j: 2 }, { i: 10, j: 2 }, { i: 11, j: 2 }, { i: 8, j: 3 }, { i: 13, j: 2 }, { i: 14, j: 2 }, { i: 15, j: 2 }, { i: 12, j: 3 }, { i: 4, j: 2 }, { i: 1, j: 3 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 5, j: 3 }, { i: 6, j: 3 }, { i: 7, j: 3 }, { i: 9, j: 3 }, { i: 10, j: 3 }, { i: 11, j: 3 }, { i: 13, j: 3 }, { i: 14, j: 3 }, { i: 15, j: 3 },  ], css_id: 'tinytable_css_9n3t6t7zwbfx18p76495',}, 
+          { positions: [ { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_ktd2ybg8odtqk86aui1n',}, 
+          { positions: [ { i: 16, j: 0 },  ], css_id: 'tinytable_css_z2idxv5bgm6lsitordcx',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 6, j: 0 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 }, { i: 12, j: 0 }, { i: 13, j: 0 }, { i: 14, j: 0 }, { i: 15, j: 0 },  ], css_id: 'tinytable_css_3gttet3g5cjhh39hs0qj',}, 
+          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_c3q21gbiumgi8j3dh9uk',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_fs9z3fpl6cpi6lijhr7y(cell.i, cell.j, group.css_id);
+                  styleCell_c84sbj2d4m3r3m5yceqp(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -5261,15 +5261,15 @@ Number of Fisher Scoring iterations: 4</code></pre>
 
     <style>
 
-.table td.tinytable_css_nje9r1ncebuiqol9pag8, .table th.tinytable_css_nje9r1ncebuiqol9pag8 { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
-.table td.tinytable_css_eizi1rjxt8w9g5st7f2p, .table th.tinytable_css_eizi1rjxt8w9g5st7f2p { text-align: center; }
-.table td.tinytable_css_x72cgllbg29p3jh4bvwu, .table th.tinytable_css_x72cgllbg29p3jh4bvwu { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-.table td.tinytable_css_vbrpm34et8q4r5gf6epo, .table th.tinytable_css_vbrpm34et8q4r5gf6epo { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
-.table td.tinytable_css_27g1myncfo31md88ah6q, .table th.tinytable_css_27g1myncfo31md88ah6q { text-align: left; }
-.table td.tinytable_css_8d85k23flt0yp6wkc353, .table th.tinytable_css_8d85k23flt0yp6wkc353 { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+.table td.tinytable_css_okwyc2lkblqsdkc7qlww, .table th.tinytable_css_okwyc2lkblqsdkc7qlww { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
+.table td.tinytable_css_9n3t6t7zwbfx18p76495, .table th.tinytable_css_9n3t6t7zwbfx18p76495 { text-align: center; }
+.table td.tinytable_css_ktd2ybg8odtqk86aui1n, .table th.tinytable_css_ktd2ybg8odtqk86aui1n { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+.table td.tinytable_css_z2idxv5bgm6lsitordcx, .table th.tinytable_css_z2idxv5bgm6lsitordcx { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
+.table td.tinytable_css_3gttet3g5cjhh39hs0qj, .table th.tinytable_css_3gttet3g5cjhh39hs0qj { text-align: left; }
+.table td.tinytable_css_c3q21gbiumgi8j3dh9uk, .table th.tinytable_css_c3q21gbiumgi8j3dh9uk { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
 </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_fs9z3fpl6cpi6lijhr7y" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_c84sbj2d4m3r3m5yceqp" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         </thead><caption>Labor Force Participation Models</caption>
               <tbody><tr>
@@ -5577,7 +5577,6 @@ Number of Fisher Scoring iterations: 4</code></pre>
 <h1 data-number="9"><span class="header-section-number">9</span> Further Reading</h1>
 <p><strong>Textbooks:</strong></p>
 <ul>
-<li>Wooldridge, J. M. (2010). <em>Econometric Analysis of Cross Section and Panel Data</em> (2nd ed.). MIT Press. Chapter 15.</li>
 <li>Greene, W. H. (2018). <em>Econometric Analysis</em> (8th ed.). Pearson. Chapter 17.</li>
 <li>Stock, J. H., &amp; Watson, M. W. (2020). <em>Introduction to Econometrics</em> (4th ed.). Pearson. Chapter 11.</li>
 </ul>
@@ -5589,15 +5588,7 @@ Number of Fisher Scoring iterations: 4</code></pre>
 <ul>
 <li>Mroz, T. (1987). “The Sensitivity of an Empirical Model of Married Women’s Hours of Work to Economic and Statistical Assumptions.” <em>Econometrica</em>, 55(4), 765–799.</li>
 </ul>
-<p><strong>R Resources:</strong></p>
-<ul>
-<li><code>wooldridge</code> package documentation for the <code>mroz</code> dataset</li>
-<li><code>marginaleffects</code> package: <a href="https://marginaleffects.com">https://marginaleffects.com</a></li>
-<li><code>mfx</code> package for marginal effects: <a href="https://cran.r-project.org/web/packages/mfx/index.html">CRAN</a></li>
-</ul>
 <hr>
-<p><strong>End of Lecture 1 Companion Notebook</strong></p>
-<p><em>Lecture 2 opens with a full derivation of marginal effects — PEA vs AME, numerical examples, R implementation — then moves to ordered and multinomial choice.</em></p>
 </section>
 
 </main>
