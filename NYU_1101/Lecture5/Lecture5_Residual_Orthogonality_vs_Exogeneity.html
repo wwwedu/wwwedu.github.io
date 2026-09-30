@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Dragos Ailoae">
+
+<title>Residual Orthogonality vs.&nbsp;Exogeneity</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Lecture5_Residual_Orthogonality_vs_Exogeneity_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Lecture5_Residual_Orthogonality_vs_Exogeneity_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="Lecture5_Residual_Orthogonality_vs_Exogeneity_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="Lecture5_Residual_Orthogonality_vs_Exogeneity_files/libs/quarto-html/popper.min.js"></script>
+<script src="Lecture5_Residual_Orthogonality_vs_Exogeneity_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Lecture5_Residual_Orthogonality_vs_Exogeneity_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Lecture5_Residual_Orthogonality_vs_Exogeneity_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Lecture5_Residual_Orthogonality_vs_Exogeneity_files/libs/quarto-html/quarto-syntax-highlighting-bb62276ab45c84d9efd712f51ff97b5a.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Lecture5_Residual_Orthogonality_vs_Exogeneity_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Lecture5_Residual_Orthogonality_vs_Exogeneity_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Lecture5_Residual_Orthogonality_vs_Exogeneity_files/libs/bootstrap/bootstrap-202ed213b2c006338bc742d5d021bd88.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="Lecture5_Residual_Orthogonality_vs_Exogeneity_files/libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+
+<script src="Lecture5_Residual_Orthogonality_vs_Exogeneity_files/libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-full toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="-1">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#the-distinction" id="toc-the-distinction" class="nav-link active" data-scroll-target="#the-distinction">The distinction</a></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup"><span class="header-section-number">1</span> Setup</a>
+  <ul class="collapse">
+  <li><a href="#packages" id="toc-packages" class="nav-link" data-scroll-target="#packages"><span class="header-section-number">1.1</span> Packages</a></li>
+  <li><a href="#simulate-a-known-dgp" id="toc-simulate-a-known-dgp" class="nav-link" data-scroll-target="#simulate-a-known-dgp"><span class="header-section-number">1.2</span> Simulate a known DGP</a></li>
+  <li><a href="#the-data-generating-process" id="toc-the-data-generating-process" class="nav-link" data-scroll-target="#the-data-generating-process"><span class="header-section-number">1.3</span> The data-generating process</a></li>
+  <li><a href="#draw-a-random-sample" id="toc-draw-a-random-sample" class="nav-link" data-scroll-target="#draw-a-random-sample"><span class="header-section-number">1.4</span> Draw a random sample</a></li>
+  </ul></li>
+  <li><a href="#omit-w" id="toc-omit-w" class="nav-link" data-scroll-target="#omit-w"><span class="header-section-number">2</span> Omit <span class="math inline">\(w\)</span></a></li>
+  <li><a href="#residuals-vs.-the-short-model-disturbance" id="toc-residuals-vs.-the-short-model-disturbance" class="nav-link" data-scroll-target="#residuals-vs.-the-short-model-disturbance"><span class="header-section-number">3</span> Residuals vs.&nbsp;the short-model disturbance</a>
+  <ul class="collapse">
+  <li><a href="#the-residuals-still-satisfy-the-normal-equations" id="toc-the-residuals-still-satisfy-the-normal-equations" class="nav-link" data-scroll-target="#the-residuals-still-satisfy-the-normal-equations"><span class="header-section-number">3.1</span> The residuals still satisfy the normal equations</a></li>
+  <li><a href="#but-the-disturbance-is-correlated-with-x" id="toc-but-the-disturbance-is-correlated-with-x" class="nav-link" data-scroll-target="#but-the-disturbance-is-correlated-with-x"><span class="header-section-number">3.2</span> But the disturbance is correlated with <span class="math inline">\(x\)</span></a></li>
+  </ul></li>
+  <li><a href="#where-did-the-correlation-go" id="toc-where-did-the-correlation-go" class="nav-link" data-scroll-target="#where-did-the-correlation-go"><span class="header-section-number">4</span> Where did the correlation go?</a>
+  <ul class="collapse">
+  <li><a href="#visualizing-it" id="toc-visualizing-it" class="nav-link" data-scroll-target="#visualizing-it"><span class="header-section-number">4.1</span> Visualizing it</a></li>
+  </ul></li>
+  <li><a href="#one-more-subtlety-residuals-are-not-disturbances" id="toc-one-more-subtlety-residuals-are-not-disturbances" class="nav-link" data-scroll-target="#one-more-subtlety-residuals-are-not-disturbances"><span class="header-section-number">5</span> One more subtlety: residuals are not disturbances</a></li>
+  <li><a href="#takeaways" id="toc-takeaways" class="nav-link" data-scroll-target="#takeaways"><span class="header-section-number">6</span> Takeaways</a></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content column-page-right" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Residual Orthogonality vs.&nbsp;Exogeneity</h1>
+<p class="subtitle lead">Lecture 5 Demo<br>NYU - Applied Statistics and Econometrics I</p>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-right">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dragos Ailoae </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="the-distinction" class="level1 unnumbered">
+<h1 class="unnumbered">The distinction</h1>
+<p>In the population model</p>
+<p><span class="math display">\[
+\mathbf y=\mathbf X\boldsymbol\beta+\boldsymbol\varepsilon,
+\]</span></p>
+<p><span class="math inline">\(\boldsymbol\varepsilon\)</span> is the <strong>unobserved disturbance</strong>. OLS produces the <strong>sample residual</strong></p>
+<p><span class="math display">\[
+\widehat{\boldsymbol\varepsilon}
+=\mathbf y-\mathbf X\widehat{\boldsymbol\beta}.
+\]</span></p>
+<p>The normal equations guarantee</p>
+<p><span class="math display">\[
+\boxed{\mathbf X'\widehat{\boldsymbol\varepsilon}=\mathbf 0}.
+\]</span></p>
+<p>But exogeneity is a population assumption:</p>
+<p><span class="math display">\[
+\boxed{E[\boldsymbol\varepsilon\mid\mathbf X]=\mathbf 0}.
+\]</span></p>
+<p>It implies <span class="math inline">\(E[X_j\varepsilon]=0\)</span>, but residual orthogonality holds <strong>by construction</strong>, whether or not exogeneity is true.</p>
+<p><strong>Goal of this demo:</strong> show why <span class="math inline">\(\mathbf X'\widehat{\boldsymbol\varepsilon}=0\)</span> cannot be used to test exogeneity.</p>
+<hr>
+</section>
+<section id="setup" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Setup</h1>
+<section id="packages" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="packages"><span class="header-section-number">1.1</span> Packages</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install any missing packages</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>packages <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"MASS"</span>, <span class="st">"knitr"</span>, <span class="st">"modelsummary"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>missing <span class="ot">&lt;-</span> packages[<span class="sc">!</span>packages <span class="sc">%in%</span> <span class="fu">rownames</span>(<span class="fu">installed.packages</span>())]</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(missing) <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="fu">install.packages</span>(missing)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="simulate-a-known-dgp" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="simulate-a-known-dgp"><span class="header-section-number">1.2</span> Simulate a known DGP</h2>
+<p>We will make the distinction between a <strong>population</strong> and a <strong>sample</strong> explicit.</p>
+<p>First, we create an artificial population of <strong>100,000 observations</strong>. Because we create the population ourselves, we know exactly how the variables are related in the population.</p>
+<p>For each population member <span class="math inline">\(i=1,\ldots,100{,}000\)</span>, we generate:</p>
+<ul>
+<li><span class="math inline">\(x_i\)</span>: a regressor;</li>
+<li><span class="math inline">\(w_i\)</span>: another variable that affects <span class="math inline">\(y_i\)</span>;</li>
+<li><span class="math inline">\(\varepsilon_i\)</span>: the disturbance in the true model.</li>
+</ul>
+<p>We specify the population correlations</p>
+<p><span class="math display">\[
+\operatorname{Corr}(x,w)=0.8,
+\qquad
+\operatorname{Corr}(x,\varepsilon)=0,
+\qquad
+\operatorname{Corr}(w,\varepsilon)=0.
+\]</span></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Size of our artificial population</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">100000</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Population correlation matrix for x, w, and epsilon</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>rho <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="fl">1.0</span>, <span class="fl">0.8</span>, <span class="fl">0.0</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                <span class="fl">0.8</span>, <span class="fl">1.0</span>, <span class="fl">0.0</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                <span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">1.0</span>),</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>              <span class="at">dimnames =</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"w"</span>, <span class="st">"epsilon"</span>),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                              <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"w"</span>, <span class="st">"epsilon"</span>)))</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Population means and standard deviations</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>mu  <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>sds <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert correlations and standard deviations into a covariance matrix</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>Sigma <span class="ot">&lt;-</span> <span class="fu">diag</span>(sds) <span class="sc">%*%</span> rho <span class="sc">%*%</span> <span class="fu">diag</span>(sds)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1001</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the artificial population.</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co"># empirical = TRUE makes its moments match the values specified above.</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>population <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  MASS<span class="sc">::</span><span class="fu">mvrnorm</span>(<span class="at">n =</span> N, <span class="at">mu =</span> mu, <span class="at">Sigma =</span> Sigma, <span class="at">empirical =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(population) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"w"</span>, <span class="st">"epsilon"</span>)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the correlations in our artificial population</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">cor</span>(population), <span class="at">digits =</span> <span class="dv">3</span>,</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>      <span class="at">caption =</span> <span class="st">"Artificial Population Correlations (N = 100,000)"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Artificial Population Correlations (N = 100,000)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">x</th>
+<th style="text-align: right;">w</th>
+<th style="text-align: right;">epsilon</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">x</td>
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">0.8</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">w</td>
+<td style="text-align: right;">0.8</td>
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">epsilon</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Think of these 100,000 observations as our <strong>population</strong>. In real empirical work we generally do not observe the whole population or the disturbance <span class="math inline">\(\varepsilon_i\)</span>. Here we created both, so we can use them to see what sampling and OLS do.</p>
+</section>
+<section id="the-data-generating-process" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="the-data-generating-process"><span class="header-section-number">1.3</span> The data-generating process</h2>
+<p>Let</p>
+<p><span class="math display">\[
+y_i=\beta_1+\beta_2x_i+\beta_3w_i+\varepsilon_i,
+\]</span></p>
+<p>with</p>
+<p><span class="math display">\[
+\beta_1=0,\qquad \beta_2=2,\qquad \beta_3=3.
+\]</span></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set the true population coefficients</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>beta_1 <span class="ot">&lt;-</span> <span class="dv">0</span>   <span class="co"># intercept</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>beta_2 <span class="ot">&lt;-</span> <span class="dv">2</span>   <span class="co"># coefficient on x</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>beta_3 <span class="ot">&lt;-</span> <span class="dv">3</span>   <span class="co"># coefficient on w</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Construct y for every unit in the artificial population</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span>y <span class="ot">&lt;-</span> beta_1 <span class="sc">+</span> beta_2 <span class="sc">*</span> population<span class="sc">$</span>x <span class="sc">+</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                beta_3 <span class="sc">*</span> population<span class="sc">$</span>w <span class="sc">+</span> population<span class="sc">$</span>epsilon</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(population)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["x"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["w"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["epsilon"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["y"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"-1.3032644","2":"0.2582257","3":"0.06518222","4":"-1.7666695","_rn_":"1"},{"1":"1.0330739","2":"1.0848076","3":"0.43585565","4":"5.7564264","_rn_":"2"},{"1":"-0.1058780","2":"-0.2368271","3":"0.11113379","4":"-0.8111034","_rn_":"3"},{"1":"0.6895881","2":"-1.0656060","3":"0.52617618","4":"-1.2914656","_rn_":"4"},{"1":"-0.7530953","2":"-1.6451466","3":"-2.08568280","4":"-8.5273132","_rn_":"5"},{"1":"0.6987159","2":"0.4051455","3":"-1.37435109","4":"1.2385172","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Every one of the 100,000 units now has its own <span class="math inline">\(x_i\)</span>, <span class="math inline">\(w_i\)</span>, <span class="math inline">\(\varepsilon_i\)</span>, and <span class="math inline">\(y_i\)</span>. The population is complete; next we sample from it.</p>
+</section>
+<section id="draw-a-random-sample" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="draw-a-random-sample"><span class="header-section-number">1.4</span> Draw a random sample</h2>
+<p>Now suppose we observe only a <strong>random sample of <span class="math inline">\(n=500\)</span></strong> units from this population. Sampling a unit means taking its entire row: <span class="math inline">\(x_i\)</span>, <span class="math inline">\(w_i\)</span>, <span class="math inline">\(y_i\)</span>, and (though we would not see it in real data) <span class="math inline">\(\varepsilon_i\)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample size</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Randomly select 500 observations from the population</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5678</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>sample_rows <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>N, <span class="at">size =</span> n, <span class="at">replace =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Take every variable for those 500 units, including y.</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># This is the sample we will use for the regressions below</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> population[sample_rows, ]</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare population and sample correlations</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>cor_comparison <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">Quantity =</span> <span class="fu">c</span>(<span class="st">"corr(x, w)"</span>,</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>               <span class="st">"corr(x, epsilon)"</span>,</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>               <span class="st">"corr(w, epsilon)"</span>),</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">Population =</span> <span class="fu">c</span>(<span class="fu">cor</span>(population<span class="sc">$</span>x, population<span class="sc">$</span>w),</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">cor</span>(population<span class="sc">$</span>x, population<span class="sc">$</span>epsilon),</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">cor</span>(population<span class="sc">$</span>w, population<span class="sc">$</span>epsilon)),</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">Sample =</span> <span class="fu">c</span>(<span class="fu">cor</span>(df<span class="sc">$</span>x, df<span class="sc">$</span>w),</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>             <span class="fu">cor</span>(df<span class="sc">$</span>x, df<span class="sc">$</span>epsilon),</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>             <span class="fu">cor</span>(df<span class="sc">$</span>w, df<span class="sc">$</span>epsilon))</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(cor_comparison, <span class="at">digits =</span> <span class="dv">4</span>,</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">caption =</span> <span class="st">"Population vs. Sample Correlations"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Population vs.&nbsp;Sample Correlations</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Quantity</th>
+<th style="text-align: right;">Population</th>
+<th style="text-align: right;">Sample</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">corr(x, w)</td>
+<td style="text-align: right;">0.8</td>
+<td style="text-align: right;">0.7877</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">corr(x, epsilon)</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0693</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">corr(w, epsilon)</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0675</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><strong>What is in <code>df</code>?</strong> Drawing the sample copies each selected unit’s full row from the population. So <code>df$y</code>, <code>df$x</code>, and <code>df$w</code> are the sampled units’ data, and <code>df$epsilon</code> holds their <strong>true disturbances</strong>. Nothing has been generated or estimated for the sample; it is simply a subset of the population. We can see these values only because we built the population ourselves; in real data they would be unobserved.</p>
+<p>The <strong>population</strong> correlations are the relationships we built into the DGP, computed over all 100,000 units. The <strong>sample</strong> correlations use the <em>same</em> variables, including the same true <span class="math inline">\(\varepsilon_i\)</span>’s, but are computed over only the 500 units we happened to draw.</p>
+<p>They will generally not match exactly. In particular,</p>
+<p><span class="math display">\[
+\operatorname{Corr}_{pop}(x,\varepsilon)=0
+\]</span></p>
+<p>does <strong>not</strong> imply that the realized sample correlation is exactly zero:</p>
+<p><span class="math display">\[
+\operatorname{Corr}_{sample}(x,\varepsilon)\neq 0 \quad \text{in general.}
+\]</span></p>
+<p>The difference is <strong>sampling variation</strong>.</p>
+<hr>
+</section>
+</section>
+<section id="omit-w" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Omit <span class="math inline">\(w\)</span></h1>
+<p>Suppose we do not observe <span class="math inline">\(w\)</span> and estimate the short regression</p>
+<p><span class="math display">\[
+y_i=\beta_1+\beta_2x_i+v_i.
+\]</span></p>
+<p>Equivalently, rewrite the true DGP as</p>
+<p><span class="math display">\[
+y_i=\beta_1+\beta_2x_i+\underbrace{(\beta_3w_i+\varepsilon_i)}_{v_i\;\text{ = new disturbance}}.
+\]</span></p>
+<p>Thus</p>
+<p><span class="math display">\[
+\boxed{v_i=\beta_3w_i+\varepsilon_i}.
+\]</span></p>
+<p>Because <span class="math inline">\(w_i\)</span> is correlated with <span class="math inline">\(x_i\)</span>, the new disturbance <span class="math inline">\(v_i\)</span> is also correlated with <span class="math inline">\(x_i\)</span>. Exogeneity fails.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Correct regression: include both x and w</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>mdl_full <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> w, <span class="at">data =</span> df)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Short regression: deliberately omit w</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>mdl_short <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> df)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># The same two regressions run on the entire population (for comparison)</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>pop_full  <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> w, <span class="at">data =</span> population)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>pop_short <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> population)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>modelsummary<span class="sc">::</span><span class="fu">modelsummary</span>(</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="st">"Full model: y ~ x + w"</span> <span class="ot">=</span> mdl_full,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>       <span class="st">"Short model: y ~ x"</span> <span class="ot">=</span> mdl_short),</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">stars =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">gof_map =</span> <span class="fu">c</span>(<span class="st">"nobs"</span>, <span class="st">"r.squared"</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_d3jhig2yd9ll64c45ou5(i, j, css_id) {
+          var table = document.getElementById("tinytable_d3jhig2yd9ll64c45ou5");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_d3jhig2yd9ll64c45ou5');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_d3jhig2yd9ll64c45ou5(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_d3jhig2yd9ll64c45ou5");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 8, j: 1 }, { i: 8, j: 2 },  ], css_id: 'tinytable_css_sp5eyxzkwov1pn31xbhm',}, 
+          { positions: [ { i: 6, j: 1 }, { i: 6, j: 2 },  ], css_id: 'tinytable_css_4i7d8wvkcz6cdmndhf9n',}, 
+          { positions: [ { i: 2, j: 1 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 1, j: 1 }, { i: 1, j: 2 }, { i: 7, j: 1 }, { i: 3, j: 2 }, { i: 5, j: 1 }, { i: 5, j: 2 }, { i: 2, j: 2 }, { i: 7, j: 2 }, { i: 4, j: 2 },  ], css_id: 'tinytable_css_82yfu0i33221n9jo7zlu',}, 
+          { positions: [ { i: 0, j: 1 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_iycfbadijs5whk2pax0h',}, 
+          { positions: [ { i: 8, j: 0 },  ], css_id: 'tinytable_css_b609384roy3pwtjox6om',}, 
+          { positions: [ { i: 6, j: 0 },  ], css_id: 'tinytable_css_dv3hc7enmh8brjvvlczy',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 7, j: 0 },  ], css_id: 'tinytable_css_xp6wrfff6q7aop2jtbs7',}, 
+          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_zqbfpapll2tijn4bm874',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_d3jhig2yd9ll64c45ou5(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_sp5eyxzkwov1pn31xbhm, .table th.tinytable_css_sp5eyxzkwov1pn31xbhm { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_4i7d8wvkcz6cdmndhf9n, .table th.tinytable_css_4i7d8wvkcz6cdmndhf9n { text-align: center; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_82yfu0i33221n9jo7zlu, .table th.tinytable_css_82yfu0i33221n9jo7zlu { text-align: center; }
+      .table td.tinytable_css_iycfbadijs5whk2pax0h, .table th.tinytable_css_iycfbadijs5whk2pax0h { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_b609384roy3pwtjox6om, .table th.tinytable_css_b609384roy3pwtjox6om { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_dv3hc7enmh8brjvvlczy, .table th.tinytable_css_dv3hc7enmh8brjvvlczy { text-align: left; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_xp6wrfff6q7aop2jtbs7, .table th.tinytable_css_xp6wrfff6q7aop2jtbs7 { text-align: left; }
+      .table td.tinytable_css_zqbfpapll2tijn4bm874, .table th.tinytable_css_zqbfpapll2tijn4bm874 { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_d3jhig2yd9ll64c45ou5" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col"> </th>
+                <th scope="col">Full model: y ~ x + w</th>
+                <th scope="col">Short model: y ~ x</th>
+              </tr>
+        </thead>
+        <tfoot><tr><td colspan="3">+ p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td></tr></tfoot>
+        <tbody>
+                <tr>
+                  <td>(Intercept)</td>
+                  <td>0.185*</td>
+                  <td>0.086</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(0.085)</td>
+                  <td>(0.121)</td>
+                </tr>
+                <tr>
+                  <td>x</td>
+                  <td>2.079***</td>
+                  <td>4.487***</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(0.135)</td>
+                  <td>(0.118)</td>
+                </tr>
+                <tr>
+                  <td>w</td>
+                  <td>3.063***</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(0.135)</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>Num.Obs.</td>
+                  <td>500</td>
+                  <td>500</td>
+                </tr>
+                <tr>
+                  <td>R2</td>
+                  <td>0.873</td>
+                  <td>0.743</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+<p>Even the correctly specified full model does not return exactly 2 and 3 in our sample (it gives 2.079 and 3.063). That is sampling variation again: run on the entire population, the same regression gives 2 and 3.</p>
+<p>The coefficient on <span class="math inline">\(x\)</span> changes from 2.079 in the full model to 4.487 in the short model (4.4 in the population). We will study omitted-variable bias formally later; here the question is what the residuals reveal about the failure of exogeneity.</p>
+<hr>
+</section>
+<section id="residuals-vs.-the-short-model-disturbance" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Residuals vs.&nbsp;the short-model disturbance</h1>
+<section id="the-residuals-still-satisfy-the-normal-equations" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="the-residuals-still-satisfy-the-normal-equations"><span class="header-section-number">3.1</span> The residuals still satisfy the normal equations</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the OLS residual from the short regression</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># for each of the 500 observations</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>vhat <span class="ot">&lt;-</span> <span class="fu">resid</span>(mdl_short)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Property =</span> <span class="fu">c</span>(<span class="st">"Sum of residuals"</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Sum of x * residuals"</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>               <span class="st">"cor(residuals, x)"</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>               <span class="st">"cor(residuals, fitted values)"</span>),</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">Value =</span> <span class="fu">c</span>(<span class="fu">sum</span>(vhat),</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>            <span class="fu">sum</span>(df<span class="sc">$</span>x <span class="sc">*</span> vhat),</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>            <span class="fu">cor</span>(vhat, df<span class="sc">$</span>x),</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>            <span class="fu">cor</span>(vhat, <span class="fu">fitted</span>(mdl_short)))</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">10</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">caption =</span> <span class="st">"Algebraic Properties of the Short-Regression Residuals"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Algebraic Properties of the Short-Regression Residuals</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Property</th>
+<th style="text-align: right;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Sum of residuals</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sum of x * residuals</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cor(residuals, x)</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cor(residuals, fitted values)</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>All are zero up to floating-point error. The residuals are orthogonal to the included regressor even though exogeneity is false.</p>
+</section>
+<section id="but-the-disturbance-is-correlated-with-x" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="but-the-disturbance-is-correlated-with-x"><span class="header-section-number">3.2</span> But the disturbance is correlated with <span class="math inline">\(x\)</span></h2>
+<p>Because we created the data, we can observe the object that would be unobserved in real data:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Omitting w creates the new disturbance</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">#     v_i = beta_3 * w_i + epsilon_i</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Because this is simulated data, we can observe v_i.</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co"># In real data, v_i would be unobserved.</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>population<span class="sc">$</span>v <span class="ot">&lt;-</span> beta_3 <span class="sc">*</span> population<span class="sc">$</span>w <span class="sc">+</span> population<span class="sc">$</span>epsilon</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># As with every other variable, the sample's v comes from the same 500 units</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>v <span class="ot">&lt;-</span> population<span class="sc">$</span>v[sample_rows]</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">Object =</span> <span class="fu">c</span>(<span class="st">"Residual (v-hat), sample"</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>             <span class="st">"Disturbance (v), sample"</span>,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>             <span class="st">"Disturbance (v), population"</span>),</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">Correlation_with_x =</span> <span class="fu">c</span>(<span class="fu">cor</span>(vhat, df<span class="sc">$</span>x),</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">cor</span>(df<span class="sc">$</span>v, df<span class="sc">$</span>x),</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">cor</span>(population<span class="sc">$</span>v, population<span class="sc">$</span>x))</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">caption =</span> <span class="st">"Correlation with x"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Correlation with x</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Object</th>
+<th style="text-align: right;">Correlation_with_x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Residual (v-hat), sample</td>
+<td style="text-align: right;">0.000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Disturbance (v), sample</td>
+<td style="text-align: right;">0.685</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Disturbance (v), population</td>
+<td style="text-align: right;">0.666</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The disturbance is correlated with <span class="math inline">\(x\)</span>, both in the population and in our sample; the residual is not. The population value can be checked by hand: <span class="math inline">\(\operatorname{Cov}(x,v)=3\operatorname{Cov}(x,w)=2.4\)</span> and <span class="math inline">\(\operatorname{Var}(v)=9\cdot 1+4=13\)</span>, so <span class="math inline">\(\operatorname{Corr}(x,v)=2.4/\sqrt{13}\approx 0.666\)</span>.</p>
+<hr>
+</section>
+</section>
+<section id="where-did-the-correlation-go" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Where did the correlation go?</h1>
+<p>The short regression is</p>
+<p><span class="math display">\[
+y_i=\beta_1+\beta_2x_i+v_i.
+\]</span></p>
+<p>If <span class="math inline">\(v_i\)</span> is correlated with <span class="math inline">\(x_i\)</span>, part of the variation in <span class="math inline">\(v_i\)</span> is systematically related to <span class="math inline">\(x_i\)</span>. OLS attributes that part to the fitted regression line, changing <span class="math inline">\(\widehat\beta_2\)</span>.</p>
+<p>What remains is the residual <span class="math inline">\(\widehat v_i\)</span>. The normal equations guarantee</p>
+<p><span class="math display">\[
+\boxed{\sum_{i=1}^n x_i\widehat v_i=0}.
+\]</span></p>
+<p>So the residual is uncorrelated with <span class="math inline">\(x\)</span> <strong>by construction</strong>, even though the disturbance <span class="math inline">\(v\)</span> is correlated with <span class="math inline">\(x\)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Regress the true short-model disturbance v on x.</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This shows the part of v that is linearly related to x.</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>v_on_x <span class="ot">&lt;-</span> <span class="fu">lm</span>(v <span class="sc">~</span> x, <span class="at">data =</span> df)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Check =</span> <span class="fu">c</span>(<span class="st">"Slope of v on x"</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">"beta_2-hat minus true beta_2"</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Max |resid(v ~ x) - resid(y ~ x)|"</span>),</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">Value =</span> <span class="fu">c</span>(<span class="fu">coef</span>(v_on_x)[<span class="st">"x"</span>],</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>            <span class="fu">coef</span>(mdl_short)[<span class="st">"x"</span>] <span class="sc">-</span> beta_2,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>            <span class="fu">max</span>(<span class="fu">abs</span>(<span class="fu">resid</span>(v_on_x) <span class="sc">-</span> vhat)))</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">6</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Check</th>
+<th style="text-align: right;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Slope of v on x</td>
+<td style="text-align: right;">2.487392</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">beta_2-hat minus true beta_2</td>
+<td style="text-align: right;">2.487392</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Max |resid(v ~ x) - resid(y ~ x)|</td>
+<td style="text-align: right;">0.000000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The slope from regressing <span class="math inline">\(v\)</span> on <span class="math inline">\(x\)</span> is exactly the amount added to the estimated slope on <span class="math inline">\(x\)</span>. The residuals from the two regressions are also identical.</p>
+<section id="visualizing-it" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="visualizing-it"><span class="header-section-number">4.1</span> Visualizing it</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(df<span class="sc">$</span>x, df<span class="sc">$</span>v,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"x"</span>, <span class="at">ylab =</span> <span class="st">"v (short-model disturbance)"</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Disturbance vs. x"</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">20</span>, <span class="at">col =</span> <span class="fu">adjustcolor</span>(<span class="st">"firebrick"</span>, <span class="fl">0.5</span>))</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(v_on_x, <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>, <span class="at">bty =</span> <span class="st">"n"</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">paste0</span>(<span class="st">"corr = "</span>, <span class="fu">round</span>(<span class="fu">cor</span>(df<span class="sc">$</span>v, df<span class="sc">$</span>x), <span class="dv">2</span>)))</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(df<span class="sc">$</span>x, vhat,</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"x"</span>, <span class="at">ylab =</span> <span class="st">"v-hat (OLS residual)"</span>,</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Residual vs. x"</span>,</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">20</span>, <span class="at">col =</span> <span class="fu">adjustcolor</span>(<span class="st">"steelblue"</span>, <span class="fl">0.5</span>))</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>, <span class="at">bty =</span> <span class="st">"n"</span>,</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">paste0</span>(<span class="st">"corr = "</span>, <span class="fu">round</span>(<span class="fu">cor</span>(vhat, df<span class="sc">$</span>x), <span class="dv">2</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Lecture5_Residual_Orthogonality_vs_Exogeneity_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The left panel shows the failure of exogeneity. The right panel cannot reveal it: residual orthogonality is imposed by OLS.</p>
+<hr>
+</section>
+</section>
+<section id="one-more-subtlety-residuals-are-not-disturbances" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> One more subtlety: residuals are not disturbances</h1>
+<p>Even when the model is correctly specified, the realized disturbance <span class="math inline">\(\varepsilon_i\)</span> and the OLS residual <span class="math inline">\(\widehat\varepsilon_i\)</span> are generally not identical.</p>
+<p>We can see this using the <strong>same 500 sampled units</strong> and the correctly specified full regression. For each unit we have two numbers side by side:</p>
+<ul>
+<li><span class="math inline">\(\varepsilon_i\)</span>: its <strong>true disturbance</strong>, copied from the population (unobserved in real data);</li>
+<li><span class="math inline">\(\widehat\varepsilon_i\)</span>: its <strong>OLS residual</strong> from <code>y ~ x + w</code> (always observed).</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the residuals from the correctly specified regression</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>epsilonhat <span class="ot">&lt;-</span> <span class="fu">resid</span>(mdl_full)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>fmt <span class="ot">&lt;-</span> <span class="cf">function</span>(z) <span class="fu">formatC</span>(<span class="fu">round</span>(z, <span class="dv">4</span>) <span class="sc">+</span> <span class="dv">0</span>, <span class="at">format =</span> <span class="st">"f"</span>, <span class="at">digits =</span> <span class="dv">4</span>)  <span class="co"># "+ 0" avoids printing -0.0000</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">Quantity =</span> <span class="fu">c</span>(<span class="st">"corr(epsilon, x): true disturbances"</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>               <span class="st">"corr(epsilon-hat, x): OLS residuals"</span>,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>               <span class="st">"mean(epsilon): true disturbances"</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>               <span class="st">"mean(epsilon-hat): OLS residuals"</span>,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>               <span class="st">"corr(epsilon, epsilon-hat)"</span>),</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">Sample =</span> <span class="fu">fmt</span>(<span class="fu">c</span>(<span class="fu">cor</span>(df<span class="sc">$</span>epsilon, df<span class="sc">$</span>x),</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">cor</span>(epsilonhat, df<span class="sc">$</span>x),</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">mean</span>(df<span class="sc">$</span>epsilon),</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">mean</span>(epsilonhat),</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">cor</span>(df<span class="sc">$</span>epsilon, epsilonhat))),</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">Population =</span> <span class="fu">c</span>(<span class="fu">fmt</span>(<span class="fu">cor</span>(population<span class="sc">$</span>epsilon, population<span class="sc">$</span>x)),</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"n/a"</span>,</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">fmt</span>(<span class="fu">mean</span>(population<span class="sc">$</span>epsilon)),</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"n/a"</span>,</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"n/a"</span>)</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">align =</span> <span class="fu">c</span>(<span class="st">"l"</span>, <span class="st">"r"</span>, <span class="st">"r"</span>), <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>        <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Quantity"</span>, <span class="st">"Sample (n = 500)"</span>, <span class="st">"Population (N = 100,000)"</span>),</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>        <span class="at">caption =</span> <span class="st">"Correct Model: True Disturbances vs. OLS Residuals"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Correct Model: True Disturbances vs.&nbsp;OLS Residuals</caption>
+<colgroup>
+<col style="width: 46%">
+<col style="width: 21%">
+<col style="width: 32%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Quantity</th>
+<th style="text-align: right;">Sample (n = 500)</th>
+<th style="text-align: right;">Population (N = 100,000)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">corr(epsilon, x): true disturbances</td>
+<td style="text-align: right;">0.0693</td>
+<td style="text-align: right;">0.0000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">corr(epsilon-hat, x): OLS residuals</td>
+<td style="text-align: right;">0.0000</td>
+<td style="text-align: right;">n/a</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">mean(epsilon): true disturbances</td>
+<td style="text-align: right;">0.1847</td>
+<td style="text-align: right;">0.0000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mean(epsilon-hat): OLS residuals</td>
+<td style="text-align: right;">0.0000</td>
+<td style="text-align: right;">n/a</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">corr(epsilon, epsilon-hat)</td>
+<td style="text-align: right;">0.9974</td>
+<td style="text-align: right;">n/a</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Reading the table:</p>
+<ul>
+<li><strong>True disturbances.</strong> Across all 100,000 units, <span class="math inline">\(\varepsilon\)</span> is uncorrelated with <span class="math inline">\(x\)</span> and has mean zero, as the DGP specifies. Across the 500 units we drew, the correlation is 0.069 and the mean is 0.185. Exogeneity is not failing here: these are the <em>same</em> true disturbances, averaged over a smaller set of units, so the sample values wobble around the population values. This is <strong>sampling variation</strong>. (The same 0.069 appeared in the population-vs.-sample table at the start.)</li>
+<li><strong>OLS residuals.</strong> Their correlation with <span class="math inline">\(x\)</span> and their mean are zero up to numerical rounding, because the normal equations impose this <strong>exactly in the sample</strong>. Residuals exist only for the sampled units, so they have no population column.</li>
+<li><strong>Residuals vs.&nbsp;disturbances.</strong> The two are highly correlated (0.997) but not identical. OLS removed the small part of the sampled <span class="math inline">\(\varepsilon\)</span>’s that happened to line up with <span class="math inline">\(x\)</span> and <span class="math inline">\(w\)</span>, and moved it into <span class="math inline">\(\widehat\beta\)</span>. That is also why the full-model estimates in our sample are not exactly 2 and 3.</li>
+</ul>
+<hr>
+</section>
+<section id="takeaways" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Takeaways</h1>
+<ol type="1">
+<li><span class="math inline">\(\boldsymbol\varepsilon\)</span> (or <span class="math inline">\(\mathbf v\)</span> in the short model) is an <strong>unobserved disturbance</strong>; <span class="math inline">\(\widehat{\boldsymbol\varepsilon}\)</span> or <span class="math inline">\(\widehat{\mathbf v}\)</span> is a <strong>sample residual</strong>.</li>
+<li><span class="math inline">\(\mathbf X'\widehat{\boldsymbol\varepsilon}=0\)</span> is an <strong>algebraic property of OLS</strong>, not evidence that exogeneity holds.</li>
+<li><span class="math inline">\(E[\boldsymbol\varepsilon\mid\mathbf X]=\mathbf 0\)</span> is a <strong>population assumption</strong> and implies population orthogonality.</li>
+<li>A disturbance can be correlated with an included regressor even though the OLS residual is uncorrelated with that regressor.</li>
+<li>Even under a correctly specified model, residuals generally are <strong>not</strong> the realized disturbances.</li>
+</ol>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+    
