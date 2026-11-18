@@ -1,0 +1,2313 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Dragos Ailoae">
+
+<title>Endogeneity and Instrumental Variables</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Endogeneity_IV_Companion_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Endogeneity_IV_Companion_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="Endogeneity_IV_Companion_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="Endogeneity_IV_Companion_files/libs/quarto-html/popper.min.js"></script>
+<script src="Endogeneity_IV_Companion_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Endogeneity_IV_Companion_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Endogeneity_IV_Companion_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Endogeneity_IV_Companion_files/libs/quarto-html/quarto-syntax-highlighting-bb62276ab45c84d9efd712f51ff97b5a.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Endogeneity_IV_Companion_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Endogeneity_IV_Companion_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Endogeneity_IV_Companion_files/libs/bootstrap/bootstrap-202ed213b2c006338bc742d5d021bd88.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="Endogeneity_IV_Companion_files/libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+
+<script src="Endogeneity_IV_Companion_files/libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-full toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="-1">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#what-this-notebook-covers" id="toc-what-this-notebook-covers" class="nav-link active" data-scroll-target="#what-this-notebook-covers">What This Notebook Covers</a></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup"><span class="header-section-number">1</span> Setup</a></li>
+  <li><a href="#part-1.-why-ols-fails" id="toc-part-1.-why-ols-fails" class="nav-link" data-scroll-target="#part-1.-why-ols-fails"><span class="header-section-number">2</span> Part 1. Why OLS Fails</a>
+  <ul class="collapse">
+  <li><a href="#a-simulated-butter-market" id="toc-a-simulated-butter-market" class="nav-link" data-scroll-target="#a-simulated-butter-market"><span class="header-section-number">2.1</span> A simulated butter market</a></li>
+  <li><a href="#ols-gets-the-wrong-sign" id="toc-ols-gets-the-wrong-sign" class="nav-link" data-scroll-target="#ols-gets-the-wrong-sign"><span class="header-section-number">2.2</span> OLS gets the wrong sign</a></li>
+  <li><a href="#why-price-is-correlated-with-the-demand-error" id="toc-why-price-is-correlated-with-the-demand-error" class="nav-link" data-scroll-target="#why-price-is-correlated-with-the-demand-error"><span class="header-section-number">2.3</span> Why: price is correlated with the demand error</a></li>
+  <li><a href="#more-data-does-not-help" id="toc-more-data-does-not-help" class="nav-link" data-scroll-target="#more-data-does-not-help"><span class="header-section-number">2.4</span> More data does not help</a></li>
+  <li><a href="#measurement-error-attenuates-ols" id="toc-measurement-error-attenuates-ols" class="nav-link" data-scroll-target="#measurement-error-attenuates-ols"><span class="header-section-number">2.5</span> Measurement error attenuates OLS</a></li>
+  </ul></li>
+  <li><a href="#part-2.-the-first-stage" id="toc-part-2.-the-first-stage" class="nav-link" data-scroll-target="#part-2.-the-first-stage"><span class="header-section-number">3</span> Part 2. The First Stage</a>
+  <ul class="collapse">
+  <li><a href="#the-idea" id="toc-the-idea" class="nav-link" data-scroll-target="#the-idea"><span class="header-section-number">3.1</span> The idea</a></li>
+  <li><a href="#regress-price-on-rainfall" id="toc-regress-price-on-rainfall" class="nav-link" data-scroll-target="#regress-price-on-rainfall"><span class="header-section-number">3.2</span> Regress price on rainfall</a></li>
+  <li><a href="#fitted-prices-and-residuals" id="toc-fitted-prices-and-residuals" class="nav-link" data-scroll-target="#fitted-prices-and-residuals"><span class="header-section-number">3.3</span> Fitted prices and residuals</a></li>
+  <li><a href="#what-the-fitted-prices-capture" id="toc-what-the-fitted-prices-capture" class="nav-link" data-scroll-target="#what-the-fitted-prices-capture"><span class="header-section-number">3.4</span> What the fitted prices capture</a></li>
+  </ul></li>
+  <li><a href="#part-3.-the-second-stage-and-2sls" id="toc-part-3.-the-second-stage-and-2sls" class="nav-link" data-scroll-target="#part-3.-the-second-stage-and-2sls"><span class="header-section-number">4</span> Part 3. The Second Stage and 2SLS</a>
+  <ul class="collapse">
+  <li><a href="#regress-quantity-on-the-fitted-prices" id="toc-regress-quantity-on-the-fitted-prices" class="nav-link" data-scroll-target="#regress-quantity-on-the-fitted-prices"><span class="header-section-number">4.1</span> Regress quantity on the fitted prices</a></li>
+  <li><a href="#sls-in-one-step-with-ivreg" id="toc-sls-in-one-step-with-ivreg" class="nav-link" data-scroll-target="#sls-in-one-step-with-ivreg"><span class="header-section-number">4.2</span> 2SLS in one step with <code>ivreg()</code></a></li>
+  <li><a href="#why-the-hand-run-standard-error-is-wrong" id="toc-why-the-hand-run-standard-error-is-wrong" class="nav-link" data-scroll-target="#why-the-hand-run-standard-error-is-wrong"><span class="header-section-number">4.3</span> Why the hand-run standard error is wrong</a></li>
+  </ul></li>
+  <li><a href="#part-4.-the-iv-estimator" id="toc-part-4.-the-iv-estimator" class="nav-link" data-scroll-target="#part-4.-the-iv-estimator"><span class="header-section-number">5</span> Part 4. The IV Estimator</a>
+  <ul class="collapse">
+  <li><a href="#one-number-three-formulas" id="toc-one-number-three-formulas" class="nav-link" data-scroll-target="#one-number-three-formulas"><span class="header-section-number">5.1</span> One number, three formulas</a></li>
+  <li><a href="#consistency-what-the-formula-needs" id="toc-consistency-what-the-formula-needs" class="nav-link" data-scroll-target="#consistency-what-the-formula-needs"><span class="header-section-number">5.2</span> Consistency: what the formula needs</a></li>
+  </ul></li>
+  <li><a href="#part-5.-instrument-validity" id="toc-part-5.-instrument-validity" class="nav-link" data-scroll-target="#part-5.-instrument-validity"><span class="header-section-number">6</span> Part 5. Instrument Validity</a>
+  <ul class="collapse">
+  <li><a href="#three-candidate-instruments-for-butter-demand" id="toc-three-candidate-instruments-for-butter-demand" class="nav-link" data-scroll-target="#three-candidate-instruments-for-butter-demand"><span class="header-section-number">6.1</span> Three candidate instruments for butter demand</a></li>
+  <li><a href="#strong-correlation-is-not-validity-a-correlation-matrix-simulation" id="toc-strong-correlation-is-not-validity-a-correlation-matrix-simulation" class="nav-link" data-scroll-target="#strong-correlation-is-not-validity-a-correlation-matrix-simulation"><span class="header-section-number">6.2</span> Strong correlation is not validity: a correlation-matrix simulation</a></li>
+  <li><a href="#proxy-variable-vs-instrument" id="toc-proxy-variable-vs-instrument" class="nav-link" data-scroll-target="#proxy-variable-vs-instrument"><span class="header-section-number">6.3</span> Proxy variable vs instrument</a></li>
+  </ul></li>
+  <li><a href="#part-6.-identification---order-and-rank-conditions" id="toc-part-6.-identification---order-and-rank-conditions" class="nav-link" data-scroll-target="#part-6.-identification---order-and-rank-conditions"><span class="header-section-number">7</span> Part 6. Identification - Order and Rank Conditions</a></li>
+  <li><a href="#part-7.-inference-and-diagnostics" id="toc-part-7.-inference-and-diagnostics" class="nav-link" data-scroll-target="#part-7.-inference-and-diagnostics"><span class="header-section-number">8</span> Part 7. Inference and Diagnostics</a>
+  <ul class="collapse">
+  <li><a href="#robust-standard-errors" id="toc-robust-standard-errors" class="nav-link" data-scroll-target="#robust-standard-errors"><span class="header-section-number">8.1</span> Robust standard errors</a></li>
+  <li><a href="#weak-instruments" id="toc-weak-instruments" class="nav-link" data-scroll-target="#weak-instruments"><span class="header-section-number">8.2</span> Weak instruments</a></li>
+  <li><a href="#is-ols-actually-biased-wuhausman-via-the-control-function" id="toc-is-ols-actually-biased-wuhausman-via-the-control-function" class="nav-link" data-scroll-target="#is-ols-actually-biased-wuhausman-via-the-control-function"><span class="header-section-number">8.3</span> Is OLS actually biased? Wu–Hausman via the control function</a></li>
+  <li><a href="#overidentification-sargan-by-hand" id="toc-overidentification-sargan-by-hand" class="nav-link" data-scroll-target="#overidentification-sargan-by-hand"><span class="header-section-number">8.4</span> Overidentification: Sargan by hand</a></li>
+  </ul></li>
+  <li><a href="#part-8.-applications" id="toc-part-8.-applications" class="nav-link" data-scroll-target="#part-8.-applications"><span class="header-section-number">9</span> Part 8. Applications</a>
+  <ul class="collapse">
+  <li><a href="#cigarette-demand-real-data" id="toc-cigarette-demand-real-data" class="nav-link" data-scroll-target="#cigarette-demand-real-data"><span class="header-section-number">9.1</span> Cigarette demand (real data)</a></li>
+  <li><a href="#distance-to-college-card-1995" id="toc-distance-to-college-card-1995" class="nav-link" data-scroll-target="#distance-to-college-card-1995"><span class="header-section-number">9.2</span> Distance to college (Card, 1995)</a></li>
+  </ul></li>
+  <li><a href="#common-mistakes" id="toc-common-mistakes" class="nav-link" data-scroll-target="#common-mistakes"><span class="header-section-number">10</span> Common Mistakes</a></li>
+  <li><a href="#summary-and-key-takeaways" id="toc-summary-and-key-takeaways" class="nav-link" data-scroll-target="#summary-and-key-takeaways"><span class="header-section-number">11</span> Summary and Key Takeaways</a></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading"><span class="header-section-number">12</span> Further Reading</a></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content column-page-right" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Endogeneity and Instrumental Variables</h1>
+<p class="subtitle lead">Companion Notebook<br>ECONGA-1001.001: Applied Statistics and Econometrics I<br>New York University</p>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-right">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dragos Ailoae </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="what-this-notebook-covers" class="level1 unnumbered">
+<h1 class="unnumbered">What This Notebook Covers</h1>
+<p>When a regressor is correlated with the error term, OLS is biased and inconsistent. <strong>Instrumental variables (IV)</strong> fix this by estimating the effect of the endogenous regressor using <strong>only the variation generated by an exogenous instrument</strong>. Every section below is a version of that idea.</p>
+<ol type="1">
+<li>Why OLS fails: a simulated butter market</li>
+<li>The first stage: separating rainfall-driven price variation</li>
+<li>The second stage and two-stage least squares (2SLS)</li>
+<li>The IV estimator: covariances and the reduced form</li>
+<li>Instrument validity: relevance, exogeneity, exclusion, and proxies</li>
+<li>Identification: order and rank conditions</li>
+<li>Inference and diagnostics: standard errors, weak instruments, Wu–Hausman, Sargan</li>
+<li>Applications: cigarette demand and distance to college</li>
+</ol>
+<p>We use two kinds of data. <strong>Simulated data</strong>, where we know the true data generating process (DGP), let us check every estimator against the truth: in the butter market the true demand elasticity is −0.5. <strong>Real data</strong> (Stock and Watson’s cigarette data and Card’s college-proximity data) show what the same tools look like in practice.</p>
+<hr>
+</section>
+<section id="setup" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Setup</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>packages <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"AER"</span>,           <span class="co"># ivreg(), CigarettesSW, robust standard errors</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"wooldridge"</span>,    <span class="co"># card dataset (Card 1995)</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"MASS"</span>,          <span class="co"># mvrnorm() for the correlation-matrix simulation</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"modelsummary"</span>,  <span class="co"># Regression tables</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"knitr"</span>          <span class="co"># kable() tables</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>missing <span class="ot">&lt;-</span> packages[<span class="sc">!</span>packages <span class="sc">%in%</span> <span class="fu">rownames</span>(<span class="fu">installed.packages</span>())]</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(missing) <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="fu">install.packages</span>(missing)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">lapply</span>(packages, library, <span class="at">character.only =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>col_blue   <span class="ot">&lt;-</span> <span class="st">"#1F4788"</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>col_orange <span class="ot">&lt;-</span> <span class="st">"#E07B00"</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>col_grey   <span class="ot">&lt;-</span> <span class="st">"grey55"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<hr>
+</section>
+<section id="part-1.-why-ols-fails" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Part 1. Why OLS Fails</h1>
+<section id="a-simulated-butter-market" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="a-simulated-butter-market"><span class="header-section-number">2.1</span> A simulated butter market</h2>
+<p>Price and quantity are determined by two equations (in logs):</p>
+<p><span class="math display">\[\text{Demand:} \quad \log Q_t = 4.6 - 0.5 \log P_t + 0.4\, M_t + \varepsilon^d_t\]</span> <span class="math display">\[\text{Supply:} \quad \log Q_t = 3.0 + 1.0 \log P_t + 0.04\,(R_t - 25) - 0.3\, F_t + \varepsilon^s_t\]</span></p>
+<ul>
+<li><span class="math inline">\(R_t\)</span>: rainfall in dairy-producing regions (inches) - our <strong>hypothetical instrument</strong>; it shifts supply only</li>
+<li><span class="math inline">\(F_t\)</span>: cattle-feed cost - another supply shifter</li>
+<li><span class="math inline">\(M_t\)</span>: price of margarine - a substitute, so it shifts <strong>demand</strong></li>
+<li><span class="math inline">\(\varepsilon^d_t, \varepsilon^s_t\)</span>: demand and supply shocks, unobserved in practice</li>
+</ul>
+<p>The <strong>true demand elasticity is −0.5</strong> and the true supply elasticity is +1.0. Setting demand equal to supply and solving gives the equilibrium price, which is how the function below generates the data.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>make_butter <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">rain_eff =</span> <span class="fl">0.04</span>, <span class="at">seed =</span> <span class="dv">1928</span>) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(seed)) <span class="fu">set.seed</span>(seed)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  rain <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="dv">25</span>, <span class="dv">5</span>)             <span class="co"># inches of rain in dairy regions (instrument)</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  feed <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="dv">0</span>, <span class="fl">0.2</span>)            <span class="co"># log cattle-feed cost (supply shifter)</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  marg <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="dv">0</span>, <span class="fl">0.2</span>)            <span class="co"># log margarine price (demand shifter)</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  ud   <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="dv">0</span>, <span class="fl">0.20</span>)           <span class="co"># demand shocks</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  us   <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="dv">0</span>, <span class="fl">0.05</span>)           <span class="co"># supply shocks</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  logP <span class="ot">&lt;-</span> (<span class="fl">0.6</span> <span class="sc">-</span> rain_eff <span class="sc">*</span> (rain <span class="sc">-</span> <span class="dv">25</span>) <span class="sc">+</span> <span class="fl">0.4</span> <span class="sc">*</span> marg <span class="sc">+</span> <span class="fl">0.3</span> <span class="sc">*</span> feed <span class="sc">+</span> ud <span class="sc">-</span> us) <span class="sc">/</span> <span class="fl">1.5</span>   <span class="co"># equilibrium</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  logQ <span class="ot">&lt;-</span> <span class="fl">4.6</span> <span class="sc">-</span> <span class="fl">0.5</span> <span class="sc">*</span> logP <span class="sc">+</span> <span class="fl">0.4</span> <span class="sc">*</span> marg <span class="sc">+</span> ud</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">year =</span> <span class="dv">1</span><span class="sc">:</span>n, rain, feed, marg, logP, logQ, ud)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>butter <span class="ot">&lt;-</span> <span class="fu">make_butter</span>()</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">round</span>(butter, <span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["year"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["rain"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["feed"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["marg"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["logP"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["logQ"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["ud"],"name":[7],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"27.281","3":"0.035","4":"0.156","5":"0.356","6":"4.434","7":"-0.051","_rn_":"1"},{"1":"2","2":"23.575","3":"0.296","4":"-0.163","5":"0.337","6":"4.201","7":"-0.165","_rn_":"2"},{"1":"3","2":"19.974","3":"-0.061","4":"0.029","5":"0.547","6":"4.382","7":"0.044","_rn_":"3"},{"1":"4","2":"28.268","3":"0.346","4":"-0.401","5":"0.270","6":"4.345","7":"0.040","_rn_":"4"},{"1":"5","2":"22.166","3":"-0.141","4":"0.271","5":"0.752","6":"4.661","7":"0.328","_rn_":"5"},{"1":"6","2":"27.948","3":"0.158","4":"0.053","5":"0.245","6":"4.304","7":"-0.195","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>The column <code>ud</code> holds the demand shocks. In real data you never see it; we keep it only so we can check what the estimators are doing.</p>
+</section>
+<section id="ols-gets-the-wrong-sign" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="ols-gets-the-wrong-sign"><span class="header-section-number">2.2</span> OLS gets the wrong sign</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(logQ <span class="sc">~</span> logP, <span class="at">data =</span> butter)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(<span class="fu">summary</span>(ols))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             Estimate Std. Error    t value      Pr(&gt;|t|)
+(Intercept) 4.2166385 0.03278490 128.615274 4.367001e-111
+logP        0.3978847 0.07486293   5.314843  6.707021e-07</code></pre>
+</div>
+</div>
+<p>OLS estimates the demand elasticity as <strong>0.40</strong> - positive, when the truth is −0.5.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Market diagrams put quantity on the x-axis and price on the y-axis.</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># A fitted line logQ = a + b logP therefore has slope 1/b in this picture.</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(butter<span class="sc">$</span>logQ, butter<span class="sc">$</span>logP, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="fu">adjustcolor</span>(col_orange, <span class="fl">0.7</span>), <span class="at">las =</span> <span class="dv">1</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"log quantity of butter sold"</span>, <span class="at">ylab =</span> <span class="st">"log price of butter"</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">range</span>(butter<span class="sc">$</span>logP) <span class="sc">+</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.25</span>))</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a =</span> <span class="sc">-</span><span class="fu">coef</span>(ols)[<span class="dv">1</span>] <span class="sc">/</span> <span class="fu">coef</span>(ols)[<span class="dv">2</span>], <span class="at">b =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="fu">coef</span>(ols)[<span class="dv">2</span>], <span class="at">lwd =</span> <span class="fl">2.5</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a =</span> <span class="fl">4.6</span> <span class="sc">/</span> <span class="fl">0.5</span>, <span class="at">b =</span> <span class="sc">-</span><span class="dv">1</span> <span class="sc">/</span> <span class="fl">0.5</span>, <span class="at">lty =</span> <span class="dv">3</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> col_blue)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>, <span class="at">bg =</span> <span class="st">"white"</span>, <span class="at">box.col =</span> <span class="cn">NA</span>, <span class="at">inset =</span> <span class="fl">0.015</span>, <span class="at">cex =</span> <span class="fl">0.85</span>, <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>), <span class="at">lwd =</span> <span class="fu">c</span>(<span class="fl">2.5</span>, <span class="dv">2</span>), <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"black"</span>, col_blue),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>       <span class="fu">c</span>(<span class="fu">sprintf</span>(<span class="st">"OLS: elasticity %+.2f"</span>, <span class="fu">coef</span>(ols)[<span class="dv">2</span>]), <span class="st">"True demand curve: elasticity -0.50"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-scatter" class="quarto-float quarto-figure quarto-figure-center anchored" width="624">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scatter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="Endogeneity_IV_Companion_files/figure-html/fig-scatter-1.png" id="fig-scatter" class="img-fluid figure-img" width="624">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-scatter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="why-price-is-correlated-with-the-demand-error" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="why-price-is-correlated-with-the-demand-error"><span class="header-section-number">2.3</span> Why: price is correlated with the demand error</h2>
+<p>Solving the two equations for the equilibrium price:</p>
+<p><span class="math display">\[\log P_t = \frac{(\alpha_0 - \beta_0) - \delta R_t + \varepsilon^d_t - \varepsilon^s_t}{\beta_1 - \alpha_1}\]</span></p>
+<p>so a positive demand shock raises the price. When we regress <span class="math inline">\(\log Q\)</span> on <span class="math inline">\(\log P\)</span> alone, the error term is everything in the demand equation except price: <span class="math inline">\(u_t = 0.4 M_t + \varepsilon^d_t\)</span>. Both pieces move the price.</p>
+<p>The single-regressor bias formula, <span class="math inline">\(\hat{\beta}_1 = \beta_1 + \widehat{\text{Cov}}(x, u)/\widehat{\text{Var}}(x)\)</span>, holds <strong>exactly</strong> in any sample. We can check it because we know <span class="math inline">\(u\)</span>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>u <span class="ot">&lt;-</span> <span class="fl">0.4</span> <span class="sc">*</span> butter<span class="sc">$</span>marg <span class="sc">+</span> butter<span class="sc">$</span>ud            <span class="co"># the demand-equation error (unobserved in practice)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>bias <span class="ot">&lt;-</span> <span class="fu">cov</span>(butter<span class="sc">$</span>logP, u) <span class="sc">/</span> <span class="fu">var</span>(butter<span class="sc">$</span>logP)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">true =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">bias =</span> bias, <span class="st">`</span><span class="at">true + bias</span><span class="st">`</span> <span class="ot">=</span> <span class="sc">-</span><span class="fl">0.5</span> <span class="sc">+</span> bias, <span class="at">OLS =</span> <span class="fu">unname</span>(<span class="fu">coef</span>(ols)[<span class="dv">2</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       true        bias true + bias         OLS 
+ -0.5000000   0.8978847   0.3978847   0.3978847 </code></pre>
+</div>
+</div>
+<p>The bias is 0.90: large enough to flip the sign.</p>
+</section>
+<section id="more-data-does-not-help" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="more-data-does-not-help"><span class="header-section-number">2.4</span> More data does not help</h2>
+<p>OLS is <strong>inconsistent</strong>: as <span class="math inline">\(n\)</span> grows it converges to the wrong number.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>sizes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">1000</span>, <span class="dv">10000</span>, <span class="dv">100000</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>ols_by_n <span class="ot">&lt;-</span> <span class="fu">sapply</span>(sizes, <span class="cf">function</span>(n) <span class="fu">coef</span>(<span class="fu">lm</span>(logQ <span class="sc">~</span> logP, <span class="at">data =</span> <span class="fu">make_butter</span>(<span class="at">n =</span> n, <span class="at">seed =</span> <span class="dv">1</span>)))[<span class="dv">2</span>])</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(<span class="at">n =</span> <span class="fu">formatC</span>(sizes, <span class="at">format =</span> <span class="st">"d"</span>, <span class="at">big.mark =</span> <span class="st">","</span>), <span class="st">`</span><span class="at">OLS estimate</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(ols_by_n, <span class="dv">3</span>),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">check.names =</span> <span class="cn">FALSE</span>), <span class="at">align =</span> <span class="st">"rr"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">n</th>
+<th style="text-align: right;">OLS estimate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">0.321</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1,000</td>
+<td style="text-align: right;">0.267</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">10,000</td>
+<td style="text-align: right;">0.242</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">100,000</td>
+<td style="text-align: right;">0.248</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>With 100,000 years of data OLS is very precise - around 0.25 - and still nowhere near −0.5.</p>
+</section>
+<section id="measurement-error-attenuates-ols" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="measurement-error-attenuates-ols"><span class="header-section-number">2.5</span> Measurement error attenuates OLS</h2>
+<p>The same logic applies to the other sources of endogeneity. With measurement error in <span class="math inline">\(x\)</span>, part of the variation in the measured regressor is noise that <span class="math inline">\(y\)</span> doesn’t respond to:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>x_true <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)                     <span class="co"># Var(x*) = 1</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>x_obs  <span class="ot">&lt;-</span> x_true <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="dv">0</span>, <span class="dv">1</span>)      <span class="co"># measurement error, sigma_u^2 = 1</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>y      <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> x_true <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">`</span><span class="at">slope on true x</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">unname</span>(<span class="fu">coef</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x_true))[<span class="dv">2</span>]),</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">slope on measured x</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">unname</span>(<span class="fu">coef</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x_obs))[<span class="dv">2</span>]),</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">theory: 2 x 1/(1+1)</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    slope on true x slope on measured x theory: 2 x 1/(1+1) 
+           2.018523            1.018805            1.000000 </code></pre>
+</div>
+</div>
+<p>Omitted variables get their own simulation in Part 5.</p>
+<hr>
+</section>
+</section>
+<section id="part-2.-the-first-stage" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Part 2. The First Stage</h1>
+<section id="the-idea" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="the-idea"><span class="header-section-number">3.1</span> The idea</h2>
+<p>Butter prices move for two kinds of reasons: demand shocks (which contaminate OLS) and supply shifts caused by rainfall (which don’t). IV uses <strong>only the rainfall-driven part</strong>. The first stage finds it.</p>
+</section>
+<section id="regress-price-on-rainfall" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="regress-price-on-rainfall"><span class="header-section-number">3.2</span> Regress price on rainfall</h2>
+<p><span class="math display">\[\log P_t = \pi_0 + \pi_1 R_t + v_t\]</span></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>fs <span class="ot">&lt;-</span> <span class="fu">lm</span>(logP <span class="sc">~</span> rain, <span class="at">data =</span> butter)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = logP ~ rain, data = butter)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.53511 -0.09603  0.02146  0.11924  0.35059 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  1.007118   0.091551  11.001  &lt; 2e-16 ***
+rain        -0.025074   0.003658  -6.854 6.43e-10 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.1655 on 98 degrees of freedom
+Multiple R-squared:  0.324, Adjusted R-squared:  0.3171 
+F-statistic: 46.97 on 1 and 98 DF,  p-value: 6.43e-10</code></pre>
+</div>
+</div>
+<p>One more inch of rain lowers the price of butter by about <strong>2.5%</strong> (<span class="math inline">\(\hat{\pi}_1 = -0.0251\)</span>). Rainfall explains 32% of the variation in price, and the first-stage F-statistic is 47.</p>
+<p><strong>Relevance check by hand.</strong> With one instrument, the first-stage F compares the model with rainfall to a model with only an intercept:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(<span class="fu">lm</span>(logP <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> butter), fs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Res.Df"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["RSS"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Df"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Sum of Sq"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["F"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Pr(>F)"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"99","2":"3.969473","3":"NA","4":"NA","5":"NA","6":"NA","_rn_":"1"},{"1":"98","2":"2.683304","3":"1","4":"1.286168","5":"46.97361","6":"6.430081e-10","_rn_":"2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>The F here is the same 47 reported by <code>summary()</code>, and it equals the squared t-statistic on rainfall (46.97).</p>
+</section>
+<section id="fitted-prices-and-residuals" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="fitted-prices-and-residuals"><span class="header-section-number">3.3</span> Fitted prices and residuals</h2>
+<p>The first stage splits every observed price into a part predicted by rainfall and a residual:</p>
+<p><span class="math display">\[\log P_t = \underbrace{\hat{\pi}_0 + \hat{\pi}_1 R_t}_{\widehat{\log P}_t} + \hat{v}_t\]</span></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>butter<span class="sc">$</span>Phat <span class="ot">&lt;-</span> <span class="fu">fitted</span>(fs)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>butter<span class="sc">$</span>vhat <span class="ot">&lt;-</span> <span class="fu">resid</span>(fs)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(butter<span class="sc">$</span>rain, butter<span class="sc">$</span>logP, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="fu">adjustcolor</span>(col_grey, <span class="fl">0.5</span>), <span class="at">las =</span> <span class="dv">1</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Rainfall in dairy regions (inches)"</span>, <span class="at">ylab =</span> <span class="st">"log price of butter"</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(fs, <span class="at">lwd =</span> <span class="dv">3</span>, <span class="at">col =</span> col_blue)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">which.max</span>(<span class="fu">abs</span>(butter<span class="sc">$</span>vhat))                       <span class="co"># highlight one year's decomposition</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="fu">segments</span>(butter<span class="sc">$</span>rain[k], butter<span class="sc">$</span>Phat[k], butter<span class="sc">$</span>rain[k], butter<span class="sc">$</span>logP[k], <span class="at">col =</span> <span class="st">"firebrick"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(butter<span class="sc">$</span>rain[k], butter<span class="sc">$</span>Phat[k], <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">bg =</span> col_blue, <span class="at">cex =</span> <span class="fl">1.5</span>)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topright"</span>, <span class="at">bty =</span> <span class="st">"n"</span>, <span class="at">cex =</span> <span class="fl">0.85</span>, <span class="fu">c</span>(<span class="st">"Observed price"</span>, <span class="st">"Fitted price"</span>, <span class="st">"Residual"</span>),</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">19</span>, <span class="dv">21</span>, <span class="cn">NA</span>), <span class="at">pt.bg =</span> <span class="fu">c</span>(<span class="cn">NA</span>, col_blue, <span class="cn">NA</span>), <span class="at">lty =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>, <span class="dv">1</span>), <span class="at">lwd =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>, <span class="dv">2</span>),</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(col_grey, <span class="st">"black"</span>, <span class="st">"firebrick"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-first-stage" class="quarto-float quarto-figure quarto-figure-center anchored" width="624">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-first-stage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="Endogeneity_IV_Companion_files/figure-html/fig-first-stage-1.png" id="fig-first-stage" class="img-fluid figure-img" width="624">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-first-stage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Because OLS residuals are uncorrelated with the fitted values, the variance splits exactly:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">`</span><span class="at">Var(log P)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">var</span>(butter<span class="sc">$</span>logP),</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Var(fitted) + Var(residual)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">var</span>(butter<span class="sc">$</span>Phat) <span class="sc">+</span> <span class="fu">var</span>(butter<span class="sc">$</span>vhat))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 Var(log P) Var(fitted) + Var(residual) 
+                 0.04009568                  0.04009568 </code></pre>
+</div>
+</div>
+</section>
+<section id="what-the-fitted-prices-capture" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="what-the-fitted-prices-capture"><span class="header-section-number">3.4</span> What the fitted prices capture</h2>
+<p>The fitted price is built from rainfall alone. If rainfall is unrelated to demand shocks, so is the fitted price - and the demand shocks end up in the residual. In the simulation we can check this directly:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Component =</span> <span class="fu">c</span>(<span class="st">"Observed price"</span>, <span class="st">"Fitted price (rainfall-driven)"</span>, <span class="st">"First-stage residual"</span>),</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Correlation with demand shock</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">c</span>(<span class="fu">cor</span>(butter<span class="sc">$</span>logP, butter<span class="sc">$</span>ud),</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                                            <span class="fu">cor</span>(butter<span class="sc">$</span>Phat, butter<span class="sc">$</span>ud),</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                                            <span class="fu">cor</span>(butter<span class="sc">$</span>vhat, butter<span class="sc">$</span>ud)), <span class="dv">2</span>),</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Component</th>
+<th style="text-align: right;">Correlation with demand shock</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Observed price</td>
+<td style="text-align: right;">0.72</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fitted price (rainfall-driven)</td>
+<td style="text-align: right;">-0.04</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">First-stage residual</td>
+<td style="text-align: right;">0.91</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="part-3.-the-second-stage-and-2sls" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Part 3. The Second Stage and 2SLS</h1>
+<section id="regress-quantity-on-the-fitted-prices" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="regress-quantity-on-the-fitted-prices"><span class="header-section-number">4.1</span> Regress quantity on the fitted prices</h2>
+<p><span class="math display">\[\log Q_t = \alpha_0 + \alpha_1 \widehat{\log P}_t + e_t\]</span></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>ss <span class="ot">&lt;-</span> <span class="fu">lm</span>(logQ <span class="sc">~</span> Phat, <span class="at">data =</span> butter)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(ss)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept)        Phat 
+  4.5838229  -0.5436446 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A regression plot: fitted price on the x-axis, so the slope is the elasticity itself.</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(butter<span class="sc">$</span>Phat, butter<span class="sc">$</span>logQ, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="fu">adjustcolor</span>(col_blue, <span class="fl">0.6</span>), <span class="at">las =</span> <span class="dv">1</span>,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"fitted log price (predicted by rainfall)"</span>, <span class="at">ylab =</span> <span class="st">"log quantity of butter sold"</span>,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">range</span>(butter<span class="sc">$</span>logQ) <span class="sc">+</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.12</span>))</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(ss, <span class="at">lwd =</span> <span class="dv">3</span>, <span class="at">col =</span> col_blue)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a =</span> <span class="fl">4.6</span>, <span class="at">b =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">lty =</span> <span class="dv">3</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> col_orange)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topright"</span>, <span class="at">bg =</span> <span class="st">"white"</span>, <span class="at">box.col =</span> <span class="cn">NA</span>, <span class="at">inset =</span> <span class="fl">0.015</span>, <span class="at">cex =</span> <span class="fl">0.85</span>, <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>), <span class="at">lwd =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">2</span>), <span class="at">col =</span> <span class="fu">c</span>(col_blue, col_orange),</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>       <span class="fu">c</span>(<span class="fu">sprintf</span>(<span class="st">"Second stage: elasticity %.2f"</span>, <span class="fu">coef</span>(ss)[<span class="dv">2</span>]), <span class="st">"True demand curve: elasticity -0.50"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-second-stage" class="quarto-float quarto-figure quarto-figure-center anchored" width="624">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-second-stage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="Endogeneity_IV_Companion_files/figure-html/fig-second-stage-1.png" id="fig-second-stage" class="img-fluid figure-img" width="624">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-second-stage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Using only the rainfall-driven price variation, the estimate is <strong>-0.54</strong>, close to the true −0.5. OLS gave 0.40.</p>
+</section>
+<section id="sls-in-one-step-with-ivreg" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="sls-in-one-step-with-ivreg"><span class="header-section-number">4.2</span> 2SLS in one step with <code>ivreg()</code></h2>
+<p>In <code>ivreg()</code>, the formula left of <code>|</code> is the equation we care about; the right side lists the instruments (and, in general, all exogenous regressors).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>iv <span class="ot">&lt;-</span> <span class="fu">ivreg</span>(logQ <span class="sc">~</span> logP <span class="sc">|</span> rain, <span class="at">data =</span> butter)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(<span class="fu">list</span>(<span class="st">"OLS"</span> <span class="ot">=</span> ols, <span class="st">"2SLS by hand (stage 2)"</span> <span class="ot">=</span> ss, <span class="st">"2SLS (ivreg)"</span> <span class="ot">=</span> iv),</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_map =</span> <span class="fu">c</span>(<span class="st">"logP"</span> <span class="ot">=</span> <span class="st">"log price"</span>, <span class="st">"Phat"</span> <span class="ot">=</span> <span class="st">"log price"</span>),</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">gof_map =</span> <span class="fu">c</span>(<span class="st">"nobs"</span>), <span class="at">fmt =</span> <span class="dv">3</span>,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">title =</span> <span class="st">"Demand for butter: true elasticity = -0.5"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_nlp372g4a9b8jg61npr7(i, j, css_id) {
+          var table = document.getElementById("tinytable_nlp372g4a9b8jg61npr7");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_nlp372g4a9b8jg61npr7');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_nlp372g4a9b8jg61npr7(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_nlp372g4a9b8jg61npr7");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 3, j: 1 }, { i: 3, j: 2 }, { i: 3, j: 3 },  ], css_id: 'tinytable_css_bo2b26gcvyxf1msyhqcs',}, 
+          { positions: [ { i: 2, j: 1 }, { i: 2, j: 2 }, { i: 2, j: 3 },  ], css_id: 'tinytable_css_88j13wyeysx9zotnuuqu',}, 
+          { positions: [ { i: 1, j: 1 }, { i: 1, j: 2 }, { i: 1, j: 3 },  ], css_id: 'tinytable_css_26jiyiqqm0k5pi77epeq',}, 
+          { positions: [ { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_82p745ixzhivwjsaxv9p',}, 
+          { positions: [ { i: 3, j: 0 },  ], css_id: 'tinytable_css_0n0b4jf6c08u7n2d59j7',}, 
+          { positions: [ { i: 2, j: 0 },  ], css_id: 'tinytable_css_srz68ga3j8f34qmytmhw',}, 
+          { positions: [ { i: 1, j: 0 },  ], css_id: 'tinytable_css_udjth7qckp1zb5yydvxn',}, 
+          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_dq1rwnajah46lolh85b6',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_nlp372g4a9b8jg61npr7(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_bo2b26gcvyxf1msyhqcs, .table th.tinytable_css_bo2b26gcvyxf1msyhqcs { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_88j13wyeysx9zotnuuqu, .table th.tinytable_css_88j13wyeysx9zotnuuqu { text-align: center; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_26jiyiqqm0k5pi77epeq, .table th.tinytable_css_26jiyiqqm0k5pi77epeq { text-align: center; }
+      .table td.tinytable_css_82p745ixzhivwjsaxv9p, .table th.tinytable_css_82p745ixzhivwjsaxv9p { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_0n0b4jf6c08u7n2d59j7, .table th.tinytable_css_0n0b4jf6c08u7n2d59j7 { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_srz68ga3j8f34qmytmhw, .table th.tinytable_css_srz68ga3j8f34qmytmhw { text-align: left; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_udjth7qckp1zb5yydvxn, .table th.tinytable_css_udjth7qckp1zb5yydvxn { text-align: left; }
+      .table td.tinytable_css_dq1rwnajah46lolh85b6, .table th.tinytable_css_dq1rwnajah46lolh85b6 { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_nlp372g4a9b8jg61npr7" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        </thead><caption>Demand for butter: true elasticity = -0.5</caption>
+              <tbody><tr>
+                <th scope="col"> </th>
+                <th scope="col">OLS</th>
+                <th scope="col">2SLS by hand (stage 2)</th>
+                <th scope="col">2SLS (ivreg)</th>
+              </tr>
+        
+        
+        </tbody><tbody>
+                <tr>
+                  <td>log price</td>
+                  <td>0.398</td>
+                  <td>-0.544</td>
+                  <td>-0.544</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(0.075)</td>
+                  <td>(0.139)</td>
+                  <td>(0.213)</td>
+                </tr>
+                <tr>
+                  <td>Num.Obs.</td>
+                  <td>100</td>
+                  <td>100</td>
+                  <td>100</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+<p>The hand-run second stage and <code>ivreg()</code> give the <strong>same coefficient</strong> but <strong>different standard errors</strong>. Only the <code>ivreg()</code> standard error is correct.</p>
+</section>
+<section id="why-the-hand-run-standard-error-is-wrong" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="why-the-hand-run-standard-error-is-wrong"><span class="header-section-number">4.3</span> Why the hand-run standard error is wrong</h2>
+<p>The second-stage error is <span class="math inline">\(e_t = \varepsilon_t + \alpha_1(\log P_t - \widehat{\log P}_t)\)</span>, not the structural error. So stage 2 estimates <span class="math inline">\(\sigma^2\)</span> from the wrong residuals. The correct variance uses residuals built from the <strong>actual</strong> price:</p>
+<p><span class="math display">\[\widehat{\text{Var}}(\hat{\boldsymbol\beta}_{2SLS}) = \hat\sigma^2 (\hat{\mathbf X}'\hat{\mathbf X})^{-1}, \qquad \hat\sigma^2 = \frac{1}{n-k}\sum_t \big(\log Q_t - \hat\alpha_0 - \hat\alpha_1 \log P_t\big)^2\]</span></p>
+<p>(note <span class="math inline">\(\hat{\mathbf X}'\hat{\mathbf X} = \mathbf X'\mathbf P_Z\mathbf X\)</span>). We can rebuild the correct SE by swapping in the right residuals:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">coef</span>(ss)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>res_wrong <span class="ot">&lt;-</span> butter<span class="sc">$</span>logQ <span class="sc">-</span> (b[<span class="dv">1</span>] <span class="sc">+</span> b[<span class="dv">2</span>] <span class="sc">*</span> butter<span class="sc">$</span>Phat)   <span class="co"># what stage 2 uses</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>res_right <span class="ot">&lt;-</span> butter<span class="sc">$</span>logQ <span class="sc">-</span> (b[<span class="dv">1</span>] <span class="sc">+</span> b[<span class="dv">2</span>] <span class="sc">*</span> butter<span class="sc">$</span>logP)   <span class="co"># what 2SLS should use</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>se_stage2 <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">summary</span>(ss))[<span class="st">"Phat"</span>, <span class="st">"Std. Error"</span>]</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>se_fixed  <span class="ot">&lt;-</span> se_stage2 <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="fu">sum</span>(res_right<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> <span class="fu">sum</span>(res_wrong<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">`</span><span class="at">stage-2 SE</span><span class="st">`</span> <span class="ot">=</span> se_stage2, <span class="st">`</span><span class="at">rebuilt SE</span><span class="st">`</span> <span class="ot">=</span> se_fixed,</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">ivreg SE</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">summary</span>(iv))[<span class="st">"logP"</span>, <span class="st">"Std. Error"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>stage-2 SE rebuilt SE   ivreg SE 
+ 0.1388048  0.2126368  0.2126368 </code></pre>
+</div>
+</div>
+<p>Here the hand-run SE is too small, so you would be overconfident. In Part 5’s simulation it turns out too large: it is not reliably conservative.</p>
+<hr>
+</section>
+</section>
+<section id="part-4.-the-iv-estimator" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Part 4. The IV Estimator</h1>
+<section id="one-number-three-formulas" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="one-number-three-formulas"><span class="header-section-number">5.1</span> One number, three formulas</h2>
+<p>With one instrument, 2SLS reduces to a ratio of sample covariances, which is also the ratio of the reduced-form and first-stage slopes:</p>
+<p><span class="math display">\[\hat{\beta}_1^{2SLS} = \frac{s_{YZ}}{s_{XZ}} = \frac{\hat{\gamma}_1}{\hat{\pi}_1} = \frac{\text{reduced form } (Y \text{ on } Z)}{\text{first stage } (X \text{ on } Z)}\]</span></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>rf <span class="ot">&lt;-</span> <span class="fu">lm</span>(logQ <span class="sc">~</span> rain, <span class="at">data =</span> butter)                     <span class="co"># reduced form</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>gam1 <span class="ot">&lt;-</span> <span class="fu">coef</span>(rf)[[<span class="st">"rain"</span>]]</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">`</span><span class="at">cov(Y,Z) / cov(X,Z)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">cov</span>(butter<span class="sc">$</span>logQ, butter<span class="sc">$</span>rain) <span class="sc">/</span> <span class="fu">cov</span>(butter<span class="sc">$</span>logP, butter<span class="sc">$</span>rain),</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">reduced form / first stage</span><span class="st">`</span> <span class="ot">=</span> gam1 <span class="sc">/</span> pi1,</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">ivreg</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">unname</span>(<span class="fu">coef</span>(iv)[<span class="dv">2</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       cov(Y,Z) / cov(X,Z) reduced form / first stage 
+                -0.5436446                 -0.5436446 
+                     ivreg 
+                -0.5436446 </code></pre>
+</div>
+</div>
+<p>The reduced form says one more inch of rain raises quantity sold by 1.36%; the first stage says it lowers the price by 2.51%. Their ratio, 0.0136 / (-0.0251) = -0.54, is the elasticity.</p>
+</section>
+<section id="consistency-what-the-formula-needs" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="consistency-what-the-formula-needs"><span class="header-section-number">5.2</span> Consistency: what the formula needs</h2>
+<p>Substituting the true model gives, in any sample,</p>
+<p><span class="math display">\[\hat{\beta}_1^{IV} - \beta_1 = \frac{\widehat{\text{Cov}}(Z, u)}{\widehat{\text{Cov}}(Z, X)}\]</span></p>
+<p>where <span class="math inline">\(u\)</span> is the structural error. Again we can check this because we know <span class="math inline">\(u\)</span>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">`</span><span class="at">cov(Z,u) / cov(Z,X)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">cov</span>(butter<span class="sc">$</span>rain, u) <span class="sc">/</span> <span class="fu">cov</span>(butter<span class="sc">$</span>rain, butter<span class="sc">$</span>logP),</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">IV - truth</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">unname</span>(<span class="fu">coef</span>(iv)[<span class="dv">2</span>]) <span class="sc">+</span> <span class="fl">0.5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>cov(Z,u) / cov(Z,X)          IV - truth 
+        -0.04364464         -0.04364464 </code></pre>
+</div>
+</div>
+<p>The numerator is small because rainfall really is unrelated to the demand error (<strong>exogeneity</strong>); the denominator is far from zero because rainfall really moves the price (<strong>relevance</strong>). In large samples the numerator goes to zero, so IV is consistent - which OLS was not.</p>
+<hr>
+</section>
+</section>
+<section id="part-5.-instrument-validity" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Part 5. Instrument Validity</h1>
+<section id="three-candidate-instruments-for-butter-demand" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="three-candidate-instruments-for-butter-demand"><span class="header-section-number">6.1</span> Three candidate instruments for butter demand</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Candidate</th>
+<th>Shifts</th>
+<th>Valid for <strong>demand</strong>?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Rainfall</td>
+<td>supply</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Cattle-feed cost</td>
+<td>supply</td>
+<td>Yes (if strong enough)</td>
+</tr>
+<tr class="odd">
+<td>Margarine price</td>
+<td><strong>demand</strong> (a substitute)</td>
+<td><strong>No</strong> - exclusion fails</td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>cand <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">rain =</span> <span class="fu">ivreg</span>(logQ <span class="sc">~</span> logP <span class="sc">|</span> rain, <span class="at">data =</span> butter),</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">feed =</span> <span class="fu">ivreg</span>(logQ <span class="sc">~</span> logP <span class="sc">|</span> feed, <span class="at">data =</span> butter),</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">marg =</span> <span class="fu">ivreg</span>(logQ <span class="sc">~</span> logP <span class="sc">|</span> marg, <span class="at">data =</span> butter))</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>fsF <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">c</span>(<span class="st">"rain"</span>, <span class="st">"feed"</span>, <span class="st">"marg"</span>), <span class="cf">function</span>(z)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>(<span class="fu">lm</span>(<span class="fu">as.formula</span>(<span class="fu">paste</span>(<span class="st">"logP ~"</span>, z)), <span class="at">data =</span> butter))<span class="sc">$</span>fstatistic[[<span class="st">"value"</span>]])</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(<span class="at">Instrument =</span> <span class="fu">c</span>(<span class="st">"Rainfall"</span>, <span class="st">"Cattle-feed cost"</span>, <span class="st">"Margarine price"</span>),</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>                        <span class="st">`</span><span class="at">First-stage F</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(fsF, <span class="dv">1</span>),</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>                        <span class="st">`</span><span class="at">IV estimate</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">sapply</span>(cand, <span class="cf">function</span>(m) <span class="fu">coef</span>(m)[<span class="dv">2</span>]), <span class="dv">2</span>),</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>                        <span class="at">check.names =</span> <span class="cn">FALSE</span>, <span class="at">row.names =</span> <span class="cn">NULL</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Instrument</th>
+<th style="text-align: right;">First-stage F</th>
+<th style="text-align: right;">IV estimate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Rainfall</td>
+<td style="text-align: right;">47.0</td>
+<td style="text-align: right;">-0.54</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cattle-feed cost</td>
+<td style="text-align: right;">1.7</td>
+<td style="text-align: right;">-0.56</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Margarine price</td>
+<td style="text-align: right;">18.6</td>
+<td style="text-align: right;">1.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li><strong>Feed cost</strong> is valid but much <strong>weaker</strong> than rainfall in this sample (F = 1.7), so its estimate is imprecise. Validity and strength are different properties.</li>
+<li><strong>Margarine</strong> is relevant (F = 18.6) but invalid. Its estimate, 1.00, is close to the <strong>supply</strong> elasticity (+1.0): a demand shifter traces out the supply curve.</li>
+</ul>
+</section>
+<section id="strong-correlation-is-not-validity-a-correlation-matrix-simulation" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="strong-correlation-is-not-validity-a-correlation-matrix-simulation"><span class="header-section-number">6.2</span> Strong correlation is not validity: a correlation-matrix simulation</h2>
+<p>This simulation (adapted from the course notebook) has an omitted variable <span class="math inline">\(c\)</span>. Each IV assumption is one cell of the correlation matrix.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>make_ovb <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">rxc =</span> <span class="fl">0.6</span>, <span class="at">rxz =</span> <span class="fl">0.6</span>, <span class="at">rzc =</span> <span class="dv">0</span>, <span class="at">empirical =</span> <span class="cn">TRUE</span>, <span class="at">n =</span> <span class="dv">500</span>, <span class="at">seed =</span> <span class="dv">1234</span>) {</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#               x    c    z    e</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  rho <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="fl">1.0</span>, rxc, rxz, <span class="fl">0.0</span>,      <span class="co"># x - regressor</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>                  rxc, <span class="fl">1.0</span>, rzc, <span class="fl">0.0</span>,      <span class="co"># c - omitted variable</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>                  rxz, rzc, <span class="fl">1.0</span>, <span class="fl">0.0</span>,      <span class="co"># z - instrument</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>                  <span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">1.0</span>),     <span class="co"># e - disturbance</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">byrow =</span> <span class="cn">TRUE</span>, <span class="at">nrow =</span> <span class="dv">4</span>)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  sd <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  Sigma <span class="ot">&lt;-</span> <span class="fu">diag</span>(sd) <span class="sc">%*%</span> rho <span class="sc">%*%</span> <span class="fu">diag</span>(sd)   <span class="co"># covariance matrix</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(seed)</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">mvrnorm</span>(<span class="at">n =</span> n, <span class="at">mu =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>), <span class="at">Sigma =</span> Sigma, <span class="at">empirical =</span> empirical))</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"c"</span>, <span class="st">"z"</span>, <span class="st">"e"</span>)</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>y <span class="ot">&lt;-</span> <span class="dv">0</span> <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> df<span class="sc">$</span>x <span class="sc">+</span> <span class="dv">3</span> <span class="sc">*</span> df<span class="sc">$</span>c <span class="sc">+</span> df<span class="sc">$</span>e   <span class="co"># true effect of x = 2; c will be omitted</span></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>  df</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">make_ovb</span>()</span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(<span class="fu">list</span>(<span class="st">"True model"</span> <span class="ot">=</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> c, <span class="at">data =</span> df),</span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"c omitted (OLS)"</span> <span class="ot">=</span> <span class="fu">lm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> df),</span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"IV with z"</span> <span class="ot">=</span> <span class="fu">ivreg</span>(y <span class="sc">~</span> x <span class="sc">|</span> z, <span class="at">data =</span> df)),</span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_map =</span> <span class="fu">c</span>(<span class="st">"x"</span> <span class="ot">=</span> <span class="st">"x"</span>, <span class="st">"c"</span> <span class="ot">=</span> <span class="st">"c"</span>), <span class="at">gof_map =</span> <span class="fu">c</span>(<span class="st">"nobs"</span>), <span class="at">fmt =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_6x23jpnqo7ebkbxbg1of(i, j, css_id) {
+          var table = document.getElementById("tinytable_6x23jpnqo7ebkbxbg1of");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_6x23jpnqo7ebkbxbg1of');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_6x23jpnqo7ebkbxbg1of(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_6x23jpnqo7ebkbxbg1of");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 5, j: 1 }, { i: 5, j: 2 }, { i: 5, j: 3 },  ], css_id: 'tinytable_css_vejg9zu30jwl043moacc',}, 
+          { positions: [ { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 },  ], css_id: 'tinytable_css_voosu7xwltwuyxfbjn9n',}, 
+          { positions: [ { i: 1, j: 1 }, { i: 3, j: 1 }, { i: 3, j: 2 }, { i: 2, j: 1 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 1, j: 3 }, { i: 2, j: 3 }, { i: 3, j: 3 },  ], css_id: 'tinytable_css_478l8680vrup0wkiz1pa',}, 
+          { positions: [ { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_w39yht46nslsm2epqk3y',}, 
+          { positions: [ { i: 5, j: 0 },  ], css_id: 'tinytable_css_qamdwczkxdbqd7mesq4f',}, 
+          { positions: [ { i: 4, j: 0 },  ], css_id: 'tinytable_css_ti7gx73yspbg0fr3wbu4',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 },  ], css_id: 'tinytable_css_ies4n3kasnh3ry9iodte',}, 
+          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_vv6j2nwbssfeavh4kyqw',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_6x23jpnqo7ebkbxbg1of(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_vejg9zu30jwl043moacc, .table th.tinytable_css_vejg9zu30jwl043moacc { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_voosu7xwltwuyxfbjn9n, .table th.tinytable_css_voosu7xwltwuyxfbjn9n { text-align: center; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_478l8680vrup0wkiz1pa, .table th.tinytable_css_478l8680vrup0wkiz1pa { text-align: center; }
+      .table td.tinytable_css_w39yht46nslsm2epqk3y, .table th.tinytable_css_w39yht46nslsm2epqk3y { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_qamdwczkxdbqd7mesq4f, .table th.tinytable_css_qamdwczkxdbqd7mesq4f { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_ti7gx73yspbg0fr3wbu4, .table th.tinytable_css_ti7gx73yspbg0fr3wbu4 { text-align: left; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_ies4n3kasnh3ry9iodte, .table th.tinytable_css_ies4n3kasnh3ry9iodte { text-align: left; }
+      .table td.tinytable_css_vv6j2nwbssfeavh4kyqw, .table th.tinytable_css_vv6j2nwbssfeavh4kyqw { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_6x23jpnqo7ebkbxbg1of" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col"> </th>
+                <th scope="col">True model</th>
+                <th scope="col">c omitted (OLS)</th>
+                <th scope="col">IV with z</th>
+              </tr>
+        </thead>
+        
+        <tbody>
+                <tr>
+                  <td>x</td>
+                  <td>2.000</td>
+                  <td>3.800</td>
+                  <td>2.000</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(0.112)</td>
+                  <td>(0.140)</td>
+                  <td>(0.269)</td>
+                </tr>
+                <tr>
+                  <td>c</td>
+                  <td>3.000</td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(0.112)</td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>Num.Obs.</td>
+                  <td>500</td>
+                  <td>500</td>
+                  <td>500</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+<p><code>empirical = TRUE</code> makes the <strong>sample</strong> correlations equal the matrix exactly, so the bias formulas hold to the decimal: OLS bias <span class="math inline">\(= 3 \times \text{Cov}(x, c)/\text{Var}(x) = 3 \times 0.6 = 1.8\)</span>.</p>
+<p>Now edit one cell at a time:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>ovb_fit <span class="ot">&lt;-</span> <span class="cf">function</span>(df) <span class="fu">c</span>(<span class="st">`</span><span class="at">First-stage F</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">summary</span>(<span class="fu">lm</span>(x <span class="sc">~</span> z, <span class="at">data =</span> df))<span class="sc">$</span>fstatistic[[<span class="st">"value"</span>]],</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>                          <span class="at">OLS =</span> <span class="fu">coef</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> df))[[<span class="st">"x"</span>]],</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>                          <span class="at">IV  =</span> <span class="fu">coef</span>(<span class="fu">ivreg</span>(y <span class="sc">~</span> x <span class="sc">|</span> z, <span class="at">data =</span> df))[[<span class="st">"x"</span>]])</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>versions <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Valid</span><span class="st">`</span>                                        <span class="ot">=</span> <span class="fu">ovb_fit</span>(<span class="fu">make_ovb</span>()),</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Invalid: Corr(z, c) 0 -&gt; 0.3</span><span class="st">`</span>                 <span class="ot">=</span> <span class="fu">ovb_fit</span>(<span class="fu">make_ovb</span>(<span class="at">rzc =</span> <span class="fl">0.3</span>)),</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Weak: Corr(x, z) 0.6 -&gt; 0.1 (empirical = F)</span><span class="st">`</span>  <span class="ot">=</span> <span class="fu">ovb_fit</span>(<span class="fu">make_ovb</span>(<span class="at">rxz =</span> <span class="fl">0.1</span>, <span class="at">empirical =</span> <span class="cn">FALSE</span>)))</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">round</span>(versions, <span class="dv">2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 64%">
+<col style="width: 20%">
+<col style="width: 7%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">First-stage F</th>
+<th style="text-align: right;">OLS</th>
+<th style="text-align: right;">IV</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Valid</td>
+<td style="text-align: right;">280.12</td>
+<td style="text-align: right;">3.80</td>
+<td style="text-align: right;">2.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Invalid: Corr(z, c) 0 -&gt; 0.3</td>
+<td style="text-align: right;">280.12</td>
+<td style="text-align: right;">3.80</td>
+<td style="text-align: right;">3.50</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Weak: Corr(x, z) 0.6 -&gt; 0.1 (empirical = F)</td>
+<td style="text-align: right;">2.32</td>
+<td style="text-align: right;">3.79</td>
+<td style="text-align: right;">4.39</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li><strong>Invalid:</strong> the first stage is just as strong (F = 280), but IV is off by exactly <span class="math inline">\(\text{Cov}(z, \text{error})/\text{Cov}(z, x) = 3 \times 0.3 / 0.6 = 1.5\)</span>. <strong>No strength statistic can detect this.</strong></li>
+<li><strong>Weak:</strong> with sampling noise switched back on (<code>empirical = FALSE</code>), a weak first stage (F = 2) gives 4.39. With <code>empirical = TRUE</code> this row would show exactly 2 - forcing the sample correlations removes the very noise that makes weak instruments dangerous.</li>
+</ul>
+<p>The standard-error contrast from Part 3 goes the other way here:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">`</span><span class="at">stage-2 SE</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">summary</span>(<span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">fitted</span>(<span class="fu">lm</span>(x <span class="sc">~</span> z, <span class="at">data =</span> df)), <span class="at">data =</span> df)))[<span class="dv">2</span>, <span class="dv">2</span>],</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">ivreg SE</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">summary</span>(<span class="fu">ivreg</span>(y <span class="sc">~</span> x <span class="sc">|</span> z, <span class="at">data =</span> df)))[<span class="dv">2</span>, <span class="dv">2</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>stage-2 SE   ivreg SE 
+ 0.3563036  0.2692810 </code></pre>
+</div>
+</div>
+</section>
+<section id="proxy-variable-vs-instrument" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="proxy-variable-vs-instrument"><span class="header-section-number">6.3</span> Proxy variable vs instrument</h2>
+<p>A <strong>proxy</strong> is a noisy measurement of the omitted variable; it goes <strong>into</strong> the regression and should be as correlated with <span class="math inline">\(c\)</span> as possible. An <strong>instrument</strong> stays <strong>out</strong> of the regression and must be uncorrelated with <span class="math inline">\(c\)</span>. A noisy proxy is a measurement-error problem: it removes only part of the bias.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">99</span>); df<span class="sc">$</span>q_good  <span class="ot">&lt;-</span> df<span class="sc">$</span>c <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fu">nrow</span>(df), <span class="dv">0</span>, <span class="fl">0.5</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">99</span>); df<span class="sc">$</span>q_noisy <span class="ot">&lt;-</span> df<span class="sc">$</span>c <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fu">nrow</span>(df), <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>proxy_tab <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">OLS, c omitted</span><span class="st">`</span>                      <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> df))[[<span class="st">"x"</span>]],</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">OLS with c (infeasible)</span><span class="st">`</span>             <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> c, <span class="at">data =</span> df))[[<span class="st">"x"</span>]],</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">OLS + good proxy</span><span class="st">`</span>                    <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> q_good, <span class="at">data =</span> df))[[<span class="st">"x"</span>]],</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">OLS + noisier proxy</span><span class="st">`</span>                 <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> q_noisy, <span class="at">data =</span> df))[[<span class="st">"x"</span>]],</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">IV with z</span><span class="st">`</span>                           <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">ivreg</span>(y <span class="sc">~</span> x <span class="sc">|</span> z, <span class="at">data =</span> df))[[<span class="st">"x"</span>]],</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Wrong job: proxy as instrument</span><span class="st">`</span>      <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">ivreg</span>(y <span class="sc">~</span> x <span class="sc">|</span> q_good, <span class="at">data =</span> df))[[<span class="st">"x"</span>]],</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Wrong job: instrument as control</span><span class="st">`</span>    <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z, <span class="at">data =</span> df))[[<span class="st">"x"</span>]])</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(<span class="at">Estimate =</span> <span class="fu">round</span>(proxy_tab, <span class="dv">2</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Estimate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">OLS, c omitted</td>
+<td style="text-align: right;">3.80</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">OLS with c (infeasible)</td>
+<td style="text-align: right;">2.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">OLS + good proxy</td>
+<td style="text-align: right;">2.52</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">OLS + noisier proxy</td>
+<td style="text-align: right;">3.08</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">IV with z</td>
+<td style="text-align: right;">2.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Wrong job: proxy as instrument</td>
+<td style="text-align: right;">6.90</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Wrong job: instrument as control</td>
+<td style="text-align: right;">4.81</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The good proxy has <span class="math inline">\(\text{Corr}(q, c) = 0.90\)</span>, the noisier one 0.72. Swapping the roles makes both worse than plain OLS: the proxy is correlated with <span class="math inline">\(c\)</span>, which is in the error, so it is an invalid instrument.</p>
+<hr>
+</section>
+</section>
+<section id="part-6.-identification---order-and-rank-conditions" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Part 6. Identification - Order and Rank Conditions</h1>
+<p><strong>Order condition:</strong> at least as many excluded instruments as endogenous regressors (<span class="math inline">\(m \ge k\)</span>). <strong>Rank condition:</strong> the instruments must move the endogenous regressors in linearly independent ways.</p>
+<p>To see the difference, make the price of <strong>margarine</strong> endogenous - say a common taste shock for spreads moves both butter demand and margarine prices - and put it in the butter demand equation as a second endogenous regressor. Margarine prices are driven by vegetable-oil costs.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>make_butter2 <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">n =</span> <span class="dv">1000</span>, <span class="at">seed =</span> <span class="dv">1928</span>) {</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(seed)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  rain <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="dv">25</span>, <span class="dv">5</span>); feed <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="dv">0</span>, <span class="fl">0.2</span>); veg <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="dv">0</span>, <span class="fl">0.2</span>)   <span class="co"># veg: vegetable-oil cost</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  ud <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="dv">0</span>, <span class="fl">0.2</span>); us <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="dv">0</span>, <span class="fl">0.05</span>)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  logPm <span class="ot">&lt;-</span> <span class="fl">0.8</span> <span class="sc">*</span> veg <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> ud <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="dv">0</span>, <span class="fl">0.05</span>)      <span class="co"># margarine price: endogenous (shares ud)</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  logP  <span class="ot">&lt;-</span> (<span class="fl">0.6</span> <span class="sc">-</span> <span class="fl">0.04</span> <span class="sc">*</span> (rain <span class="sc">-</span> <span class="dv">25</span>) <span class="sc">+</span> <span class="fl">0.4</span> <span class="sc">*</span> logPm <span class="sc">+</span> <span class="fl">0.3</span> <span class="sc">*</span> feed <span class="sc">+</span> ud <span class="sc">-</span> us) <span class="sc">/</span> <span class="fl">1.5</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  logQ  <span class="ot">&lt;-</span> <span class="fl">4.6</span> <span class="sc">-</span> <span class="fl">0.5</span> <span class="sc">*</span> logP <span class="sc">+</span> <span class="fl">0.4</span> <span class="sc">*</span> logPm <span class="sc">+</span> ud           <span class="co"># true: -0.5 own price, +0.4 margarine price</span></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(rain, feed, veg, logPm, logP, logQ)</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>b2 <span class="ot">&lt;-</span> <span class="fu">make_butter2</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>With rainfall and feed cost as instruments, <span class="math inline">\(m = k = 2\)</span>: the <strong>order condition holds</strong>. But both are dairy supply shifters, so neither moves the margarine price:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(logPm <span class="sc">~</span> rain <span class="sc">+</span> feed, <span class="at">data =</span> b2))<span class="sc">$</span>fstatistic</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      value       numdf       dendf 
+  0.3944414   2.0000000 997.0000000 </code></pre>
+</div>
+</div>
+<p>The <strong>rank condition fails</strong>. Adding a margarine supply shifter (vegetable-oil cost) restores it:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>fail <span class="ot">&lt;-</span> <span class="fu">ivreg</span>(logQ <span class="sc">~</span> logP <span class="sc">+</span> logPm <span class="sc">|</span> rain <span class="sc">+</span> feed, <span class="at">data =</span> b2)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>ok   <span class="ot">&lt;-</span> <span class="fu">ivreg</span>(logQ <span class="sc">~</span> logP <span class="sc">+</span> logPm <span class="sc">|</span> rain <span class="sc">+</span> feed <span class="sc">+</span> veg, <span class="at">data =</span> b2)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(<span class="fu">list</span>(<span class="st">"Instruments: rain, feed"</span> <span class="ot">=</span> fail, <span class="st">"Instruments: rain, feed, veg. oil"</span> <span class="ot">=</span> ok),</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_map =</span> <span class="fu">c</span>(<span class="st">"logP"</span> <span class="ot">=</span> <span class="st">"log butter price (truth -0.5)"</span>, <span class="st">"logPm"</span> <span class="ot">=</span> <span class="st">"log margarine price (truth +0.4)"</span>),</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">gof_map =</span> <span class="fu">c</span>(<span class="st">"nobs"</span>), <span class="at">fmt =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_98qiaosvxftzn3u137ej(i, j, css_id) {
+          var table = document.getElementById("tinytable_98qiaosvxftzn3u137ej");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_98qiaosvxftzn3u137ej');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_98qiaosvxftzn3u137ej(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_98qiaosvxftzn3u137ej");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 5, j: 1 }, { i: 5, j: 2 },  ], css_id: 'tinytable_css_r00zri46893pk9tmdqjo',}, 
+          { positions: [ { i: 4, j: 1 }, { i: 4, j: 2 },  ], css_id: 'tinytable_css_nwyucgrvoexllud1sda8',}, 
+          { positions: [ { i: 1, j: 1 }, { i: 3, j: 1 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 2, j: 1 }, { i: 1, j: 2 },  ], css_id: 'tinytable_css_qo4jam848c56tj8yl3iw',}, 
+          { positions: [ { i: 0, j: 1 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_c97sb0j9ls73vu1uy49z',}, 
+          { positions: [ { i: 5, j: 0 },  ], css_id: 'tinytable_css_5zy5g638jx5hp4vzsrkv',}, 
+          { positions: [ { i: 4, j: 0 },  ], css_id: 'tinytable_css_7zowlbop4jn6u4ohkc16',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 },  ], css_id: 'tinytable_css_hnbe059zowe2nk2lphl5',}, 
+          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_h8ascxnde8h42ptth0ol',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_98qiaosvxftzn3u137ej(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_r00zri46893pk9tmdqjo, .table th.tinytable_css_r00zri46893pk9tmdqjo { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_nwyucgrvoexllud1sda8, .table th.tinytable_css_nwyucgrvoexllud1sda8 { text-align: center; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_qo4jam848c56tj8yl3iw, .table th.tinytable_css_qo4jam848c56tj8yl3iw { text-align: center; }
+      .table td.tinytable_css_c97sb0j9ls73vu1uy49z, .table th.tinytable_css_c97sb0j9ls73vu1uy49z { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_5zy5g638jx5hp4vzsrkv, .table th.tinytable_css_5zy5g638jx5hp4vzsrkv { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_7zowlbop4jn6u4ohkc16, .table th.tinytable_css_7zowlbop4jn6u4ohkc16 { text-align: left; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_hnbe059zowe2nk2lphl5, .table th.tinytable_css_hnbe059zowe2nk2lphl5 { text-align: left; }
+      .table td.tinytable_css_h8ascxnde8h42ptth0ol, .table th.tinytable_css_h8ascxnde8h42ptth0ol { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_98qiaosvxftzn3u137ej" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col"> </th>
+                <th scope="col">Instruments: rain, feed</th>
+                <th scope="col">Instruments: rain, feed, veg. oil</th>
+              </tr>
+        </thead>
+        
+        <tbody>
+                <tr>
+                  <td>log butter price (truth -0.5)</td>
+                  <td>-0.511</td>
+                  <td>-0.506</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(0.091)</td>
+                  <td>(0.044)</td>
+                </tr>
+                <tr>
+                  <td>log margarine price (truth +0.4)</td>
+                  <td>0.306</td>
+                  <td>0.455</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(2.249)</td>
+                  <td>(0.039)</td>
+                </tr>
+                <tr>
+                  <td>Num.Obs.</td>
+                  <td>1000</td>
+                  <td>1000</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+<p>Under rank failure the margarine coefficient is not pinned down - it changes wildly from sample to sample:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>seeds <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">7</span>, <span class="dv">1928</span>)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">t</span>(<span class="fu">sapply</span>(seeds, <span class="cf">function</span>(s) {</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  d <span class="ot">&lt;-</span> <span class="fu">make_butter2</span>(<span class="at">seed =</span> s)</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">seed =</span> s,</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">margarine coef. (rain, feed)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">coef</span>(<span class="fu">ivreg</span>(logQ <span class="sc">~</span> logP <span class="sc">+</span> logPm <span class="sc">|</span> rain <span class="sc">+</span> feed, <span class="at">data =</span> d))[[<span class="st">"logPm"</span>]], <span class="dv">2</span>),</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">margarine coef. (+ veg. oil)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">coef</span>(<span class="fu">ivreg</span>(logQ <span class="sc">~</span> logP <span class="sc">+</span> logPm <span class="sc">|</span> rain <span class="sc">+</span> feed <span class="sc">+</span> veg, <span class="at">data =</span> d))[[<span class="st">"logPm"</span>]], <span class="dv">2</span>))</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>})))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">seed</th>
+<th style="text-align: right;">margarine coef. (rain, feed)</th>
+<th style="text-align: right;">margarine coef. (+ veg. oil)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.90</td>
+<td style="text-align: right;">0.42</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">43.78</td>
+<td style="text-align: right;">0.42</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0.31</td>
+<td style="text-align: right;">0.45</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">4.77</td>
+<td style="text-align: right;">0.47</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1928</td>
+<td style="text-align: right;">0.31</td>
+<td style="text-align: right;">0.45</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<hr>
+</section>
+<section id="part-7.-inference-and-diagnostics" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Part 7. Inference and Diagnostics</h1>
+<section id="robust-standard-errors" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="robust-standard-errors"><span class="header-section-number">8.1</span> Robust standard errors</h2>
+<p><code>ivreg()</code> gives the correct 2SLS standard errors. As with OLS, heteroskedasticity-robust SEs are a sensible default:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(iv, <span class="at">vcov =</span> sandwich)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+t test of coefficients:
+
+             Estimate Std. Error t value  Pr(&gt;|t|)    
+(Intercept)  4.583823   0.087154 52.5948 &lt; 2.2e-16 ***
+logP        -0.543645   0.202658 -2.6826  0.008576 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+<section id="weak-instruments" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="weak-instruments"><span class="header-section-number">8.2</span> Weak instruments</h2>
+<p>When the instrument barely moves <span class="math inline">\(X\)</span>, the IV estimator divides by a small, noisy number. We simulate the butter market 1,000 times with the rainfall effect we have used so far, and again with an effect less than a third as large:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>sim_once <span class="ot">&lt;-</span> <span class="cf">function</span>(eff) {</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  d <span class="ot">&lt;-</span> <span class="fu">make_butter</span>(<span class="at">rain_eff =</span> eff, <span class="at">seed =</span> <span class="cn">NULL</span>)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">iv =</span> <span class="fu">cov</span>(d<span class="sc">$</span>logQ, d<span class="sc">$</span>rain) <span class="sc">/</span> <span class="fu">cov</span>(d<span class="sc">$</span>logP, d<span class="sc">$</span>rain),</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">F  =</span> <span class="fu">summary</span>(<span class="fu">lm</span>(logP <span class="sc">~</span> rain, <span class="at">data =</span> d))<span class="sc">$</span>fstatistic[[<span class="st">"value"</span>]])</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>strong <span class="ot">&lt;-</span> <span class="fu">replicate</span>(<span class="dv">1000</span>, <span class="fu">sim_once</span>(<span class="fl">0.040</span>))</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>weak   <span class="ot">&lt;-</span> <span class="fu">replicate</span>(<span class="dv">1000</span>, <span class="fu">sim_once</span>(<span class="fl">0.012</span>))</span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>summ <span class="ot">&lt;-</span> <span class="cf">function</span>(r) <span class="fu">c</span>(<span class="st">`</span><span class="at">median F</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">median</span>(r[<span class="st">"F"</span>, ]), <span class="st">`</span><span class="at">share F &gt; 10</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">mean</span>(r[<span class="st">"F"</span>, ] <span class="sc">&gt;</span> <span class="dv">10</span>),</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>                      <span class="st">`</span><span class="at">5th pct</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">unname</span>(<span class="fu">quantile</span>(r[<span class="st">"iv"</span>, ], <span class="fl">0.05</span>)), <span class="at">median =</span> <span class="fu">median</span>(r[<span class="st">"iv"</span>, ]),</span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>                      <span class="st">`</span><span class="at">95th pct</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">unname</span>(<span class="fu">quantile</span>(r[<span class="st">"iv"</span>, ], <span class="fl">0.95</span>)), <span class="st">`</span><span class="at">share wrong sign</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">mean</span>(r[<span class="st">"iv"</span>, ] <span class="sc">&gt;</span> <span class="dv">0</span>))</span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">round</span>(<span class="fu">rbind</span>(<span class="at">Strong =</span> <span class="fu">summ</span>(strong), <span class="at">Weak =</span> <span class="fu">summ</span>(weak)), <span class="dv">2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 12%">
+<col style="width: 18%">
+<col style="width: 11%">
+<col style="width: 10%">
+<col style="width: 12%">
+<col style="width: 24%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">median F</th>
+<th style="text-align: right;">share F &gt; 10</th>
+<th style="text-align: right;">5th pct</th>
+<th style="text-align: right;">median</th>
+<th style="text-align: right;">95th pct</th>
+<th style="text-align: right;">share wrong sign</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Strong</td>
+<td style="text-align: right;">76.53</td>
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">-0.83</td>
+<td style="text-align: right;">-0.50</td>
+<td style="text-align: right;">-0.27</td>
+<td style="text-align: right;">0.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Weak</td>
+<td style="text-align: right;">6.99</td>
+<td style="text-align: right;">0.3</td>
+<td style="text-align: right;">-2.73</td>
+<td style="text-align: right;">-0.46</td>
+<td style="text-align: right;">0.08</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) {</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  r <span class="ot">&lt;-</span> <span class="fu">list</span>(strong, weak)[[k]]</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  est <span class="ot">&lt;-</span> r[<span class="st">"iv"</span>, ][<span class="fu">abs</span>(r[<span class="st">"iv"</span>, ]) <span class="sc">&lt;</span> <span class="dv">500</span>]</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hist</span>(est, <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">500</span>, <span class="dv">500</span>, <span class="at">by =</span> <span class="fl">0.1</span>), <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">4</span>, <span class="fl">1.5</span>), <span class="at">col =</span> col_blue, <span class="at">border =</span> <span class="st">"white"</span>,</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">main =</span> <span class="fu">sprintf</span>(<span class="st">"%s: median F = %.0f"</span>, <span class="fu">c</span>(<span class="st">"Strong"</span>, <span class="st">"Weak"</span>)[k], <span class="fu">median</span>(r[<span class="st">"F"</span>, ])),</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">"IV estimate of demand elasticity"</span>, <span class="at">ylab =</span> <span class="st">""</span>)</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">abline</span>(<span class="at">v =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">lwd =</span> <span class="fl">2.5</span>)</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-weak" class="quarto-float quarto-figure quarto-figure-center anchored" width="864">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-weak-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="Endogeneity_IV_Companion_files/figure-html/fig-weak-1.png" id="fig-weak" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-weak-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The rule of thumb is a first-stage F above 10. It is a <strong>conventional heuristic, not a theorem</strong>: an F just above 10 still deserves caution.</p>
+</section>
+<section id="is-ols-actually-biased-wuhausman-via-the-control-function" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="is-ols-actually-biased-wuhausman-via-the-control-function"><span class="header-section-number">8.3</span> Is OLS actually biased? Wu–Hausman via the control function</h2>
+<p>Add the first-stage residual to the OLS regression. The coefficient on price becomes the 2SLS estimate, and the t-test on the residual is the Wu–Hausman test:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>cf <span class="ot">&lt;-</span> <span class="fu">lm</span>(logQ <span class="sc">~</span> logP <span class="sc">+</span> vhat, <span class="at">data =</span> butter)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(<span class="fu">summary</span>(cf))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              Estimate Std. Error    t value      Pr(&gt;|t|)
+(Intercept)  4.5838229 0.02554435 179.445657 3.729521e-124
+logP        -0.5436446 0.06289506  -8.643679  1.129972e-13
+vhat         1.3928256 0.07649762  18.207436  4.679274e-33</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">`</span><span class="at">control-function coef. on logP</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">coef</span>(cf)[[<span class="st">"logP"</span>]], <span class="st">`</span><span class="at">2SLS</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">unname</span>(<span class="fu">coef</span>(iv)[<span class="dv">2</span>]),</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">t on vhat, squared</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">summary</span>(cf))[<span class="st">"vhat"</span>, <span class="st">"t value"</span>]<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">ivreg Wu-Hausman F</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">summary</span>(iv, <span class="at">diagnostics =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>diagnostics[<span class="st">"Wu-Hausman"</span>, <span class="st">"statistic"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>control-function coef. on logP                           2SLS 
+                    -0.5436446                     -0.5436446 
+            t on vhat, squared             ivreg Wu-Hausman F 
+                   331.5107422                    331.5107422 </code></pre>
+</div>
+</div>
+<p>A large statistic says the “suspicious” part of price matters, so OLS is inconsistent. <strong>Failing to reject would not prove exogeneity</strong>: the test assumes the instrument is valid and can lack power.</p>
+</section>
+<section id="overidentification-sargan-by-hand" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="overidentification-sargan-by-hand"><span class="header-section-number">8.4</span> Overidentification: Sargan by hand</h2>
+<p>With more instruments than endogenous regressors, regress the 2SLS residuals (built from the <strong>actual</strong> price) on all the instruments; <span class="math inline">\(nR^2 \sim \chi^2_{m-k}\)</span> under <span class="math inline">\(H_0\)</span> that all instruments are valid.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>sargan_by_hand <span class="ot">&lt;-</span> <span class="cf">function</span>(model, instruments) {</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  e  <span class="ot">&lt;-</span> <span class="fu">residuals</span>(model)                              <span class="co"># y - X b_2SLS, using actual X</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  R2 <span class="ot">&lt;-</span> <span class="fu">summary</span>(<span class="fu">lm</span>(<span class="fu">as.formula</span>(<span class="fu">paste</span>(<span class="st">"e ~"</span>, instruments)), <span class="at">data =</span> butter))<span class="sc">$</span>r.squared</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  stat <span class="ot">&lt;-</span> <span class="fu">nobs</span>(model) <span class="sc">*</span> R2</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">stat =</span> stat, <span class="at">p =</span> <span class="fu">pchisq</span>(stat, <span class="at">df =</span> <span class="dv">1</span>, <span class="at">lower.tail =</span> <span class="cn">FALSE</span>))</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>iv_rf <span class="ot">&lt;-</span> <span class="fu">ivreg</span>(logQ <span class="sc">~</span> logP <span class="sc">|</span> rain <span class="sc">+</span> feed, <span class="at">data =</span> butter)</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>iv_rm <span class="ot">&lt;-</span> <span class="fu">ivreg</span>(logQ <span class="sc">~</span> logP <span class="sc">|</span> rain <span class="sc">+</span> marg, <span class="at">data =</span> butter)</span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>sarg <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Rain + feed (both valid)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="at">estimate =</span> <span class="fu">coef</span>(iv_rf)[[<span class="dv">2</span>]], <span class="fu">sargan_by_hand</span>(iv_rf, <span class="st">"rain + feed"</span>),</span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">ivreg_stat =</span> <span class="fu">summary</span>(iv_rf, <span class="at">diagnostics =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>diagnostics[<span class="st">"Sargan"</span>, <span class="st">"statistic"</span>]),</span>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Rain + margarine (one invalid)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="at">estimate =</span> <span class="fu">coef</span>(iv_rm)[[<span class="dv">2</span>]], <span class="fu">sargan_by_hand</span>(iv_rm, <span class="st">"rain + marg"</span>),</span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">ivreg_stat =</span> <span class="fu">summary</span>(iv_rm, <span class="at">diagnostics =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>diagnostics[<span class="st">"Sargan"</span>, <span class="st">"statistic"</span>]))</span>
+<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">signif</span>(sarg, <span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">estimate</th>
+<th style="text-align: right;">stat</th>
+<th style="text-align: right;">p</th>
+<th style="text-align: right;">ivreg_stat</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Rain + feed (both valid)</td>
+<td style="text-align: right;">-0.5450</td>
+<td style="text-align: right;">2.57e-04</td>
+<td style="text-align: right;">0.987</td>
+<td style="text-align: right;">2.57e-04</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rain + margarine (one invalid)</td>
+<td style="text-align: right;">-0.0473</td>
+<td style="text-align: right;">3.54e+01</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">3.54e+01</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The test <strong>rejects</strong> when one instrument is invalid. But it only checks whether instruments <strong>agree</strong>: two instruments that are invalid in the same direction can pass, and with exactly one instrument there is nothing to test (<code>ivreg</code> reports <code>NA</code>). Failure to reject does not establish validity.</p>
+<hr>
+</section>
+</section>
+<section id="part-8.-applications" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> Part 8. Applications</h1>
+<section id="cigarette-demand-real-data" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="cigarette-demand-real-data"><span class="header-section-number">9.1</span> Cigarette demand (real data)</h2>
+<p>Same simultaneity problem as butter: 48 U.S. states in 1995, with the general sales tax as the instrument for price.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"CigarettesSW"</span>, <span class="at">package =</span> <span class="st">"AER"</span>)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>cig <span class="ot">&lt;-</span> <span class="fu">subset</span>(CigarettesSW, year <span class="sc">==</span> <span class="st">"1995"</span>)</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>cig<span class="sc">$</span>rprice   <span class="ot">&lt;-</span> cig<span class="sc">$</span>price <span class="sc">/</span> cig<span class="sc">$</span>cpi                    <span class="co"># real price per pack</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>cig<span class="sc">$</span>salestax <span class="ot">&lt;-</span> (cig<span class="sc">$</span>taxs <span class="sc">-</span> cig<span class="sc">$</span>tax) <span class="sc">/</span> cig<span class="sc">$</span>cpi         <span class="co"># real general sales tax</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>cig_ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(packs) <span class="sc">~</span> <span class="fu">log</span>(rprice), <span class="at">data =</span> cig)</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>cig_iv  <span class="ot">&lt;-</span> <span class="fu">ivreg</span>(<span class="fu">log</span>(packs) <span class="sc">~</span> <span class="fu">log</span>(rprice) <span class="sc">|</span> salestax, <span class="at">data =</span> cig)</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(<span class="fu">list</span>(<span class="st">"OLS"</span> <span class="ot">=</span> cig_ols, <span class="st">"IV: sales tax"</span> <span class="ot">=</span> cig_iv), <span class="at">vcov =</span> <span class="st">"HC0"</span>,</span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_map =</span> <span class="fu">c</span>(<span class="st">"log(rprice)"</span> <span class="ot">=</span> <span class="st">"log real price"</span>), <span class="at">gof_map =</span> <span class="fu">c</span>(<span class="st">"nobs"</span>), <span class="at">fmt =</span> <span class="dv">3</span>,</span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">title =</span> <span class="st">"Cigarette demand, 1995 (robust standard errors)"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_66ttb67sbvdyurjzr49g(i, j, css_id) {
+          var table = document.getElementById("tinytable_66ttb67sbvdyurjzr49g");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_66ttb67sbvdyurjzr49g');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_66ttb67sbvdyurjzr49g(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_66ttb67sbvdyurjzr49g");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 3, j: 1 }, { i: 3, j: 2 },  ], css_id: 'tinytable_css_ove6noa3s6ojlagm7mm1',}, 
+          { positions: [ { i: 2, j: 1 }, { i: 2, j: 2 },  ], css_id: 'tinytable_css_jilave8bj2dgbphs9pp8',}, 
+          { positions: [ { i: 1, j: 1 }, { i: 1, j: 2 },  ], css_id: 'tinytable_css_l24u6w6yqoiq03mcur3r',}, 
+          { positions: [ { i: 0, j: 1 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_2u2zkaau8sn82xuyq4ta',}, 
+          { positions: [ { i: 3, j: 0 },  ], css_id: 'tinytable_css_dzcc2tae2kj8er7h1fsw',}, 
+          { positions: [ { i: 2, j: 0 },  ], css_id: 'tinytable_css_63zoicf56rpe3bg7u4lm',}, 
+          { positions: [ { i: 1, j: 0 },  ], css_id: 'tinytable_css_zrh7mxafyf232n78ig6e',}, 
+          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_wwfvx7auvvbmvtxrc5am',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_66ttb67sbvdyurjzr49g(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_ove6noa3s6ojlagm7mm1, .table th.tinytable_css_ove6noa3s6ojlagm7mm1 { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_jilave8bj2dgbphs9pp8, .table th.tinytable_css_jilave8bj2dgbphs9pp8 { text-align: center; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_l24u6w6yqoiq03mcur3r, .table th.tinytable_css_l24u6w6yqoiq03mcur3r { text-align: center; }
+      .table td.tinytable_css_2u2zkaau8sn82xuyq4ta, .table th.tinytable_css_2u2zkaau8sn82xuyq4ta { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_dzcc2tae2kj8er7h1fsw, .table th.tinytable_css_dzcc2tae2kj8er7h1fsw { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_63zoicf56rpe3bg7u4lm, .table th.tinytable_css_63zoicf56rpe3bg7u4lm { text-align: left; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_zrh7mxafyf232n78ig6e, .table th.tinytable_css_zrh7mxafyf232n78ig6e { text-align: left; }
+      .table td.tinytable_css_wwfvx7auvvbmvtxrc5am, .table th.tinytable_css_wwfvx7auvvbmvtxrc5am { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_66ttb67sbvdyurjzr49g" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        </thead><caption>Cigarette demand, 1995 (robust standard errors)</caption>
+              <tbody><tr>
+                <th scope="col"> </th>
+                <th scope="col">OLS</th>
+                <th scope="col">IV: sales tax</th>
+              </tr>
+        
+        
+        </tbody><tbody>
+                <tr>
+                  <td>log real price</td>
+                  <td>-1.213</td>
+                  <td>-1.084</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(0.190)</td>
+                  <td>(0.312)</td>
+                </tr>
+                <tr>
+                  <td>Num.Obs.</td>
+                  <td>48</td>
+                  <td>48</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(cig_iv, <span class="at">vcov =</span> sandwich, <span class="at">diagnostics =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>diagnostics</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 df1 df2  statistic      p-value
+Weak instruments   1  46 42.1410807 5.289018e-08
+Wu-Hausman         1  45  0.3059935 5.828871e-01
+Sargan             0  NA         NA           NA</code></pre>
+</div>
+</div>
+<p>A 10% price increase reduces packs smoked by about 11%. The instrument is strong (robust first-stage F = 42), but OLS and IV are close and Wu–Hausman does not reject (p = 0.58). With only 48 states, that is weak evidence that price is exogenous - not proof.</p>
+</section>
+<section id="distance-to-college-card-1995" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="distance-to-college-card-1995"><span class="header-section-number">9.2</span> Distance to college (Card, 1995)</h2>
+<p>Card uses growing up near a four-year college (<code>nearc4</code>) as an instrument for years of schooling in the NLS Young Men cohort: proximity lowers the cost of college.</p>
+<p><strong>The exogeneity concern.</strong> Families who live near colleges differ:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"card"</span>, <span class="at">package =</span> <span class="st">"wooldridge"</span>)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>bal <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(<span class="fu">cbind</span>(smsa66, south66, black, fatheduc, motheduc) <span class="sc">~</span> nearc4, <span class="at">data =</span> card, <span class="at">FUN =</span> mean)</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>bal<span class="sc">$</span>nearc4 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Not near a 4-year college"</span>, <span class="st">"Near a 4-year college"</span>)</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(bal, <span class="at">digits =</span> <span class="dv">2</span>, <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">""</span>, <span class="st">"Urban (1966)"</span>, <span class="st">"South (1966)"</span>, <span class="st">"Black"</span>,</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>                                            <span class="st">"Father's educ."</span>, <span class="st">"Mother's educ."</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 29%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 6%">
+<col style="width: 17%">
+<col style="width: 17%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Urban (1966)</th>
+<th style="text-align: right;">South (1966)</th>
+<th style="text-align: right;">Black</th>
+<th style="text-align: right;">Father’s educ.</th>
+<th style="text-align: right;">Mother’s educ.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Not near a 4-year college</td>
+<td style="text-align: right;">0.36</td>
+<td style="text-align: right;">0.54</td>
+<td style="text-align: right;">0.19</td>
+<td style="text-align: right;">9.33</td>
+<td style="text-align: right;">10.26</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Near a 4-year college</td>
+<td style="text-align: right;">0.80</td>
+<td style="text-align: right;">0.30</td>
+<td style="text-align: right;">0.14</td>
+<td style="text-align: right;">10.42</td>
+<td style="text-align: right;">10.77</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Men near a college are far more likely to have grown up in a city and outside the South, and their parents have more schooling (among those who report it). So the instrument is plausible only <strong>conditional on controls</strong> - the exogenous controls <span class="math inline">\(W\)</span>, which appear on both sides of <code>|</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>ctrl <span class="ot">&lt;-</span> <span class="st">"exper + expersq + black + smsa + south + smsa66 + reg662 + reg663 + reg664 + reg665 + reg666 + reg667 + reg668 + reg669"</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>card_ols    <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">as.formula</span>(<span class="fu">paste</span>(<span class="st">"lwage ~ educ +"</span>, ctrl)), <span class="at">data =</span> card)</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>card_fs     <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">as.formula</span>(<span class="fu">paste</span>(<span class="st">"educ ~ nearc4 +"</span>, ctrl)), <span class="at">data =</span> card)</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>card_iv0    <span class="ot">&lt;-</span> <span class="fu">ivreg</span>(lwage <span class="sc">~</span> educ <span class="sc">|</span> nearc4, <span class="at">data =</span> card)</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>card_iv     <span class="ot">&lt;-</span> <span class="fu">ivreg</span>(<span class="fu">as.formula</span>(<span class="fu">paste</span>(<span class="st">"lwage ~ educ +"</span>, ctrl, <span class="st">"| nearc4 +"</span>, ctrl)), <span class="at">data =</span> card)</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(<span class="fu">list</span>(<span class="st">"OLS (controls)"</span> <span class="ot">=</span> card_ols, <span class="st">"First stage: educ"</span> <span class="ot">=</span> card_fs,</span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"IV, no controls"</span> <span class="ot">=</span> card_iv0, <span class="st">"IV (controls)"</span> <span class="ot">=</span> card_iv),</span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_map =</span> <span class="fu">c</span>(<span class="st">"educ"</span> <span class="ot">=</span> <span class="st">"years of schooling"</span>, <span class="st">"nearc4"</span> <span class="ot">=</span> <span class="st">"near a 4-year college"</span>),</span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">gof_map =</span> <span class="fu">c</span>(<span class="st">"nobs"</span>), <span class="at">fmt =</span> <span class="dv">3</span>,</span>
+<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">title =</span> <span class="st">"Return to schooling, NLS Young Men (Card 1995)"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_ky5fowx95keixoywfm4d(i, j, css_id) {
+          var table = document.getElementById("tinytable_ky5fowx95keixoywfm4d");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_ky5fowx95keixoywfm4d');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_ky5fowx95keixoywfm4d(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_ky5fowx95keixoywfm4d");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 5, j: 1 }, { i: 5, j: 2 }, { i: 5, j: 3 }, { i: 5, j: 4 },  ], css_id: 'tinytable_css_1mruk8lg73m9am0898ib',}, 
+          { positions: [ { i: 4, j: 1 }, { i: 4, j: 2 }, { i: 4, j: 3 }, { i: 4, j: 4 },  ], css_id: 'tinytable_css_xkjc7tfigfz358axyaei',}, 
+          { positions: [ { i: 1, j: 1 }, { i: 3, j: 1 }, { i: 3, j: 2 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 1, j: 3 }, { i: 2, j: 1 }, { i: 3, j: 3 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 2, j: 3 }, { i: 1, j: 4 },  ], css_id: 'tinytable_css_09q1s4a1ktd3h3s00cia',}, 
+          { positions: [ { i: 0, j: 1 }, { i: 0, j: 2 }, { i: 0, j: 3 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_siay1jbo7ayn3b34j7ln',}, 
+          { positions: [ { i: 5, j: 0 },  ], css_id: 'tinytable_css_x6xayx9vnpnfi83y2nwq',}, 
+          { positions: [ { i: 4, j: 0 },  ], css_id: 'tinytable_css_o5dq4nafryc9xc1ul8mx',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 },  ], css_id: 'tinytable_css_r7e78c8myt5g5sd85oj6',}, 
+          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_kq0gpg14yy8ef8cxu655',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_ky5fowx95keixoywfm4d(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_1mruk8lg73m9am0898ib, .table th.tinytable_css_1mruk8lg73m9am0898ib { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_xkjc7tfigfz358axyaei, .table th.tinytable_css_xkjc7tfigfz358axyaei { text-align: center; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_09q1s4a1ktd3h3s00cia, .table th.tinytable_css_09q1s4a1ktd3h3s00cia { text-align: center; }
+      .table td.tinytable_css_siay1jbo7ayn3b34j7ln, .table th.tinytable_css_siay1jbo7ayn3b34j7ln { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_x6xayx9vnpnfi83y2nwq, .table th.tinytable_css_x6xayx9vnpnfi83y2nwq { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_o5dq4nafryc9xc1ul8mx, .table th.tinytable_css_o5dq4nafryc9xc1ul8mx { text-align: left; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_r7e78c8myt5g5sd85oj6, .table th.tinytable_css_r7e78c8myt5g5sd85oj6 { text-align: left; }
+      .table td.tinytable_css_kq0gpg14yy8ef8cxu655, .table th.tinytable_css_kq0gpg14yy8ef8cxu655 { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_ky5fowx95keixoywfm4d" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        </thead><caption>Return to schooling, NLS Young Men (Card 1995)</caption>
+              <tbody><tr>
+                <th scope="col"> </th>
+                <th scope="col">OLS (controls)</th>
+                <th scope="col">First stage: educ</th>
+                <th scope="col">IV, no controls</th>
+                <th scope="col">IV (controls)</th>
+              </tr>
+        
+        
+        </tbody><tbody>
+                <tr>
+                  <td>years of schooling</td>
+                  <td>0.075</td>
+                  <td></td>
+                  <td>0.188</td>
+                  <td>0.132</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(0.003)</td>
+                  <td></td>
+                  <td>(0.026)</td>
+                  <td>(0.055)</td>
+                </tr>
+                <tr>
+                  <td>near a 4-year college</td>
+                  <td></td>
+                  <td>0.320</td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td>(0.088)</td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>Num.Obs.</td>
+                  <td>3010</td>
+                  <td>3010</td>
+                  <td>3010</td>
+                  <td>3010</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+<ul>
+<li><strong>First stage:</strong> growing up near a college adds 0.32 years of schooling (F = 13.3 - above 10, but not by a wide margin).</li>
+<li><strong>IV vs OLS:</strong> with controls, IV gives 0.132 per year of schooling against OLS’s 0.075, with a standard error about 16 times larger.</li>
+<li><strong>Controls matter:</strong> without them IV is 0.188 - the urban and regional differences in the balance table were loading onto the instrument.</li>
+<li><strong>Interpretation:</strong> the variation comes from men whose schooling responds to proximity. Card reports that these gains are concentrated among men with less-educated parents, one reason IV need not equal the average return.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="common-mistakes" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> Common Mistakes</h1>
+<ol type="1">
+<li><strong>Taking standard errors from a hand-run second stage.</strong> The coefficient is right; the residuals are wrong (Part 3). Use <code>ivreg()</code>.</li>
+<li><strong>“My instrument is strongly correlated with X, so it’s valid.”</strong> Strength and validity are separate (Part 5: F = 280 and still biased).</li>
+<li><strong>Using a shifter of the wrong curve.</strong> Margarine for butter demand estimates supply (Part 5).</li>
+<li><strong>Using a proxy as an instrument, or an instrument as a control</strong> (Part 5).</li>
+<li><strong>Counting instruments and stopping.</strong> The order condition can hold while the rank condition fails (Part 6).</li>
+<li><strong>Leaving controls off the right of <code>|</code>.</strong> Every exogenous regressor must appear on both sides, or <code>ivreg()</code> treats it as endogenous.</li>
+<li><strong>Treating F &gt; 10 as a guarantee, or a passed Sargan/Wu–Hausman test as proof.</strong> These are heuristics and partial checks (Part 7).</li>
+</ol>
+<hr>
+</section>
+<section id="summary-and-key-takeaways" class="level1" data-number="11">
+<h1 data-number="11"><span class="header-section-number">11</span> Summary and Key Takeaways</h1>
+<ol type="1">
+<li><strong>Endogeneity</strong> (<span class="math inline">\(\text{Cov}(X, \varepsilon) \neq 0\)</span>) makes OLS biased and inconsistent. In the butter market, OLS estimated 0.40 against a truth of −0.5, and more data only made it more precise.</li>
+<li><strong>The first stage</strong> splits the endogenous regressor into a part driven by the instrument (uncorrelated with the error) and a residual (which carries the endogeneity).</li>
+<li><strong>The second stage</strong> regresses <span class="math inline">\(Y\)</span> on the fitted values; with rainfall it recovers -0.54. Its coefficient is right, but its standard errors are not: use <code>ivreg()</code>.</li>
+<li><strong>The IV estimator</strong> is <span class="math inline">\(s_{YZ}/s_{XZ}\)</span> = reduced form / first stage, and <span class="math inline">\(\hat\beta^{IV} - \beta = \widehat{\text{Cov}}(Z,u)/\widehat{\text{Cov}}(Z,X)\)</span>.</li>
+<li><strong>Relevance</strong> is testable; <strong>exogeneity</strong> and the <strong>exclusion restriction</strong> are not. A strong instrument can be invalid, and a demand shifter identifies supply.</li>
+<li><strong>A proxy</strong> is a noisy measure of the omitted variable and goes into the regression; <strong>an instrument</strong> stays out and must be unrelated to it.</li>
+<li><strong>The order condition</strong> counts instruments; <strong>the rank condition</strong> is what actually pins down the coefficients.</li>
+<li><strong>Diagnostics</strong> - first-stage F &gt; 10 (a heuristic), Wu–Hausman, Sargan/Hansen - are partial checks. None proves an instrument valid.</li>
+</ol>
+<hr>
+</section>
+<section id="further-reading" class="level1" data-number="12">
+<h1 data-number="12"><span class="header-section-number">12</span> Further Reading</h1>
+<ul>
+<li>Greene, W. H. <em>Econometric Analysis</em>. Pearson. The chapter on endogeneity and instrumental variable estimation.</li>
+<li>Wooldridge, J. M. <em>Introductory Econometrics: A Modern Approach</em>. Cengage. The chapter on instrumental variables estimation and two stage least squares (the source of the <code>card</code> data).</li>
+<li>Stock, J. H., &amp; Watson, M. W. <em>Introduction to Econometrics</em>. Pearson. The chapter on instrumental variables regression (the cigarette example).</li>
+<li>Card, D. (1995). Using Geographic Variation in College Proximity to Estimate the Return to Schooling. In <em>Aspects of Labour Market Behaviour: Essays in Honour of John Vanderkamp</em>. University of Toronto Press. <a href="https://www.nber.org/papers/w4483">NBER working paper</a></li>
+<li>Stock, J. H., &amp; Trebbi, F. (2003). Who Invented Instrumental Variable Regression? <em>Journal of Economic Perspectives</em>, 17(3), 177–194.</li>
+<li>Angrist, J. D., &amp; Pischke, J.-S. (2009). <em>Mostly Harmless Econometrics</em>. Princeton University Press. Chapter 4.</li>
+</ul>
+<hr>
+<p><strong>End of Notebook</strong></p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
