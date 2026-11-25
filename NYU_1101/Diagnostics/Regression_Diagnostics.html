@@ -1,0 +1,2438 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Dragos Ailoae">
+
+<title>Regression Diagnostics</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Regression_Diagnostics_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Regression_Diagnostics_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="Regression_Diagnostics_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="Regression_Diagnostics_files/libs/quarto-html/popper.min.js"></script>
+<script src="Regression_Diagnostics_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Regression_Diagnostics_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Regression_Diagnostics_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Regression_Diagnostics_files/libs/quarto-html/quarto-syntax-highlighting-bb62276ab45c84d9efd712f51ff97b5a.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Regression_Diagnostics_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Regression_Diagnostics_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Regression_Diagnostics_files/libs/bootstrap/bootstrap-202ed213b2c006338bc742d5d021bd88.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="Regression_Diagnostics_files/libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+
+<script src="Regression_Diagnostics_files/libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-full toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="-1">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#the-art-of-regression-diagnostics" id="toc-the-art-of-regression-diagnostics" class="nav-link" data-scroll-target="#the-art-of-regression-diagnostics">The Art of Regression Diagnostics</a></li>
+  </ul></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup"><span class="header-section-number">1</span> Setup</a></li>
+  <li><a href="#the-data-and-the-model" id="toc-the-data-and-the-model" class="nav-link" data-scroll-target="#the-data-and-the-model"><span class="header-section-number">2</span> The Data and the Model</a></li>
+  <li><a href="#missing-values" id="toc-missing-values" class="nav-link" data-scroll-target="#missing-values"><span class="header-section-number">3</span> Missing Values</a></li>
+  <li><a href="#multicollinearity" id="toc-multicollinearity" class="nav-link" data-scroll-target="#multicollinearity"><span class="header-section-number">4</span> Multicollinearity</a></li>
+  <li><a href="#outliers-leverage-and-influence" id="toc-outliers-leverage-and-influence" class="nav-link" data-scroll-target="#outliers-leverage-and-influence"><span class="header-section-number">5</span> Outliers, Leverage and Influence</a>
+  <ul class="collapse">
+  <li><a href="#detecting-outliers" id="toc-detecting-outliers" class="nav-link" data-scroll-target="#detecting-outliers"><span class="header-section-number">5.1</span> Detecting outliers</a></li>
+  <li><a href="#leverage" id="toc-leverage" class="nav-link" data-scroll-target="#leverage"><span class="header-section-number">5.2</span> Leverage</a></li>
+  <li><a href="#influence-cooks-distance" id="toc-influence-cooks-distance" class="nav-link" data-scroll-target="#influence-cooks-distance"><span class="header-section-number">5.3</span> Influence: Cook’s distance</a></li>
+  <li><a href="#influence-dfbetas" id="toc-influence-dfbetas" class="nav-link" data-scroll-target="#influence-dfbetas"><span class="header-section-number">5.4</span> Influence: DFBETAS</a></li>
+  <li><a href="#addressing-outliers" id="toc-addressing-outliers" class="nav-link" data-scroll-target="#addressing-outliers"><span class="header-section-number">5.5</span> Addressing outliers</a></li>
+  </ul></li>
+  <li><a href="#non-linearity" id="toc-non-linearity" class="nav-link" data-scroll-target="#non-linearity"><span class="header-section-number">6</span> Non-linearity</a></li>
+  <li><a href="#heteroskedasticity" id="toc-heteroskedasticity" class="nav-link" data-scroll-target="#heteroskedasticity"><span class="header-section-number">7</span> Heteroskedasticity</a></li>
+  <li><a href="#autocorrelation" id="toc-autocorrelation" class="nav-link" data-scroll-target="#autocorrelation"><span class="header-section-number">8</span> Autocorrelation</a></li>
+  <li><a href="#normality" id="toc-normality" class="nav-link" data-scroll-target="#normality"><span class="header-section-number">9</span> Normality</a></li>
+  <li><a href="#back-to-the-start-a-revised-model" id="toc-back-to-the-start-a-revised-model" class="nav-link" data-scroll-target="#back-to-the-start-a-revised-model"><span class="header-section-number">10</span> Back to the Start: A Revised Model</a></li>
+  <li><a href="#interpreting-the-quadratic-marginaleffects" id="toc-interpreting-the-quadratic-marginaleffects" class="nav-link" data-scroll-target="#interpreting-the-quadratic-marginaleffects"><span class="header-section-number">11</span> Interpreting the Quadratic: <code>marginaleffects</code></a>
+  <ul class="collapse">
+  <li><a href="#predictions" id="toc-predictions" class="nav-link" data-scroll-target="#predictions"><span class="header-section-number">11.1</span> Predictions</a></li>
+  <li><a href="#slopes-marginal-effects" id="toc-slopes-marginal-effects" class="nav-link" data-scroll-target="#slopes-marginal-effects"><span class="header-section-number">11.2</span> Slopes (marginal effects)</a></li>
+  <li><a href="#the-average-marginal-effect" id="toc-the-average-marginal-effect" class="nav-link" data-scroll-target="#the-average-marginal-effect"><span class="header-section-number">11.3</span> The average marginal effect</a></li>
+  <li><a href="#comparing-two-specific-values" id="toc-comparing-two-specific-values" class="nav-link" data-scroll-target="#comparing-two-specific-values"><span class="header-section-number">11.4</span> Comparing two specific values</a></li>
+  </ul></li>
+  <li><a href="#the-tldr-version-plotlm" id="toc-the-tldr-version-plotlm" class="nav-link" data-scroll-target="#the-tldr-version-plotlm"><span class="header-section-number">12</span> The TLDR Version: <code>plot(lm)</code></a></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content column-page-right" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Regression Diagnostics</h1>
+<p class="subtitle lead">Companion Notebook<br>ECONGA-1001.001: Applied Statistics and Econometrics I<br>New York University</p>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-right">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dragos Ailoae </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1 unnumbered">
+<h1 class="unnumbered">Introduction</h1>
+<p>Before we start performing statistical hypothesis tests intended to draw economic meaning out of the model, our first tests should concern the question: <strong>is this a good model?</strong></p>
+<p>It would be nice if there was a statistical test along the lines of:</p>
+<p><span class="math display">\[\left\{\begin{array}{l}H_{0}: \text{My model is awesome.}\\ H_{a}: \text{My model is not so awesome.} \end{array}\right.\]</span></p>
+<p>Unfortunately, troubleshooting a regression is not that simple and requires assessing a number of different factors.</p>
+<section id="the-art-of-regression-diagnostics" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="the-art-of-regression-diagnostics">The Art of Regression Diagnostics</h2>
+<p>Regression diagnosis is an iterative process, but there is a natural order:</p>
+<ol type="1">
+<li><p><strong>Conditions that cause outright numerical errors.</strong> Multicollinearity is one of those: it can produce unstable systems of equations and, in extreme cases, outright incorrect answers. Any problem here usually means you cannot proceed until it is fixed. Multicollinearity is usually diagnosed using Variance Inflation Factors (VIFs). Additional checks at this stage include assessing the influence of missing values in the dataset and verifying that the important parameters are identifiable. (Missing combinations of discrete independent variables can sometimes cause trouble here.)</p></li>
+<li><p><strong>Whether the output reflects most of the data or is sensitive to a small subset.</strong> In the latter case, everything else you subsequently do may be misleading. Procedures include examination of outliers and of leverage. (A high-leverage observation might not be an outlier, but it may still unduly influence all the results.) If a robust alternative to the regression procedure exists (e.g.&nbsp;robust regression with <code>MASS::rlm()</code>), this is a good time to apply it: check that it produces similar results and use it to detect outlying values.</p></li>
+<li><p><strong>The statistical assumptions needed for correct interpretation of the output.</strong> Having achieved a situation that is numerically stable (so you can trust the computations) and which reflects the full dataset, you turn to the distribution of the residuals - in rough order of importance: non-linearity, heteroskedasticity, autocorrelation, and non-normality.</p></li>
+</ol>
+<p>At any stage, if something needs to be corrected, it’s wise to return to the beginning. Repeat as many times as necessary.</p>
+<p>If we collect the various problems that can arise, we can rank them in terms of severity roughly as:</p>
+<p><span class="math display">\[\text{outliers} &gt; \text{non-linearity} &gt; \text{heteroskedasticity} &gt; \text{autocorrelation} &gt; \text{non-normality}\]</span></p>
+<hr>
+</section>
+</section>
+<section id="setup" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Setup</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>packages <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"tidyverse"</span>,     <span class="co"># pipes, dplyr, ggplot2</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"modelsummary"</span>,  <span class="co"># datasummary_skim(), datasummary_correlation(), modelsummary()</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"car"</span>,           <span class="co"># vif(), crPlots()</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"olsrr"</span>,         <span class="co"># ols_plot_resid_lev(), ols_plot_cooksd_bar(), ols_plot_dfbetas()</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"lmtest"</span>,        <span class="co"># resettest(), bptest(), bgtest(), coeftest()</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sandwich"</span>,      <span class="co"># vcovHC(), vcovHAC()</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"reshape2"</span>,      <span class="co"># melt()</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"forecast"</span>,      <span class="co"># Acf()</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"nortest"</span>,       <span class="co"># ad.test(), cvm.test()</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"tseries"</span>,       <span class="co"># jarque.bera.test()</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"marginaleffects"</span>, <span class="co"># predictions(), slopes(), comparisons()</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"knitr"</span>          <span class="co"># kable()</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>missing <span class="ot">&lt;-</span> packages[<span class="sc">!</span>packages <span class="sc">%in%</span> <span class="fu">rownames</span>(<span class="fu">installed.packages</span>())]</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(missing) <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="fu">install.packages</span>(missing)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">lapply</span>(packages, library, <span class="at">character.only =</span> <span class="cn">TRUE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<hr>
+</section>
+<section id="the-data-and-the-model" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> The Data and the Model</h1>
+<p>To understand the troubleshooting process in a practical setting we will look at a multiple regression model that predicts:</p>
+<p><span class="math inline">\(Y\)</span> - survey respondents’ perceived levels of climate change risk (0 to 10, higher numbers = more concerned)</p>
+<p>using as independent variables (<span class="math inline">\(X\)</span>s):</p>
+<ul>
+<li>political ideology (1 to 7, higher numbers = more conservative)</li>
+<li>age</li>
+<li>household income</li>
+<li>educational achievement (1 = less than high school, 8 = PhD/JD/MD)</li>
+</ul>
+<p>See <a href="https://journals.ametsoc.org/view/journals/atot/34/11/jtech-d-17-0088.1.xml">Paper</a>, <a href="https://web.archive.org/web/20240824124231/http://crcm.ou.edu/epscordata/">Data source</a>, <a href="https://web.archive.org/web/20240703013610/http://crcm.ou.edu/epscor/codebooks/codebook-wave19.pdf">Codebook</a>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ds <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"https://wwwedu.github.io/NYU_1101/Diagnostics/MSISNetWave12.csv"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(ds)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2547  207</code></pre>
+</div>
+</div>
+<p>Since the dataset is rather large we’ll just grab the first 500 observations of the variables of interest.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ds.small <span class="ot">&lt;-</span> ds <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(glbcc_risk, age, education, income, ideol) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">500</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ds.small)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["glbcc_risk"],"name":[1],"type":["int"],"align":["right"]},{"label":["age"],"name":[2],"type":["int"],"align":["right"]},{"label":["education"],"name":[3],"type":["int"],"align":["right"]},{"label":["income"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["ideol"],"name":[5],"type":["int"],"align":["right"]}],"data":[{"1":"4","2":"50","3":"4","4":"160000","5":"6","_rn_":"1"},{"1":"10","2":"58","3":"4","4":"45000","5":"3","_rn_":"2"},{"1":"3","2":"52","3":"6","4":"40000","5":"6","_rn_":"3"},{"1":"0","2":"58","3":"6","4":"130000","5":"NA","_rn_":"4"},{"1":"5","2":"40","3":"4","4":"55000","5":"4","_rn_":"5"},{"1":"NA","2":"44","3":"4","4":"33000","5":"4","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>The results of the regression model are as follows:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ols1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(glbcc_risk <span class="sc">~</span> age <span class="sc">+</span> education <span class="sc">+</span> income <span class="sc">+</span> ideol, <span class="at">data =</span> ds.small)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ols1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = glbcc_risk ~ age + education + income + ideol, data = ds.small)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-7.1617 -1.7131 -0.0584  1.7216  6.8981 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  1.208e+01  7.247e-01  16.676   &lt;2e-16 ***
+age         -5.559e-03  8.407e-03  -0.661    0.509    
+education   -1.861e-02  6.979e-02  -0.267    0.790    
+income       1.923e-07  2.227e-06   0.086    0.931    
+ideol       -1.224e+00  6.630e-02 -18.454   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 2.353 on 445 degrees of freedom
+  (50 observations deleted due to missingness)
+Multiple R-squared:  0.4365,    Adjusted R-squared:  0.4315 
+F-statistic: 86.19 on 4 and 445 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>The ideology coefficient is highly significant and negative, indicating that concern for climate change risk declines as we move towards the conservative end of the ideology spectrum. Note however that the regression summary reports <strong>“50 observations deleted due to missingness.”</strong></p>
+<hr>
+</section>
+<section id="missing-values" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Missing Values</h1>
+<p>Prepackaged econometrics functions deal with missing data in different ways. It’s best to be on top of it and handle it as you see appropriate. Many data summary tables report missing values, for example:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datasummary_skim</span>(ds.small)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_psypfbp3y0u8sndfierv(i, j, css_id) {
+          var table = document.getElementById("tinytable_psypfbp3y0u8sndfierv");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_psypfbp3y0u8sndfierv');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_psypfbp3y0u8sndfierv(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_psypfbp3y0u8sndfierv");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 5, j: 6 }, { i: 5, j: 4 }, { i: 5, j: 2 }, { i: 5, j: 0 }, { i: 5, j: 3 }, { i: 5, j: 1 }, { i: 5, j: 7 }, { i: 5, j: 5 }, { i: 5, j: 8 },  ], css_id: 'tinytable_css_je2uh2c4uymeonuhgj1d',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 1, j: 5 }, { i: 1, j: 3 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 1, j: 6 }, { i: 1, j: 4 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 4, j: 4 }, { i: 4, j: 2 }, { i: 1, j: 7 }, { i: 2, j: 7 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 4, j: 5 }, { i: 4, j: 3 }, { i: 1, j: 8 }, { i: 2, j: 8 }, { i: 2, j: 6 }, { i: 3, j: 6 }, { i: 4, j: 6 }, { i: 3, j: 7 }, { i: 4, j: 7 }, { i: 3, j: 8 }, { i: 4, j: 8 },  ], css_id: 'tinytable_css_9tky7dqpruu6ov31e5y7',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 1 }, { i: 0, j: 7 }, { i: 0, j: 5 }, { i: 0, j: 8 }, { i: 0, j: 6 }, { i: 0, j: 4 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_8kl8ggxd2jwkjw29kcvb',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_psypfbp3y0u8sndfierv(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_je2uh2c4uymeonuhgj1d, .table th.tinytable_css_je2uh2c4uymeonuhgj1d { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_9tky7dqpruu6ov31e5y7, .table th.tinytable_css_9tky7dqpruu6ov31e5y7 { text-align: left; }
+      .table td.tinytable_css_8kl8ggxd2jwkjw29kcvb, .table th.tinytable_css_8kl8ggxd2jwkjw29kcvb { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_psypfbp3y0u8sndfierv" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col"> </th>
+                <th scope="col">Unique</th>
+                <th scope="col">Missing Pct.</th>
+                <th scope="col">Mean</th>
+                <th scope="col">SD</th>
+                <th scope="col">Min</th>
+                <th scope="col">Median</th>
+                <th scope="col">Max</th>
+                <th scope="col">Histogram</th>
+              </tr>
+        </thead>
+        
+        <tbody>
+                <tr>
+                  <td>glbcc_risk</td>
+                  <td>12</td>
+                  <td>0</td>
+                  <td>5.8</td>
+                  <td>3.1</td>
+                  <td>0.0</td>
+                  <td>6.0</td>
+                  <td>10.0</td>
+                  <td><img src="./tinytable_assets/idqrou9vm01he4fshn9gke.png" style="height: 1em;"></td>
+                </tr>
+                <tr>
+                  <td>age</td>
+                  <td>64</td>
+                  <td>0</td>
+                  <td>60.3</td>
+                  <td>13.4</td>
+                  <td>23.0</td>
+                  <td>62.0</td>
+                  <td>96.0</td>
+                  <td><img src="./tinytable_assets/idos0udsv01go662nmp3gv.png" style="height: 1em;"></td>
+                </tr>
+                <tr>
+                  <td>education</td>
+                  <td>8</td>
+                  <td>0</td>
+                  <td>5.2</td>
+                  <td>1.7</td>
+                  <td>1.0</td>
+                  <td>6.0</td>
+                  <td>8.0</td>
+                  <td><img src="./tinytable_assets/id58jwr1afrno3vmnkp6bk.png" style="height: 1em;"></td>
+                </tr>
+                <tr>
+                  <td>income</td>
+                  <td>114</td>
+                  <td>9</td>
+                  <td>74696.6</td>
+                  <td>52298.7</td>
+                  <td>10000.0</td>
+                  <td>60000.0</td>
+                  <td>400000.0</td>
+                  <td><img src="./tinytable_assets/idh3fn4zkp3nhbft5nud0y.png" style="height: 1em;"></td>
+                </tr>
+                <tr>
+                  <td>ideol</td>
+                  <td>8</td>
+                  <td>1</td>
+                  <td>4.7</td>
+                  <td>1.7</td>
+                  <td>1.0</td>
+                  <td>5.0</td>
+                  <td>7.0</td>
+                  <td><img src="./tinytable_assets/idxlsz7lh4qwsqf3zqbx2m.png" style="height: 1em;"></td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+<p>Most of the missing values come from income. Dropping rows with missing values (listwise deletion) is reasonable when whether a value is missing is unrelated to the outcome. If it isn’t - say, people who are more worried about climate change are also more likely to skip the income question - a large sample won’t remove the bias. In that case, try imputing the missing values instead; R has a number of <a href="https://www.analyticsvidhya.com/blog/2016/03/tutorial-powerful-packages-imputing-missing-values/">powerful packages</a> for this.</p>
+<p>Here we’ll drop any rows with missing values:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ds.small <span class="ot">&lt;-</span> ds.small <span class="sc">%&gt;%</span> <span class="fu">drop_na</span>()        <span class="co"># filter out NAs</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(ds.small) <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(ds.small)    <span class="co"># reindex without the missing rows</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">datasummary_skim</span>(ds.small)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_t3qf2kjf8m6ujgpnzxpm(i, j, css_id) {
+          var table = document.getElementById("tinytable_t3qf2kjf8m6ujgpnzxpm");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_t3qf2kjf8m6ujgpnzxpm');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_t3qf2kjf8m6ujgpnzxpm(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_t3qf2kjf8m6ujgpnzxpm");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 5, j: 6 }, { i: 5, j: 4 }, { i: 5, j: 2 }, { i: 5, j: 0 }, { i: 5, j: 3 }, { i: 5, j: 1 }, { i: 5, j: 7 }, { i: 5, j: 5 }, { i: 5, j: 8 },  ], css_id: 'tinytable_css_vz2y1pdt8vkk1r9k5h2n',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 1, j: 5 }, { i: 1, j: 3 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 1, j: 6 }, { i: 1, j: 4 }, { i: 2, j: 4 }, { i: 3, j: 4 }, { i: 4, j: 4 }, { i: 4, j: 2 }, { i: 1, j: 7 }, { i: 2, j: 7 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 4, j: 5 }, { i: 4, j: 3 }, { i: 1, j: 8 }, { i: 2, j: 8 }, { i: 2, j: 6 }, { i: 3, j: 6 }, { i: 4, j: 6 }, { i: 3, j: 7 }, { i: 4, j: 7 }, { i: 3, j: 8 }, { i: 4, j: 8 },  ], css_id: 'tinytable_css_fgxx3d6vyjn0cqtdeg64',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 1 }, { i: 0, j: 7 }, { i: 0, j: 5 }, { i: 0, j: 8 }, { i: 0, j: 6 }, { i: 0, j: 4 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_jzpr9j9kzt87focp2tu2',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_t3qf2kjf8m6ujgpnzxpm(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_vz2y1pdt8vkk1r9k5h2n, .table th.tinytable_css_vz2y1pdt8vkk1r9k5h2n { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_fgxx3d6vyjn0cqtdeg64, .table th.tinytable_css_fgxx3d6vyjn0cqtdeg64 { text-align: left; }
+      .table td.tinytable_css_jzpr9j9kzt87focp2tu2, .table th.tinytable_css_jzpr9j9kzt87focp2tu2 { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_t3qf2kjf8m6ujgpnzxpm" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col"> </th>
+                <th scope="col">Unique</th>
+                <th scope="col">Missing Pct.</th>
+                <th scope="col">Mean</th>
+                <th scope="col">SD</th>
+                <th scope="col">Min</th>
+                <th scope="col">Median</th>
+                <th scope="col">Max</th>
+                <th scope="col">Histogram</th>
+              </tr>
+        </thead>
+        
+        <tbody>
+                <tr>
+                  <td>glbcc_risk</td>
+                  <td>11</td>
+                  <td>0</td>
+                  <td>5.9</td>
+                  <td>3.1</td>
+                  <td>0.0</td>
+                  <td>6.0</td>
+                  <td>10.0</td>
+                  <td><img src="./tinytable_assets/id1aerqpkoz26bxfsc02o2.png" style="height: 1em;"></td>
+                </tr>
+                <tr>
+                  <td>age</td>
+                  <td>63</td>
+                  <td>0</td>
+                  <td>59.8</td>
+                  <td>13.4</td>
+                  <td>23.0</td>
+                  <td>61.0</td>
+                  <td>88.0</td>
+                  <td><img src="./tinytable_assets/id897dof28jrl9dfeshwop.png" style="height: 1em;"></td>
+                </tr>
+                <tr>
+                  <td>education</td>
+                  <td>8</td>
+                  <td>0</td>
+                  <td>5.2</td>
+                  <td>1.7</td>
+                  <td>1.0</td>
+                  <td>6.0</td>
+                  <td>8.0</td>
+                  <td><img src="./tinytable_assets/idw9zyqemh3j6cgld5can6.png" style="height: 1em;"></td>
+                </tr>
+                <tr>
+                  <td>income</td>
+                  <td>113</td>
+                  <td>0</td>
+                  <td>74587.9</td>
+                  <td>52344.6</td>
+                  <td>10000.0</td>
+                  <td>60000.0</td>
+                  <td>400000.0</td>
+                  <td><img src="./tinytable_assets/idetiefwkbtux2fjq31rgf.png" style="height: 1em;"></td>
+                </tr>
+                <tr>
+                  <td>ideol</td>
+                  <td>7</td>
+                  <td>0</td>
+                  <td>4.7</td>
+                  <td>1.7</td>
+                  <td>1.0</td>
+                  <td>5.0</td>
+                  <td>7.0</td>
+                  <td><img src="./tinytable_assets/idkdzzntuabtr2ab32zzce.png" style="height: 1em;"></td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+<p>We’ve confirmed there is no missing data, so we re-estimate the model:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ols1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(glbcc_risk <span class="sc">~</span> age <span class="sc">+</span> education <span class="sc">+</span> income <span class="sc">+</span> ideol, <span class="at">data =</span> ds.small)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ols1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = glbcc_risk ~ age + education + income + ideol, data = ds.small)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-7.1617 -1.7131 -0.0584  1.7216  6.8981 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  1.208e+01  7.247e-01  16.676   &lt;2e-16 ***
+age         -5.559e-03  8.407e-03  -0.661    0.509    
+education   -1.861e-02  6.979e-02  -0.267    0.790    
+income       1.923e-07  2.227e-06   0.086    0.931    
+ideol       -1.224e+00  6.630e-02 -18.454   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 2.353 on 445 degrees of freedom
+Multiple R-squared:  0.4365,    Adjusted R-squared:  0.4315 
+F-statistic: 86.19 on 4 and 445 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>On the basis of the R output, the model appears to be quite reasonable, with a statistically significant estimated partial regression coefficient for political ideology. But let’s take a closer look.</p>
+<hr>
+</section>
+<section id="multicollinearity" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Multicollinearity</h1>
+<p>In practical terms, detecting multicollinearity can begin by examining pairwise correlations of our independent variables.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datasummary_correlation</span>(ds.small)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_dc7zdpkwrn66rr2xtv6k(i, j, css_id) {
+          var table = document.getElementById("tinytable_dc7zdpkwrn66rr2xtv6k");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_dc7zdpkwrn66rr2xtv6k');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_dc7zdpkwrn66rr2xtv6k(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_dc7zdpkwrn66rr2xtv6k");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 5, j: 3 }, { i: 5, j: 1 }, { i: 5, j: 4 }, { i: 5, j: 2 }, { i: 5, j: 5 },  ], css_id: 'tinytable_css_f90zs54en47927vzok8d',}, 
+          { positions: [ { i: 1, j: 1 }, { i: 2, j: 1 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 1, j: 3 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 3, j: 4 }, { i: 4, j: 4 }, { i: 1, j: 4 }, { i: 2, j: 4 }, { i: 1, j: 5 }, { i: 2, j: 5 }, { i: 3, j: 5 }, { i: 4, j: 5 },  ], css_id: 'tinytable_css_8nd8jc222poweedolqts',}, 
+          { positions: [ { i: 0, j: 1 }, { i: 0, j: 4 }, { i: 0, j: 2 }, { i: 0, j: 5 }, { i: 0, j: 3 },  ], css_id: 'tinytable_css_a07selau5v65w8ub5yps',}, 
+          { positions: [ { i: 5, j: 0 },  ], css_id: 'tinytable_css_zw8akhp0bc19xgv090uq',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 },  ], css_id: 'tinytable_css_iaxnlq38g135pg1sp0b8',}, 
+          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_ikrubef80ty7uax9hv0a',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_dc7zdpkwrn66rr2xtv6k(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_f90zs54en47927vzok8d, .table th.tinytable_css_f90zs54en47927vzok8d { text-align: right; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_8nd8jc222poweedolqts, .table th.tinytable_css_8nd8jc222poweedolqts { text-align: right; }
+      .table td.tinytable_css_a07selau5v65w8ub5yps, .table th.tinytable_css_a07selau5v65w8ub5yps { text-align: right; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_zw8akhp0bc19xgv090uq, .table th.tinytable_css_zw8akhp0bc19xgv090uq { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_iaxnlq38g135pg1sp0b8, .table th.tinytable_css_iaxnlq38g135pg1sp0b8 { text-align: left; }
+      .table td.tinytable_css_ikrubef80ty7uax9hv0a, .table th.tinytable_css_ikrubef80ty7uax9hv0a { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_dc7zdpkwrn66rr2xtv6k" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col"> </th>
+                <th scope="col">glbcc_risk</th>
+                <th scope="col">age</th>
+                <th scope="col">education</th>
+                <th scope="col">income</th>
+                <th scope="col">ideol</th>
+              </tr>
+        </thead>
+        
+        <tbody>
+                <tr>
+                  <td>glbcc_risk</td>
+                  <td>1</td>
+                  <td>.</td>
+                  <td>.</td>
+                  <td>.</td>
+                  <td>.</td>
+                </tr>
+                <tr>
+                  <td>age</td>
+                  <td>-.06</td>
+                  <td>1</td>
+                  <td>.</td>
+                  <td>.</td>
+                  <td>.</td>
+                </tr>
+                <tr>
+                  <td>education</td>
+                  <td>.04</td>
+                  <td>-.10</td>
+                  <td>1</td>
+                  <td>.</td>
+                  <td>.</td>
+                </tr>
+                <tr>
+                  <td>income</td>
+                  <td>-.01</td>
+                  <td>-.13</td>
+                  <td>.28</td>
+                  <td>1</td>
+                  <td>.</td>
+                </tr>
+                <tr>
+                  <td>ideol</td>
+                  <td>-.66</td>
+                  <td>.06</td>
+                  <td>-.07</td>
+                  <td>.02</td>
+                  <td>1</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+<p>While education vs.&nbsp;income has a slightly elevated correlation coefficient, it is not that concerning.</p>
+<p>Even better, we can look at the variance inflation factors (VIFs). Pairwise correlations can miss collinearity that involves three or more variables; VIFs don’t, because each one comes from regressing one <span class="math inline">\(X\)</span> on <strong>all</strong> the others:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vif</span>(ols1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      age education    income     ideol 
+ 1.024094  1.098383  1.101733  1.009105 </code></pre>
+</div>
+</div>
+<p>We find no VIFs over 10 (or even 5), which means we don’t have to worry about multicollinearity with this model.</p>
+<p>But if multicollinearity is suspected, what can you do? One option is to drop one of the highly collinear variables. However, this may result in model mis-specification (omitted variable bias). As with other modeling considerations, you must use theory as a guide. A second option would be to add new data, thereby lessening the threat posed by multicollinearity. A third option would be to obtain data from specialized samples that maximize independent variation in the collinear variables (e.g., elite samples may disentangle the effects of income, education, and other variables related to socio-economic status).</p>
+<p>Yet another strategy involves reconsidering why your data are so highly correlated. It may be that your measures are in fact different “indicators” of the same underlying theoretical concept. This can happen, for example, when you measure sets of attitudes that are all influenced by a more general attitude or belief system. In such a case, data scaling is a promising option: build an additive scale, or use one of the various scaling options in R.</p>
+<p>Another approach would be to use techniques such as factor analysis to tease out the underlying (or “latent”) variables represented by your indicator variables. Indeed, the combination of factor analysis and regression modeling is an important and widely used approach, referred to as structural equation modeling (SEM), which you can study in more advanced courses.</p>
+<hr>
+</section>
+<section id="outliers-leverage-and-influence" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Outliers, Leverage and Influence</h1>
+<p>It is also important to examine the regression residuals for “unusual” observations. Unusual observations may be cases of mis-coding (e.g., <span class="math inline">\(-99\)</span>), mis-measurement, or special cases that require different treatment in the model. The unusual cases we should be most concerned about are regression outliers that are potentially influential and that are suspect because of their differences from other cases.</p>
+<p>Why should we worry about outliers? Recall that OLS minimizes the sum of the <strong>squared</strong> residuals. Unusual cases - which by definition have large residuals - can substantially influence our estimates of <span class="math inline">\(\hat\beta\)</span>, because their already large residuals are squared. A large outlier can thus change the model intercept and slope.</p>
+<p>Several steps can help identify outliers and their effects on your model. The first - and most obvious - is to examine the range of values in your <span class="math inline">\(Y\)</span> and <span class="math inline">\(X\)</span> variables. Do they fall within the appropriate ranges? This step - too often omitted even by experienced analysts - can help you avoid agonizing mis-steps that result from including mis-coded data or missing values (e.g., <span class="math inline">\(-99\)</span>) that need to be recoded before running your model. If you fail to identify these problems, they will show up in your residual analysis as outliers, but it is much easier to catch them before you run the model. (The <code>datasummary_skim()</code> tables above already show the min and max of each variable.)</p>
+<p>But sometimes we find outliers for reasons other than mis-codes, and identifying them requires careful examination of the residuals. First we look at outliers (unusual values of <span class="math inline">\(Y\)</span>) and leverage (unusual values of <span class="math inline">\(X\)</span>), since they are closely related.</p>
+<section id="detecting-outliers" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="detecting-outliers"><span class="header-section-number">5.1</span> Detecting outliers</h2>
+<p>Let’s begin by looking at any <span class="math inline">\(Y\)</span> outliers.</p>
+<p>Using the lower quartile <span class="math inline">\(Q_1\)</span> and the upper quartile <span class="math inline">\(Q_3\)</span>, we can define the interquartile range as</p>
+<p><span class="math display">\[IQR = Q_3 - Q_1\]</span></p>
+<p>also known as the midspread, which defines a standard <a href="https://www150.statcan.gc.ca/n1/edu/power-pouvoir/ch12/5214889-eng.htm">boxplot</a>. Based on the <span class="math inline">\(IQR\)</span>, Tukey defined an outlier as any observation outside the interval</p>
+<p><span class="math display">\[\left[Q_1 - k \times IQR,\ Q_3 + k \times IQR\right]\]</span></p>
+<p>where we usually take <span class="math inline">\(k = 1.5\)</span>. The lower and upper bounds are marked in the boxplot by the whiskers; points plotted beyond them can be considered outliers.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> ds.small<span class="sc">$</span>glbcc_risk</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(y, <span class="at">main =</span> <span class="st">"Y"</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(y, <span class="at">outline =</span> <span class="cn">FALSE</span>, <span class="at">main =</span> <span class="st">"Y, no outliers"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>No difference: no value of <span class="math inline">\(Y\)</span> lies outside the whiskers. We can also look at the actual distribution (i.e.&nbsp;the histogram):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="at">mat =</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">nrow =</span> <span class="dv">2</span>, <span class="at">ncol =</span> <span class="dv">1</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>), <span class="at">heights =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">4</span>))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(y, <span class="at">horizontal =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(y, <span class="at">breaks =</span> <span class="dv">10</span>, <span class="at">main =</span> <span class="st">"Histogram of Y"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We’ll now bring in the influence of the independent variables by looking at the residuals:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> <span class="fu">residuals</span>(ols1)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(r, <span class="at">main =</span> <span class="st">"Residuals"</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">col =</span> <span class="st">"red"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="at">mat =</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">nrow =</span> <span class="dv">2</span>, <span class="at">ncol =</span> <span class="dv">1</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>), <span class="at">heights =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">4</span>))</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(r, <span class="at">horizontal =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(r, <span class="at">breaks =</span> <span class="dv">10</span>, <span class="at">main =</span> <span class="st">"Histogram of Residuals"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Next, we can sort the residuals and find the cases with the largest positive and negative values:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>sorted.residuals <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">residuals</span>(ols1), <span class="at">decreasing =</span> <span class="cn">TRUE</span>)   <span class="co"># largest first</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(sorted.residuals, <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      94 
+6.898077 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span>(sorted.residuals, <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      298 
+-7.161695 </code></pre>
+</div>
+</div>
+<p>Then we can examine the <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> values of those cases:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>ds.small[<span class="fu">c</span>(<span class="dv">298</span>, <span class="dv">94</span>), <span class="fu">c</span>(<span class="st">"age"</span>, <span class="st">"education"</span>, <span class="st">"income"</span>, <span class="st">"ideol"</span>, <span class="st">"glbcc_risk"</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["age"],"name":[1],"type":["int"],"align":["right"]},{"label":["education"],"name":[2],"type":["int"],"align":["right"]},{"label":["income"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["ideol"],"name":[4],"type":["int"],"align":["right"]},{"label":["glbcc_risk"],"name":[5],"type":["int"],"align":["right"]}],"data":[{"1":"69","2":"6","3":"100000","4":"2","5":"2","_rn_":"298"},{"1":"55","2":"7","3":"94000","4":"7","5":"10","_rn_":"94"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Case 298 is an outlier because its observed <span class="math inline">\(Y\)</span> is far from what would be expected given its values of <span class="math inline">\(X\)</span>: a wealthy, older liberal would most likely rate climate change as riskier than a 2. In case 94, a strong conservative rates climate change risk at the highest possible value. This observation, while not consistent with the estimated relationship between ideology and environmental concern, is certainly not implausible. But the unusual combination of a strong conservative leaning and a high perceived risk results in a large residual.</p>
+</section>
+<section id="leverage" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="leverage"><span class="header-section-number">5.2</span> Leverage</h2>
+<p>Leverage measures how far an observation’s values of the predictors, <span class="math inline">\(\mathbf{X}\)</span>, are from the means of the predictors. For the linear regression model, the leverage score for the <span class="math inline">\(i\)</span>-th observation is the <span class="math inline">\(i\)</span>-th diagonal element of the projection (“hat”) matrix <span class="math inline">\(\mathbf{P}=\mathbf{X}\left(\mathbf{X}'\mathbf{X}\right)^{-1}\mathbf{X}'\)</span>, which is equivalent to the partial derivative of <span class="math inline">\(\widehat{Y}_i\)</span> with respect to <span class="math inline">\(Y_i\)</span>:</p>
+<p><span class="math display">\[h_{ii}=\frac{\partial \widehat{Y}_i}{\partial Y_i}=(\mathbf{P})_{ii}\]</span></p>
+<p>Defining leverage via the partial derivative lets us interpret it as the observation’s <strong>self-influence</strong>: how much the actual value <span class="math inline">\(Y_i\)</span> pulls its own fitted value <span class="math inline">\(\widehat{Y}_i\)</span>.</p>
+<p>A useful visual tool plots the studentized residuals against leverage:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ols_plot_resid_lev</span>(ols1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="influence-cooks-distance" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="influence-cooks-distance"><span class="header-section-number">5.3</span> Influence: Cook’s distance</h2>
+<p>What we really want to know is: does any particular case substantially change the regression results? If it does, the case is said to have <strong>influence</strong>. A case can be an outlier without being influential, and influential without being an outlier (a high-leverage point that lies close to the line, for example).</p>
+<p><strong>Cook’s distance</strong> summarizes the influence of case <span class="math inline">\(i\)</span> in a single number: how much <strong>all</strong> the fitted values change when case <span class="math inline">\(i\)</span> is removed. It combines the two ideas above - a case is influential when it has both a large residual and high leverage:</p>
+<p><span class="math display">\[D_i = \frac{\sum_{j}\left(\widehat{Y}_j - \widehat{Y}_{j(-i)}\right)^2}{k\, s^2}\]</span></p>
+<p>where <span class="math inline">\(\widehat{Y}_{j(-i)}\)</span> is the fitted value for case <span class="math inline">\(j\)</span> when case <span class="math inline">\(i\)</span> is removed, <span class="math inline">\(k\)</span> is the number of coefficients, and <span class="math inline">\(s^2\)</span> is the residual variance. A common rule of thumb flags cases with <span class="math inline">\(D_i &gt; 4/n\)</span>; values near 1 indicate a case that substantially moves the estimates.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ols_plot_cooksd_bar</span>(ols1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">sort</span>(<span class="fu">cooks.distance</span>(ols1), <span class="at">decreasing =</span> <span class="cn">TRUE</span>), <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       445        254        420        234        298 
+0.03819503 0.03317838 0.02618197 0.02017779 0.01999440 </code></pre>
+</div>
+</div>
+<p>Several cases exceed the <span class="math inline">\(4/n\)</span> threshold, but the largest Cook’s distance is far below 1. We’ll take a closer look at the most influential case, 445, below.</p>
+</section>
+<section id="influence-dfbetas" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="influence-dfbetas"><span class="header-section-number">5.4</span> Influence: DFBETAS</h2>
+<p>Cook’s distance tells us <em>whether</em> a case moves the results; DFBETAS tell us <em>which coefficients</em> it moves. DFBETAS measure the influence of case <span class="math inline">\(i\)</span> on each estimated coefficient <span class="math inline">\(B_j\)</span>: by how many standard errors does <span class="math inline">\(B_j\)</span> change when case <span class="math inline">\(i\)</span> is removed?</p>
+<p><span class="math display">\[\text{DFBETAS}_{ij}=\frac{B_j - B_{j(-i)}}{SE\left(B_j\right)}\]</span></p>
+<p>where <span class="math inline">\(B_{j(-i)}\)</span> is the estimate with case <span class="math inline">\(i\)</span> removed. If <span class="math inline">\(\text{DFBETAS}_{ij} &gt; 0\)</span>, case <span class="math inline">\(i\)</span> pulls <span class="math inline">\(B_j\)</span> up; if <span class="math inline">\(\text{DFBETAS}_{ij} &lt; 0\)</span>, it pulls <span class="math inline">\(B_j\)</span> down. Since a DFBETAS value is calculated for each variable for each case, there are many of them. In general, cases with <span class="math inline">\(\left|\text{DFBETAS}_{ij}\right| &gt; \frac{2}{\sqrt{n}}\)</span> warrant further examination.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>cutoff <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="fu">nrow</span>(ds.small))</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(cutoff, <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.094</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>df.ols1 <span class="ot">&lt;-</span> <span class="fu">dfbetas</span>(ols1)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df.ols1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   (Intercept)          age   education      income        ideol
+1 -0.004396485  0.005554545  0.01043817 -0.01548697 -0.005616679
+2  0.046302381 -0.007569305 -0.02671961 -0.01401653 -0.042323468
+3 -0.002896270  0.018301623 -0.01946054  0.02534233 -0.023111519
+4 -0.072106074  0.060263914  0.02966501  0.01243482  0.015464937
+5 -0.057608817 -0.005345142 -0.04948456  0.06456577  0.134103149
+6  0.008388099 -0.018985904 -0.02227335  0.01918300  0.014382282</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ols_plot_dfbetas</span>(ols1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="624"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-20-2.png" class="img-fluid figure-img" width="624"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Several cases exceed the 0.094 cut-off. That is expected: the cut-off shrinks with the sample size, so it will always flag some cases. Its job is to tell us which cases to look at. Next we find the case with the highest <strong>absolute</strong> DFBETAS value (the most extreme value could be negative, so we take <code>abs()</code> of both sides) and examine its <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> values:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span>(<span class="fu">abs</span>(df.ols1) <span class="sc">==</span> <span class="fu">max</span>(<span class="fu">abs</span>(df.ols1)), <span class="at">arr.ind =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    row col
+445 445   4</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>ds.small[<span class="dv">445</span>, <span class="fu">c</span>(<span class="st">"age"</span>, <span class="st">"education"</span>, <span class="st">"income"</span>, <span class="st">"ideol"</span>, <span class="st">"glbcc_risk"</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["age"],"name":[1],"type":["int"],"align":["right"]},{"label":["education"],"name":[2],"type":["int"],"align":["right"]},{"label":["income"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["ideol"],"name":[4],"type":["int"],"align":["right"]},{"label":["glbcc_risk"],"name":[5],"type":["int"],"align":["right"]}],"data":[{"1":"46","2":"8","3":"4e+05","4":"4","5":"10","_rn_":"445"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>It is the same case with the largest Cook’s distance. The most influential case is not implausible: a highly educated 46-year-old with a high income ($400,000), who is moderate and perceives very high risk from climate change. Its high income gives it high leverage, so it pulls the income coefficient up. We can be reassured that even in this most extreme case we do not have a problematic observation.</p>
+</section>
+<section id="addressing-outliers" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="addressing-outliers"><span class="header-section-number">5.5</span> Addressing outliers</h2>
+<p>Having explored the residuals from our model, we found a number of outliers, some with noticeable influence on our model results. Inspection of the most extreme cases gave us no cause to worry that the observations were inappropriately distorting our results. But what should you do if you find puzzling, implausible observations that may influence your model?</p>
+<p>First, as always, evaluate your theory. Is it possible that the case represents a class of observations that behave systematically differently from the other cases? This is of particular concern if you have a cluster of cases, all determined to be outliers, with similar properties. You may need to modify your theory to account for this subgroup. One such example can be found in the study of American politics, wherein the Southern states routinely appeared to behave differently than others. Most careful efforts to model state (and individual) political behavior account for the unique aspects of Southern politics, in ways ranging from the addition of dummy variables to interaction terms in regression models.</p>
+<p>How would you determine whether the model (and theory) should be revised? Look closely at the deviant cases - what can you learn from them? Try experiments by running the models with controls - dummies and interaction terms. What effects do you observe? If your results suggest theoretical revisions, you will need to collect new data to test your new hypotheses. Remember: in empirical studies, you need to keep your discoveries distinct from your hypothesis tests.</p>
+<p><strong>Capping the outliers.</strong> If the explanatory variables <span class="math inline">\(X_{1,i}, \ldots, X_{k,i}\)</span> of an outlying <span class="math inline">\(Y_i\)</span> are similar to those of other observations with non-outlying values of <span class="math inline">\(Y\)</span>, we may cap the value of the outlier to match those values.</p>
+<p><strong>Replacing outliers with imputed values.</strong> If we are certain that the outlier is due to an error in the data itself, we can treat it as a missing value and impute it (for example with the Expectation-Maximization (EM) algorithm).</p>
+<p><strong>Deleting outliers.</strong> As a last resort, if you have troubling outliers that you cannot account for in theory, you might decide to omit those observations and re-run your analyses. This is not recommended, because it can appear to be a case of “jiggering the data” to get the results you want. If you do it, report the results with and without those cases.</p>
+<hr>
+</section>
+</section>
+<section id="non-linearity" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Non-linearity</h1>
+<p>One of the most critical assumptions of OLS is that the relationships between variables are linear in their functional form.</p>
+<p>To motivate the upcoming test procedure, consider the following example - assume that the true model is quadratic:</p>
+<p><span class="math display">\[Y_{i}=\beta_{0}+\beta_{1} X_{i}^{2}+\epsilon_{i}, \quad X_{i} \sim \mathcal{N}(1,1),\ \epsilon_{i} \sim \mathcal{N}\left(0,0.5^{2}\right)\]</span></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>beta_vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="dv">2</span>)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">1</span>, <span class="at">sd =</span> <span class="dv">1</span>, <span class="at">n =</span> N)</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>e <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="fl">0.5</span>, <span class="at">n =</span> N)</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="dv">1</span>, x<span class="sc">^</span><span class="dv">2</span>) <span class="sc">%*%</span> beta_vec <span class="sc">+</span> e</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, y)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>If we fit a straight line anyway:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>mdl_quad <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, y, <span class="at">main =</span> <span class="fu">paste0</span>(<span class="st">"R^2 = "</span>, <span class="fu">round</span>(<span class="fu">summary</span>(mdl_quad)<span class="sc">$</span>r.squared, <span class="dv">4</span>)))</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(x[<span class="fu">order</span>(x)], mdl_quad<span class="sc">$</span>fitted.values[<span class="fu">order</span>(x)])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The <span class="math inline">\(R^2\)</span> is high, but the residuals plotted against the fitted values show a clear U-shape:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mdl_quad<span class="sc">$</span>fitted.values, mdl_quad<span class="sc">$</span>residuals)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>One solution to the non-linearity problem is polynomial regression. We can think of the polynomial model as the <a href="https://en.wikipedia.org/wiki/Taylor_series">Taylor series</a> expansion of the unknown function. Polynomial models are useful:</p>
+<ul>
+<li>in situations where the analyst knows that curvilinear effects are present in the true response function;</li>
+<li>as approximating functions to unknown and possibly very complex nonlinear relationships.</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>mdl_quad2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> <span class="fu">I</span>(x<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mdl_quad2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ x + I(x^2))
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.96841 -0.36457 -0.05954  0.32720  1.66598 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  0.45592    0.07802   5.844 6.83e-08 ***
+x            0.07348    0.11081   0.663    0.509    
+I(x^2)       1.95540    0.04342  45.035  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.4852 on 97 degrees of freedom
+Multiple R-squared:  0.9893,    Adjusted R-squared:  0.9891 
+F-statistic:  4476 on 2 and 97 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mdl_quad2<span class="sc">$</span>fitted.values, mdl_quad2<span class="sc">$</span>residuals)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>After including the polynomial term, the residuals look much more like white noise.</p>
+<p>In a multiple regression it is more difficult to identify which regressor is responsible for the non-linear relationship. The <code>car</code> package helps with default <strong>component-plus-residual plots</strong>. Each panel plots one <span class="math inline">\(X\)</span> against the residuals plus that variable’s own contribution, <span class="math inline">\(e_i + \hat\beta_j X_{ij}\)</span> - the part of <span class="math inline">\(Y\)</span> the other regressors don’t explain. The dashed line is the linear fit; the solid curve is a smoother that follows the data. If the two diverge, the relationship is not linear:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">crPlots</span>(ols1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Age, education, and income follow their lines closely. For ideology, the smoother bends below the line at the conservative end: perceived risk falls faster there. We can check this visual analysis by squaring each term and using the ANOVA function for an F-test to compare model fit:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>ds.small<span class="sc">$</span>age2      <span class="ot">&lt;-</span> ds.small<span class="sc">$</span>age<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>ds.small<span class="sc">$</span>edu2      <span class="ot">&lt;-</span> ds.small<span class="sc">$</span>education<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>ds.small<span class="sc">$</span>inc2      <span class="ot">&lt;-</span> ds.small<span class="sc">$</span>income<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>ds.small<span class="sc">$</span>ideology2 <span class="ot">&lt;-</span> ds.small<span class="sc">$</span>ideol<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>ols2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(glbcc_risk <span class="sc">~</span> age <span class="sc">+</span> age2 <span class="sc">+</span> education <span class="sc">+</span> edu2 <span class="sc">+</span> income <span class="sc">+</span> inc2 <span class="sc">+</span> ideol <span class="sc">+</span> ideology2, <span class="at">data =</span> ds.small)</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ols2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = glbcc_risk ~ age + age2 + education + edu2 + income + 
+    inc2 + ideol + ideology2, data = ds.small)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-7.1563 -1.5894  0.0389  1.4898  7.3417 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  9.661e+00  1.931e+00   5.004 8.12e-07 ***
+age          2.973e-02  5.735e-02   0.518 0.604385    
+age2        -2.891e-04  5.010e-04  -0.577 0.564175    
+education   -4.814e-01  3.589e-01  -1.341 0.180499    
+edu2         5.132e-02  3.722e-02   1.379 0.168723    
+income       2.853e-06  5.341e-06   0.534 0.593564    
+inc2        -1.131e-11  1.839e-11  -0.615 0.538966    
+ideol       -5.726e-02  3.532e-01  -0.162 0.871279    
+ideology2   -1.327e-01  3.965e-02  -3.347 0.000886 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 2.33 on 441 degrees of freedom
+Multiple R-squared:  0.4528,    Adjusted R-squared:  0.4429 
+F-statistic: 45.61 on 8 and 441 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>For ideology, only the squared term is significant, indicating that perceived risk of climate change declines at an increasing rate toward the most conservative end of the scale. This is consistent with the visual inspection of the residuals by ideology. (Note that the linear <code>ideol</code> term is no longer significant on its own - that does not mean ideology stopped mattering. With a squared term, the two coefficients have to be judged together.)</p>
+<p>The question remains whether the polynomial terms improve overall model fit. We can check that with an analysis of variance across the simple model and the model with the squared terms:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(ols1, ols2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Res.Df"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["RSS"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Df"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Sum of Sq"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["F"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Pr(>F)"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"445","2":"2464.247","3":"NA","4":"NA","5":"NA","6":"NA","_rn_":"1"},{"1":"441","2":"2393.188","3":"4","4":"71.05883","5":"3.273556","6":"0.01160913","_rn_":"2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>The F-test indicates that including the squared terms improves model fit, so the relationships include non-linear components.</p>
+<p>Another general check is Ramsey’s RESET test, which adds powers of the regressors (or of the fitted values) to the model and tests whether they jointly improve the fit:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">resettest</span>(ols1, <span class="at">power =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">type =</span> <span class="st">"regressor"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    RESET test
+
+data:  ols1
+RESET = 2.2752, df1 = 8, df2 = 437, p-value = 0.02157</code></pre>
+</div>
+</div>
+<p>Again, the test provides evidence of a non-linear relationship: we reject the null hypothesis that the restricted model (without the polynomial terms) is correctly specified.</p>
+<p>What should we do when we identify a non-linear relationship between <span class="math inline">\(Y\)</span> and the <span class="math inline">\(X\)</span>s? The first step is to look closely at the bivariate plots to discern the correct functional form for each <span class="math inline">\(X\)</span>. If the relationship looks curvilinear, try a polynomial regression that includes both <span class="math inline">\(X\)</span> and <span class="math inline">\(X^2\)</span> for the relevant variables. It may also be that a skewed dependent or independent variable is causing the problem. This is not unusual when, for example, income plays an important role in the model, since the distribution of income is skewed upward. In that case, try transforming the skewed variable, for example with a log.</p>
+<p>It is possible that variable transformations won’t suffice. In that case, you may have to try non-linear forms of regression.</p>
+<hr>
+</section>
+<section id="heteroskedasticity" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Heteroskedasticity</h1>
+<p>The case when the error variance-covariance matrix is diagonal, but not equal to <span class="math inline">\(\sigma_{\epsilon}^{2} \mathbf{I}\)</span>,</p>
+<p><span class="math display">\[
+\boldsymbol{\Sigma}=\left[\begin{array}{ccccc}
+\sigma_{1}^{2} &amp; 0 &amp; 0 &amp; \ldots &amp; 0 \\
+0 &amp; \sigma_{2}^{2} &amp; 0 &amp; \ldots &amp; 0 \\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+0 &amp; 0 &amp; 0 &amp; \ldots &amp; \sigma_{N}^{2}
+\end{array}\right]
+\]</span></p>
+<p>is referred to as <strong>heteroskedasticity</strong>. Under heteroskedasticity:</p>
+<ul>
+<li>the OLS estimators remain unbiased;</li>
+<li>the OLS estimators are no longer efficient;</li>
+<li>the OLS variance estimator is biased and inconsistent;</li>
+<li>the usual <span class="math inline">\(t\)</span>-statistics of the OLS estimates do not have Student’s <span class="math inline">\(t\)</span> distribution, even in large samples.</li>
+</ul>
+<p>Let’s simulate the following model:</p>
+<p><span class="math display">\[
+\begin{aligned}
+&amp;Y_{i}=\beta_{0}+\beta_{1} X_{1, i}+\beta_{2} X_{2, i}+u_{i} \\
+&amp;u_{i}=i \cdot \epsilon_{i}, \quad \epsilon_{i} \sim \mathcal{N}\left(0, \sigma^{2}\right) \quad\left[\text { or } u_{i} \sim \mathcal{N}\left(0, i^{2} \cdot \sigma^{2}\right)\right]
+\end{aligned}
+\]</span></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">200</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>beta_vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">5</span>, <span class="sc">-</span><span class="dv">3</span>)</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">5</span>, <span class="at">length.out =</span> N)</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>x2 <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">3</span>, <span class="at">to =</span> <span class="dv">17</span>, <span class="at">length.out =</span> <span class="dv">80</span>), <span class="at">size =</span> N, <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>e  <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span><span class="sc">:</span>N, <span class="at">n =</span> N)</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>x_mat <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="dv">1</span>, x1, x2)</span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> x_mat <span class="sc">%*%</span> beta_vec <span class="sc">+</span> e</span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>data_mat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(y, x1, x2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We can detect heteroskedasticity from residual plots, as well as with a number of formal tests. We begin by estimating the model via OLS, as we usually would:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>mdl_hc <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x1 <span class="sc">+</span> x2, <span class="at">data =</span> data_mat)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mdl_hc)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ x1 + x2, data = data_mat)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-499.84  -45.70   -3.32   57.12  495.58 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)  -0.8907    28.4237  -0.031    0.975
+x1            7.2193     5.9343   1.217    0.225
+x2           -1.8321     2.1888  -0.837    0.404
+
+Residual standard error: 121.3 on 197 degrees of freedom
+Multiple R-squared:  0.01188,   Adjusted R-squared:  0.001848 
+F-statistic: 1.184 on 2 and 197 DF,  p-value: 0.3081</code></pre>
+</div>
+</div>
+<p>One way of investigating heteroskedasticity is to visually examine the OLS residuals. If they are homoskedastic, there should be no pattern in the residuals. If the errors are heteroskedastic, they will exhibit increasing or decreasing variation in some systematic way - for example, with larger values of <span class="math inline">\(\widehat{Y}\)</span>, or with larger values of <span class="math inline">\(X_j\)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mdl_hc<span class="sc">$</span>residuals, <span class="at">main =</span> <span class="st">"Run-Sequence Plot"</span>)</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mdl_hc<span class="sc">$</span>fitted.values, mdl_hc<span class="sc">$</span>residuals, <span class="at">main =</span> <span class="st">"Residuals vs Fitted"</span>)</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x1, mdl_hc<span class="sc">$</span>residuals, <span class="at">main =</span> <span class="fu">bquote</span>(<span class="st">"Residuals vs"</span> <span class="sc">~</span> X[<span class="dv">1</span>]))</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x2, mdl_hc<span class="sc">$</span>residuals, <span class="at">main =</span> <span class="fu">bquote</span>(<span class="st">"Residuals vs"</span> <span class="sc">~</span> X[<span class="dv">2</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The Breusch-Pagan test has the null hypothesis of homoskedasticity:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bptest</span>(mdl_hc)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    studentized Breusch-Pagan test
+
+data:  mdl_hc
+BP = 35.896, df = 2, p-value = 1.604e-08</code></pre>
+</div>
+</div>
+<p>The p-value is below the 0.05 significance level, so we reject homoskedasticity: the residuals are heteroskedastic. Note that <code>bptest()</code> uses Koenker’s (1981) “studentized” version of the test by default (<code>studentize = TRUE</code>), which does not require normally distributed errors.</p>
+<p>There are several steps to consider when confronted with heteroskedasticity. First, consider whether the model needs to be re-specified - for example, because of omitted variables or the wrong functional form. If re-specification does not correct the problem, we can keep the OLS estimates and use <strong>heteroskedasticity-robust standard errors</strong>, which are valid when the form of the error variance is unknown.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(mdl_hc, <span class="at">vcov. =</span> <span class="fu">vcovHC</span>(mdl_hc, <span class="at">type =</span> <span class="st">"HC3"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+t test of coefficients:
+
+            Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept) -0.89066   26.87208 -0.0331   0.9736
+x1           7.21929    6.96475  1.0365   0.3012
+x2          -1.83213    2.22390 -0.8238   0.4110</code></pre>
+</div>
+</div>
+<p>The coefficients are identical to OLS; only the standard errors change. (<code>type</code> can be <code>"HC0"</code> to <code>"HC3"</code>; HC1 is what Stata reports with <code>, robust</code>, and HC3 is the default in <code>vcovHC()</code> and behaves better in small samples.) Here, the conclusions about significance remain unchanged.</p>
+<p>It is important to note that while robust standard errors can help atone for heteroskedasticity, their use is not an alternative to careful model construction. The first step should always be to evaluate the model specification and functional form (e.g., polynomials, relevant variables), as well as possible measurement error, before resorting to robust standard errors.</p>
+<p><strong>Weighted Least Squares.</strong> A more involved alternative is to model the heteroskedasticity and weight the observations accordingly. This method and its associated problems are covered in the GLS notebook.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>resid_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">log_e2 =</span> <span class="fu">log</span>(mdl_hc<span class="sc">$</span>residuals<span class="sc">^</span><span class="dv">2</span>), x1, x2)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>h_est   <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="fu">lm</span>(log_e2 <span class="sc">~</span> x1 <span class="sc">+</span> x2, <span class="at">data =</span> resid_data)<span class="sc">$</span>fitted.values)</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>mdl_wls <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x1 <span class="sc">+</span> x2, <span class="at">data =</span> data_mat, <span class="at">weights =</span> <span class="dv">1</span> <span class="sc">/</span> h_est)</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mdl_wls)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ x1 + x2, data = data_mat, weights = 1/h_est)
+
+Weighted Residuals:
+    Min      1Q  Median      3Q     Max 
+-4.5762 -1.3421 -0.0546  1.2794  5.9209 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)  
+(Intercept)  -1.3924    10.1948  -0.137   0.8915  
+x1            7.9764     4.0033   1.992   0.0477 *
+x2           -2.0246     0.8816  -2.297   0.0227 *
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 2.076 on 197 degrees of freedom
+Multiple R-squared:  0.04577,   Adjusted R-squared:  0.03608 
+F-statistic: 4.724 on 2 and 197 DF,  p-value: 0.009906</code></pre>
+</div>
+</div>
+<p><strong>Back to our climate change model.</strong> The same two lines apply:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bptest</span>(ols1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    studentized Breusch-Pagan test
+
+data:  ols1
+BP = 14.824, df = 4, p-value = 0.005081</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(ols1, <span class="at">vcov. =</span> <span class="fu">vcovHC</span>(ols1, <span class="at">type =</span> <span class="st">"HC3"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+t test of coefficients:
+
+               Estimate  Std. Error  t value Pr(&gt;|t|)    
+(Intercept)  1.2085e+01  6.6878e-01  18.0700   &lt;2e-16 ***
+age         -5.5586e-03  8.0304e-03  -0.6922   0.4892    
+education   -1.8615e-02  6.9824e-02  -0.2666   0.7899    
+income       1.9229e-07  2.3209e-06   0.0829   0.9340    
+ideol       -1.2236e+00  6.0039e-02 -20.3795   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>The Breusch-Pagan test rejects homoskedasticity, but the robust standard errors are close to the default ones, and ideology remains highly significant.</p>
+<hr>
+</section>
+<section id="autocorrelation" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Autocorrelation</h1>
+<p>The case when the error variance-covariance matrix is no longer diagonal, but has equal diagonal elements,</p>
+<p><span class="math display">\[
+\boldsymbol{\Sigma}=\left[\begin{array}{ccccc}
+\sigma^{2} &amp; \sigma_{1,2} &amp; \sigma_{1,3} &amp; \ldots &amp; \sigma_{1, N} \\
+\sigma_{2,1} &amp; \sigma^{2} &amp; \sigma_{2,3} &amp; \ldots &amp; \sigma_{2, N} \\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+\sigma_{N, 1} &amp; \sigma_{N, 2} &amp; \sigma_{N, 3} &amp; \ldots &amp; \sigma^{2}
+\end{array}\right], \quad \sigma_{i, j}=\sigma_{j, i}=\text{Cov}\left(\epsilon_{i}, \epsilon_{j}\right) \neq 0
+\]</span></p>
+<p>is referred to as <strong>autocorrelation</strong> (or serial correlation). Just as with heteroskedasticity:</p>
+<ul>
+<li>the OLS estimators remain unbiased and consistent;</li>
+<li>the OLS estimators are no longer efficient;</li>
+<li>the variance estimator of the OLS estimates is biased and inconsistent;</li>
+<li>the usual <span class="math inline">\(t\)</span>-statistics are invalid.</li>
+</ul>
+<p>Serial correlation is usually present in time-series data. In cross-sectional data, errors may be correlated by social or geographical distance - for example, between respondents in the same city, town, or neighborhood. (In a cross-section like our survey, the order of the rows is arbitrary, so the time-series tests below are not meaningful unless the data are first sorted by something like time or location.)</p>
+<p>To gain some insight into the problem we simulate the following model:</p>
+<p><span class="math display">\[
+\left\{\begin{array}{l}
+Y_{i}=\beta_{0}+\beta_{1} X_{1, i}+\beta_{2} X_{2, i}+\epsilon_{i} \\
+\epsilon_{i}=\rho \epsilon_{i-1}+u_{i},\ |\rho|&lt;1,\ u_{i} \sim \mathcal{N}\left(0, \sigma^{2}\right),\ \epsilon_{0}=0
+\end{array}\right.
+\]</span></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">200</span></span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>beta_vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">5</span>, <span class="sc">-</span><span class="dv">3</span>)</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>rho <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">5</span>, <span class="at">length.out =</span> N)</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>x2 <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">3</span>, <span class="at">to =</span> <span class="dv">17</span>, <span class="at">length.out =</span> <span class="dv">80</span>), <span class="at">size =</span> N, <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>ee <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">3</span>, <span class="at">n =</span> N)      <span class="co"># serially correlated errors</span></span>
+<span id="cb61-10"><a href="#cb61-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>N) {</span>
+<span id="cb61-11"><a href="#cb61-11" aria-hidden="true" tabindex="-1"></a>  ee[i] <span class="ot">&lt;-</span> rho <span class="sc">*</span> ee[i <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">+</span> ee[i]</span>
+<span id="cb61-12"><a href="#cb61-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb61-13"><a href="#cb61-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-14"><a href="#cb61-14" aria-hidden="true" tabindex="-1"></a>x_mat <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="dv">1</span>, x1, x2)</span>
+<span id="cb61-15"><a href="#cb61-15" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> x_mat <span class="sc">%*%</span> beta_vec <span class="sc">+</span> ee</span>
+<span id="cb61-16"><a href="#cb61-16" aria-hidden="true" tabindex="-1"></a>data_mat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(y, x1, x2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We can identify autocorrelation from residual plots or with formal statistical tests. We begin by estimating the model via OLS:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>mdl_ac <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x1 <span class="sc">+</span> x2, <span class="at">data =</span> data_mat)</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mdl_ac)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ x1 + x2, data = data_mat)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-9.7965 -3.2193  0.0674  2.5057 11.8135 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 10.61601    0.97983   10.84   &lt;2e-16 ***
+x1           4.89018    0.20457   23.91   &lt;2e-16 ***
+x2          -2.93686    0.07545  -38.92   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 4.182 on 197 degrees of freedom
+Multiple R-squared:  0.9198,    Adjusted R-squared:  0.919 
+F-statistic:  1129 on 2 and 197 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mdl_ac<span class="sc">$</span>residuals)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The residual plot shows the telltale signs of autocorrelation: long runs of positive and negative residuals. It is more obvious if we smooth the pattern:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> mdl_ac<span class="sc">$</span>residuals</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(r)</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(r)</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">predict</span>(<span class="fu">loess</span>(r <span class="sc">~</span> n)), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-41-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The pattern also shows up in the residuals’ <a href="https://en.wikipedia.org/wiki/Correlogram">correlogram</a>, where the autocorrelations at the first several lags are well outside the confidence bands:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Acf</span>(r)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-42-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Breusch-Godfrey (BG or LM) test for autocorrelation:</strong></p>
+<p><span class="math display">\[\left\{\begin{array}{l}H_{0}: \rho_{1}=\ldots=\rho_{p}=0 \\ H_{1}: \rho_{j} \neq 0, \text { for some } j\end{array}\right.\]</span></p>
+<p>To test the null hypothesis of no autocorrelation in the first three lags of the residuals:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bgtest</span>(mdl_ac, <span class="at">order =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Breusch-Godfrey test for serial correlation of order up to 3
+
+data:  mdl_ac
+LM test = 100.72, df = 3, p-value &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Since the p-value &lt; 0.05, we reject the null hypothesis and conclude that there is serial correlation in the residuals.</p>
+<p>If we find autocorrelation, we need to re-specify the model to account for (or estimate) the relationships among the error terms. In time-series analysis, where observations are taken sequentially over time, we would typically include a “lag” term (in which the value of <span class="math inline">\(Y\)</span> in period <span class="math inline">\(t\)</span> is predicted by the value of <span class="math inline">\(Y\)</span> in period <span class="math inline">\(t-1\)</span>). This is a typical AR(1) model, which is discussed in time-series analysis. The entangled residuals can, of course, be much more complex and require more specialized models (e.g., ARIMA or vector autoregression models). These approaches will be studied next semester.</p>
+<p>As a band-aid, we can calculate heteroskedasticity-and-autocorrelation-consistent (HAC) standard errors to improve inference:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(mdl_ac, <span class="at">vcov. =</span> <span class="fu">vcovHAC</span>(mdl_ac))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+t test of coefficients:
+
+             Estimate Std. Error  t value  Pr(&gt;|t|)    
+(Intercept) 10.616005   1.165046   9.1121 &lt; 2.2e-16 ***
+x1           4.890185   0.413444  11.8279 &lt; 2.2e-16 ***
+x2          -2.936860   0.060834 -48.2769 &lt; 2.2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="normality" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> Normality</h1>
+<p>The hypothesis we want to test is:</p>
+<p><span class="math display">\[
+\begin{cases}H_{0}: &amp; \text{residuals follow a normal distribution} \\ H_{1}: &amp; \text{residuals do not follow a normal distribution}\end{cases}
+\]</span></p>
+<p>We carry out the following tests and combine their p-values in a single table:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>norm_tests.df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Tests =</span> <span class="fu">c</span>(<span class="st">"Anderson-Darling"</span>, <span class="st">"Shapiro-Wilk"</span>,</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>                                      <span class="st">"Cramer-von Mises"</span>, <span class="st">"Jarque-Bera"</span>))</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>norm_tests.df<span class="sc">$</span>p_vals <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">ad.test</span>(mdl_ac<span class="sc">$</span>residuals)<span class="sc">$</span>p.value,</span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">shapiro.test</span>(mdl_ac<span class="sc">$</span>residuals)<span class="sc">$</span>p.value,</span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">cvm.test</span>(mdl_ac<span class="sc">$</span>residuals)<span class="sc">$</span>p.value,</span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">jarque.bera.test</span>(mdl_ac<span class="sc">$</span>residuals)<span class="sc">$</span>p.value)</span>
+<span id="cb71-7"><a href="#cb71-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb71-8"><a href="#cb71-8" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(norm_tests.df, <span class="at">digits =</span> <span class="dv">2</span>, <span class="at">align =</span> <span class="st">"c"</span>, <span class="at">caption =</span> <span class="st">"Normality tests: mdl_ac residuals"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Normality tests: mdl_ac residuals</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Tests</th>
+<th style="text-align: center;">p_vals</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Anderson-Darling</td>
+<td style="text-align: center;">0.56</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Shapiro-Wilk</td>
+<td style="text-align: center;">0.55</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Cramer-von Mises</td>
+<td style="text-align: center;">0.56</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Jarque-Bera</td>
+<td style="text-align: center;">0.43</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>All four p-values are above the 5% significance level, so we <strong>cannot reject</strong> the null hypothesis of normality. Note that failing to reject is not proof that the residuals are normal - only that the tests found no evidence against it. Note also that Gaussian white noise requires both independence and normality: these residuals look normal but are serially correlated.</p>
+<p>Compare this with our earlier model of the quadratic DGP:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>norm_tests.df<span class="sc">$</span>p_vals <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">ad.test</span>(mdl_quad<span class="sc">$</span>residuals)<span class="sc">$</span>p.value,</span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">shapiro.test</span>(mdl_quad<span class="sc">$</span>residuals)<span class="sc">$</span>p.value,</span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">cvm.test</span>(mdl_quad<span class="sc">$</span>residuals)<span class="sc">$</span>p.value,</span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">jarque.bera.test</span>(mdl_quad<span class="sc">$</span>residuals)<span class="sc">$</span>p.value)</span>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(norm_tests.df, <span class="at">digits =</span> <span class="dv">2</span>, <span class="at">align =</span> <span class="st">"c"</span>, <span class="at">caption =</span> <span class="st">"Normality tests: mdl_quad residuals"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Normality tests: mdl_quad residuals</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Tests</th>
+<th style="text-align: center;">p_vals</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Anderson-Darling</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Shapiro-Wilk</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Cramer-von Mises</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Jarque-Bera</td>
+<td style="text-align: center;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>According to all four tests we reject <span class="math inline">\(H_0\)</span> that the residuals are normally distributed. This can also be seen in the quantile-quantile (Q-Q) plots:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mdl_quad, <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-47-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mdl_ac, <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-48-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Normality is last on the list of concerns for a reason: in samples of a few hundred observations, the <span class="math inline">\(t\)</span>-tests are approximately valid even when the errors are not normal. Normality tests also have the opposite problem in very large samples, where they reject departures far too small to matter. For our climate change model:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(ols1<span class="sc">$</span>residuals)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Shapiro-Wilk normality test
+
+data:  ols1$residuals
+W = 0.99566, p-value = 0.2485</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ols1, <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-49-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We cannot reject normality, and the Q-Q plot stays close to the line. With 450 observations, normality is not a concern for this model.</p>
+<hr>
+</section>
+<section id="back-to-the-start-a-revised-model" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> Back to the Start: A Revised Model</h1>
+<p>Our diagnostics found one substantive problem with the climate change model: the effect of ideology is not linear. In the squared-terms model, only <code>ideology2</code> mattered, so the revised model adds just that term:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>ols3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(glbcc_risk <span class="sc">~</span> age <span class="sc">+</span> education <span class="sc">+</span> income <span class="sc">+</span> ideol <span class="sc">+</span> <span class="fu">I</span>(ideol<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> ds.small)</span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(ols1, ols3)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Res.Df"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["RSS"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Df"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Sum of Sq"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["F"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Pr(>F)"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"445","2":"2464.247","3":"NA","4":"NA","5":"NA","6":"NA","_rn_":"1"},{"1":"444","2":"2407.249","3":"1","4":"56.99853","5":"10.51297","6":"0.001274725","_rn_":"2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">resettest</span>(ols3, <span class="at">power =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">type =</span> <span class="st">"regressor"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    RESET test
+
+data:  ols3
+RESET = 0.78486, df1 = 10, df2 = 434, p-value = 0.6435</code></pre>
+</div>
+</div>
+<p>The squared term improves the fit, and the RESET test no longer rejects. As the introduction says, a changed model sends us back through the checklist. (One thing to expect: <code>vif(ols3)</code> will be large for <code>ideol</code> and <code>I(ideol^2)</code>, because a variable and its square are naturally correlated. This is harmless and doesn’t signal a problem with the model.)</p>
+<p><code>modelsummary()</code> puts the two models side by side. Since we found heteroskedasticity, we report HC3 robust standard errors (in parentheses):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(<span class="fu">list</span>(<span class="st">"Original"</span> <span class="ot">=</span> ols1, <span class="st">"Revised"</span> <span class="ot">=</span> ols3),</span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">vcov =</span> <span class="st">"HC3"</span>, <span class="at">stars =</span> <span class="cn">TRUE</span>, <span class="at">fmt =</span> <span class="fu">fmt_significant</span>(<span class="dv">2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script>
+
+      function styleCell_boqcj9tb76eimy5639g7(i, j, css_id) {
+          var table = document.getElementById("tinytable_boqcj9tb76eimy5639g7");
+          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+          if (cell) {
+              console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
+              cell.classList.add(css_id);
+          } else {
+              console.warn(`Cell at (${i}, ${j}) not found.`);
+          }
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_boqcj9tb76eimy5639g7');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_boqcj9tb76eimy5639g7(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_boqcj9tb76eimy5639g7");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: 21, j: 1 }, { i: 21, j: 2 },  ], css_id: 'tinytable_css_ysli7w14kuzqm2e6xuhh',}, 
+          { positions: [ { i: 12, j: 1 }, { i: 12, j: 2 },  ], css_id: 'tinytable_css_q98uihrkszjm41hbch98',}, 
+          { positions: [ { i: 2, j: 1 }, { i: 3, j: 1 }, { i: 4, j: 1 }, { i: 1, j: 1 }, { i: 6, j: 1 }, { i: 7, j: 1 }, { i: 8, j: 1 }, { i: 5, j: 1 }, { i: 10, j: 1 }, { i: 11, j: 1 }, { i: 3, j: 2 }, { i: 13, j: 1 }, { i: 14, j: 1 }, { i: 15, j: 1 }, { i: 16, j: 1 }, { i: 17, j: 1 }, { i: 18, j: 1 }, { i: 19, j: 1 }, { i: 20, j: 1 }, { i: 16, j: 2 }, { i: 9, j: 1 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 7, j: 2 }, { i: 4, j: 2 }, { i: 5, j: 2 }, { i: 6, j: 2 }, { i: 11, j: 2 }, { i: 8, j: 2 }, { i: 9, j: 2 }, { i: 10, j: 2 }, { i: 15, j: 2 }, { i: 20, j: 2 }, { i: 13, j: 2 }, { i: 14, j: 2 }, { i: 19, j: 2 }, { i: 17, j: 2 }, { i: 18, j: 2 },  ], css_id: 'tinytable_css_5mgvd6c7ag6iedpqgwhj',}, 
+          { positions: [ { i: 0, j: 1 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_7sk8xa36awak92yxrc71',}, 
+          { positions: [ { i: 21, j: 0 },  ], css_id: 'tinytable_css_97v6gjw991emy158moel',}, 
+          { positions: [ { i: 12, j: 0 },  ], css_id: 'tinytable_css_63n32a9sm4nvoa9eu9ny',}, 
+          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 6, j: 0 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 }, { i: 16, j: 0 }, { i: 13, j: 0 }, { i: 14, j: 0 }, { i: 15, j: 0 }, { i: 20, j: 0 }, { i: 17, j: 0 }, { i: 18, j: 0 }, { i: 19, j: 0 },  ], css_id: 'tinytable_css_mok4b1h3m70aaeeeeoz2',}, 
+          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_2dr58wix0rt3pa4ziyw4',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  styleCell_boqcj9tb76eimy5639g7(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <style>
+      /* tinytable css entries after */
+      .table td.tinytable_css_ysli7w14kuzqm2e6xuhh, .table th.tinytable_css_ysli7w14kuzqm2e6xuhh { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_q98uihrkszjm41hbch98, .table th.tinytable_css_q98uihrkszjm41hbch98 { text-align: center; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_5mgvd6c7ag6iedpqgwhj, .table th.tinytable_css_5mgvd6c7ag6iedpqgwhj { text-align: center; }
+      .table td.tinytable_css_7sk8xa36awak92yxrc71, .table th.tinytable_css_7sk8xa36awak92yxrc71 { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_97v6gjw991emy158moel, .table th.tinytable_css_97v6gjw991emy158moel { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_63n32a9sm4nvoa9eu9ny, .table th.tinytable_css_63n32a9sm4nvoa9eu9ny { text-align: left; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_mok4b1h3m70aaeeeeoz2, .table th.tinytable_css_mok4b1h3m70aaeeeeoz2 { text-align: left; }
+      .table td.tinytable_css_2dr58wix0rt3pa4ziyw4, .table th.tinytable_css_2dr58wix0rt3pa4ziyw4 { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+    </style>
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_boqcj9tb76eimy5639g7" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col"> </th>
+                <th scope="col">Original</th>
+                <th scope="col">Revised</th>
+              </tr>
+        </thead>
+        <tfoot><tr><td colspan="3">+ p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td></tr></tfoot>
+        <tbody>
+                <tr>
+                  <td>(Intercept)</td>
+                  <td>12.08***</td>
+                  <td>9.73***</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(0.67)</td>
+                  <td>(0.94)</td>
+                </tr>
+                <tr>
+                  <td>age</td>
+                  <td>-0.0056</td>
+                  <td>-0.0032</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(0.0080)</td>
+                  <td>(0.0081)</td>
+                </tr>
+                <tr>
+                  <td>education</td>
+                  <td>-0.019</td>
+                  <td>0.0095</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(0.070)</td>
+                  <td>(0.0700)</td>
+                </tr>
+                <tr>
+                  <td>income</td>
+                  <td>1.9e-07</td>
+                  <td>2.6e-07</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(2.3e-06)</td>
+                  <td>(2.3e-06)</td>
+                </tr>
+                <tr>
+                  <td>ideol</td>
+                  <td>-1.22***</td>
+                  <td>-0.11</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>(0.06)</td>
+                  <td>(0.30)</td>
+                </tr>
+                <tr>
+                  <td>I(ideol^2)</td>
+                  <td></td>
+                  <td>-0.128***</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td>(0.035)</td>
+                </tr>
+                <tr>
+                  <td>Num.Obs.</td>
+                  <td>450</td>
+                  <td>450</td>
+                </tr>
+                <tr>
+                  <td>R2</td>
+                  <td>0.437</td>
+                  <td>0.450</td>
+                </tr>
+                <tr>
+                  <td>R2 Adj.</td>
+                  <td>0.431</td>
+                  <td>0.443</td>
+                </tr>
+                <tr>
+                  <td>AIC</td>
+                  <td>2054.2</td>
+                  <td>2045.7</td>
+                </tr>
+                <tr>
+                  <td>BIC</td>
+                  <td>2078.9</td>
+                  <td>2074.5</td>
+                </tr>
+                <tr>
+                  <td>Log.Lik.</td>
+                  <td>-1021.111</td>
+                  <td>-1015.846</td>
+                </tr>
+                <tr>
+                  <td>F</td>
+                  <td>106.795</td>
+                  <td>90.575</td>
+                </tr>
+                <tr>
+                  <td>RMSE</td>
+                  <td>2.34</td>
+                  <td>2.31</td>
+                </tr>
+                <tr>
+                  <td>Std.Errors</td>
+                  <td>HC3</td>
+                  <td>HC3</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+<p>The main conclusion is unchanged: concern about climate change falls as ideology becomes more conservative. The revised model adds that the decline steepens toward the conservative end. Note that the linear <code>ideol</code> coefficient in the revised model is not significant on its own; with a squared term, the effect of ideology depends on both coefficients together.</p>
+<hr>
+</section>
+<section id="interpreting-the-quadratic-marginaleffects" class="level1" data-number="11">
+<h1 data-number="11"><span class="header-section-number">11</span> Interpreting the Quadratic: <code>marginaleffects</code></h1>
+<p>With a squared term, the coefficients in the table above are no longer the answer to “what is the effect of ideology?”. The <code>ideol</code> coefficient (<span class="math inline">\(-0.11\)</span>, not significant) is the slope at <code>ideol = 0</code>, a value that doesn’t exist on our 1-7 scale. The effect of a one-unit change in ideology now depends on where you start:</p>
+<p><span class="math display">\[\frac{\partial\, \widehat{\text{risk}}}{\partial\, \text{ideol}} = \hat\beta_{\text{ideol}} + 2\,\hat\beta_{\text{ideol}^2} \times \text{ideol}\]</span></p>
+<p>The <code>marginaleffects</code> package does these calculations for us, with standard errors, for any model. Here we pass <code>vcov = "HC3"</code> so the standard errors stay robust.</p>
+<p><strong>Why <code>I(ideol^2)</code> and not a separate <code>ideology2</code> column?</strong> <code>marginaleffects</code> works by changing <code>ideol</code> slightly and re-computing the predictions. With <code>I(ideol^2)</code> in the formula, R squares the new value automatically. If we had used the <code>ideology2</code> column from <code>ols2</code>, the package would treat it as a separate variable that stays fixed when <code>ideol</code> changes, and the answers would be wrong.</p>
+<section id="predictions" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="predictions"><span class="header-section-number">11.1</span> Predictions</h2>
+<p>What does the model predict at each level of ideology? <code>datagrid()</code> builds the scenarios: each ideology level, with the other variables held at their means (rounded for whole-number variables like age and education).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predictions</span>(ols3, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">ideol =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>), <span class="at">vcov =</span> <span class="st">"HC3"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ ideol Estimate Std. Error    z Pr(&gt;|z|)     S 2.5 % 97.5 %
+     1     9.37      0.302 31.0   &lt;0.001 699.1  8.77   9.96
+     2     8.88      0.165 53.8   &lt;0.001   Inf  8.55   9.20
+     3     8.13      0.148 54.9   &lt;0.001   Inf  7.84   8.42
+     4     7.13      0.164 43.6   &lt;0.001   Inf  6.81   7.45
+     5     5.88      0.152 38.8   &lt;0.001   Inf  5.58   6.18
+     6     4.37      0.148 29.6   &lt;0.001 635.2  4.08   4.66
+     7     2.60      0.254 10.2   &lt;0.001  79.3  2.10   3.10
+
+Type: response</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_predictions</span>(ols3, <span class="at">condition =</span> <span class="st">"ideol"</span>, <span class="at">vcov =</span> <span class="st">"HC3"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-53-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Predicted risk falls from about 9.4 for the most liberal respondents to about 2.6 for the most conservative, and the curve gets steeper as we move to the right.</p>
+</section>
+<section id="slopes-marginal-effects" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="slopes-marginal-effects"><span class="header-section-number">11.2</span> Slopes (marginal effects)</h2>
+<p>The slope of that curve at each ideology level:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="fu">slopes</span>(ols3, <span class="at">variables =</span> <span class="st">"ideol"</span>, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">ideol =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>), <span class="at">vcov =</span> <span class="st">"HC3"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ ideol Estimate Std. Error      z Pr(&gt;|z|)     S  2.5 %  97.5 %
+     1   -0.362     0.2277  -1.59    0.112   3.2 -0.808  0.0847
+     2   -0.617     0.1605  -3.84   &lt;0.001  13.0 -0.931 -0.3022
+     3   -0.872     0.0977  -8.93   &lt;0.001  61.0 -1.063 -0.6805
+     4   -1.127     0.0565 -19.95   &lt;0.001 291.7 -1.238 -1.0165
+     5   -1.382     0.0835 -16.55   &lt;0.001 201.9 -1.546 -1.2187
+     6   -1.638     0.1444 -11.34   &lt;0.001  96.6 -1.921 -1.3546
+     7   -1.893     0.2101  -9.01   &lt;0.001  62.1 -2.305 -1.4812
+
+Term: ideol
+Type: response
+Comparison: dY/dX</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_slopes</span>(ols3, <span class="at">variables =</span> <span class="st">"ideol"</span>, <span class="at">condition =</span> <span class="st">"ideol"</span>, <span class="at">vcov =</span> <span class="st">"HC3"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-55-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>At the liberal end, moving one point more conservative lowers predicted risk by about 0.36 (not significantly different from zero, <span class="math inline">\(p \approx 0.11\)</span>); at the conservative end, by about 1.89 - five times as much. The slope plot is a straight line because the derivative of a quadratic is linear in <code>ideol</code>.</p>
+</section>
+<section id="the-average-marginal-effect" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="the-average-marginal-effect"><span class="header-section-number">11.3</span> The average marginal effect</h2>
+<p>To summarize the effect in one number, average the slope over every respondent in the sample:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="fu">avg_slopes</span>(ols3, <span class="at">variables =</span> <span class="st">"ideol"</span>, <span class="at">vcov =</span> <span class="st">"HC3"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ Estimate Std. Error     z Pr(&gt;|z|)     S 2.5 % 97.5 %
+    -1.32     0.0714 -18.5   &lt;0.001 250.5 -1.46  -1.18
+
+Term: ideol
+Type: response
+Comparison: dY/dX</code></pre>
+</div>
+</div>
+<p>The average marginal effect, about <span class="math inline">\(-1.32\)</span>, is close to the <span class="math inline">\(-1.22\)</span> from the original linear model. That is typical: the linear model estimates roughly the average slope, while the quadratic shows how the slope changes along the scale.</p>
+</section>
+<section id="comparing-two-specific-values" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="comparing-two-specific-values"><span class="header-section-number">11.4</span> Comparing two specific values</h2>
+<p>We can also ask a direct question: how much does predicted risk differ between a very liberal (1) and a very conservative (7) respondent, all else equal?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a><span class="fu">avg_comparisons</span>(ols3, <span class="at">variables =</span> <span class="fu">list</span>(<span class="at">ideol =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">7</span>)), <span class="at">vcov =</span> <span class="st">"HC3"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ Estimate Std. Error     z Pr(&gt;|z|)     S 2.5 % 97.5 %
+    -6.76       0.34 -19.9   &lt;0.001 289.8 -7.43   -6.1
+
+Term: ideol
+Type: response
+Comparison: 7 - 1</code></pre>
+</div>
+</div>
+<p>About 6.8 points on a 0-10 scale - by far the largest effect in the model.</p>
+<hr>
+</section>
+</section>
+<section id="the-tldr-version-plotlm" class="level1" data-number="12">
+<h1 data-number="12"><span class="header-section-number">12</span> The TLDR Version: <code>plot(lm)</code></h1>
+<p>R has a set of diagnostic plots built into the <code>plot()</code> function for any <code>lm()</code> model. The examples above should help in interpreting them:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Plot</th>
+<th>What to look for</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1. Residuals vs Fitted</td>
+<td>a curved pattern: non-linearity</td>
+<td>Non-linearity</td>
+</tr>
+<tr class="even">
+<td>2. Q-Q Residuals</td>
+<td>points far off the line: non-normality</td>
+<td>Normality</td>
+</tr>
+<tr class="odd">
+<td>3. Scale-Location</td>
+<td>a trend in the spread: heteroskedasticity</td>
+<td>Heteroskedasticity</td>
+</tr>
+<tr class="even">
+<td>4. Cook’s distance</td>
+<td>individual cases with large influence</td>
+<td>Influence: Cook’s distance</td>
+</tr>
+<tr class="odd">
+<td>5. Residuals vs Leverage</td>
+<td>points beyond the Cook’s distance contours</td>
+<td>Outliers, Leverage and Influence</td>
+</tr>
+<tr class="even">
+<td>6. Cook’s dist vs Leverage</td>
+<td>influence and leverage together</td>
+<td>Outliers, Leverage and Influence</td>
+</tr>
+</tbody>
+</table>
+<p>Here is how to view them all for our climate change model:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">2</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">1</span>))</span>
+<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ols1, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-58-1.png" class="img-fluid figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Or, to display an individual plot:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ols1, <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Regression_Diagnostics_files/figure-html/unnamed-chunk-59-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+<p><strong>End of Notebook</strong></p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
