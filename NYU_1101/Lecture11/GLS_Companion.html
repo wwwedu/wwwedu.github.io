@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Dragos Ailoae">
+
+<title>Heteroskedasticity, Serial Correlation, and GLS</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="GLS_Companion_files/libs/clipboard/clipboard.min.js"></script>
+<script src="GLS_Companion_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="GLS_Companion_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="GLS_Companion_files/libs/quarto-html/popper.min.js"></script>
+<script src="GLS_Companion_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="GLS_Companion_files/libs/quarto-html/anchor.min.js"></script>
+<link href="GLS_Companion_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="GLS_Companion_files/libs/quarto-html/quarto-syntax-highlighting-bb62276ab45c84d9efd712f51ff97b5a.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="GLS_Companion_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="GLS_Companion_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="GLS_Companion_files/libs/bootstrap/bootstrap-202ed213b2c006338bc742d5d021bd88.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="GLS_Companion_files/libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+
+<script src="GLS_Companion_files/libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-full toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="-1">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#what-this-notebook-covers" id="toc-what-this-notebook-covers" class="nav-link active" data-scroll-target="#what-this-notebook-covers">What This Notebook Covers</a></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup"><span class="header-section-number">1</span> Setup</a></li>
+  <li><a href="#part-1.-what-a4-failure-does---and-doesnt" id="toc-part-1.-what-a4-failure-does---and-doesnt" class="nav-link" data-scroll-target="#part-1.-what-a4-failure-does---and-doesnt"><span class="header-section-number">2</span> Part 1. What A4 Failure Does - and Doesn’t</a>
+  <ul class="collapse">
+  <li><a href="#a-simulated-engel-curve" id="toc-a-simulated-engel-curve" class="nav-link" data-scroll-target="#a-simulated-engel-curve"><span class="header-section-number">2.1</span> A simulated Engel curve</a></li>
+  <li><a href="#ols-looks-fine" id="toc-ols-looks-fine" class="nav-link" data-scroll-target="#ols-looks-fine"><span class="header-section-number">2.2</span> OLS looks fine</a></li>
+  <li><a href="#unbiased-but-the-default-standard-error-is-wrong" id="toc-unbiased-but-the-default-standard-error-is-wrong" class="nav-link" data-scroll-target="#unbiased-but-the-default-standard-error-is-wrong"><span class="header-section-number">2.3</span> Unbiased, but the default standard error is wrong</a></li>
+  <li><a href="#why-the-variance-formula-with-unequal-variances" id="toc-why-the-variance-formula-with-unequal-variances" class="nav-link" data-scroll-target="#why-the-variance-formula-with-unequal-variances"><span class="header-section-number">2.4</span> Why: the variance formula with unequal variances</a></li>
+  </ul></li>
+  <li><a href="#part-2.-detecting-heteroskedasticity" id="toc-part-2.-detecting-heteroskedasticity" class="nav-link" data-scroll-target="#part-2.-detecting-heteroskedasticity"><span class="header-section-number">3</span> Part 2. Detecting Heteroskedasticity</a>
+  <ul class="collapse">
+  <li><a href="#look-first" id="toc-look-first" class="nav-link" data-scroll-target="#look-first"><span class="header-section-number">3.1</span> Look first</a></li>
+  <li><a href="#breuschpagan-by-hand" id="toc-breuschpagan-by-hand" class="nav-link" data-scroll-target="#breuschpagan-by-hand"><span class="header-section-number">3.2</span> Breusch–Pagan by hand</a></li>
+  <li><a href="#whites-test" id="toc-whites-test" class="nav-link" data-scroll-target="#whites-test"><span class="header-section-number">3.3</span> White’s test</a></li>
+  </ul></li>
+  <li><a href="#part-3.-robust-standard-errors" id="toc-part-3.-robust-standard-errors" class="nav-link" data-scroll-target="#part-3.-robust-standard-errors"><span class="header-section-number">4</span> Part 3. Robust Standard Errors</a>
+  <ul class="collapse">
+  <li><a href="#the-sandwich-by-hand" id="toc-the-sandwich-by-hand" class="nav-link" data-scroll-target="#the-sandwich-by-hand"><span class="header-section-number">4.1</span> The sandwich by hand</a></li>
+  <li><a href="#does-it-work-rejection-rates" id="toc-does-it-work-rejection-rates" class="nav-link" data-scroll-target="#does-it-work-rejection-rates"><span class="header-section-number">4.2</span> Does it work? Rejection rates</a></li>
+  </ul></li>
+  <li><a href="#part-4.-gls-and-weighted-least-squares" id="toc-part-4.-gls-and-weighted-least-squares" class="nav-link" data-scroll-target="#part-4.-gls-and-weighted-least-squares"><span class="header-section-number">5</span> Part 4. GLS and Weighted Least Squares</a>
+  <ul class="collapse">
+  <li><a href="#the-idea-two-scales" id="toc-the-idea-two-scales" class="nav-link" data-scroll-target="#the-idea-two-scales"><span class="header-section-number">5.1</span> The idea: two scales</a></li>
+  <li><a href="#wls-ols-on-transformed-data" id="toc-wls-ols-on-transformed-data" class="nav-link" data-scroll-target="#wls-ols-on-transformed-data"><span class="header-section-number">5.2</span> WLS = OLS on transformed data</a></li>
+  <li><a href="#the-gls-formula-by-hand" id="toc-the-gls-formula-by-hand" class="nav-link" data-scroll-target="#the-gls-formula-by-hand"><span class="header-section-number">5.3</span> The GLS formula by hand</a></li>
+  <li><a href="#feasible-gls-estimate-the-weights" id="toc-feasible-gls-estimate-the-weights" class="nav-link" data-scroll-target="#feasible-gls-estimate-the-weights"><span class="header-section-number">5.4</span> Feasible GLS: estimate the weights</a></li>
+  <li><a href="#correct-weights-wrong-weights-and-ols" id="toc-correct-weights-wrong-weights-and-ols" class="nav-link" data-scroll-target="#correct-weights-wrong-weights-and-ols"><span class="header-section-number">5.5</span> Correct weights, wrong weights, and OLS</a></li>
+  <li><a href="#when-the-choice-of-weights-does-change-the-answer" id="toc-when-the-choice-of-weights-does-change-the-answer" class="nav-link" data-scroll-target="#when-the-choice-of-weights-does-change-the-answer"><span class="header-section-number">5.6</span> When the choice of weights does change the answer</a></li>
+  </ul></li>
+  <li><a href="#part-5.-serial-correlation" id="toc-part-5.-serial-correlation" class="nav-link" data-scroll-target="#part-5.-serial-correlation"><span class="header-section-number">6</span> Part 5. Serial Correlation</a>
+  <ul class="collapse">
+  <li><a href="#a-simulated-consumption-function" id="toc-a-simulated-consumption-function" class="nav-link" data-scroll-target="#a-simulated-consumption-function"><span class="header-section-number">6.1</span> A simulated consumption function</a></li>
+  <li><a href="#less-information-than-it-looks" id="toc-less-information-than-it-looks" class="nav-link" data-scroll-target="#less-information-than-it-looks"><span class="header-section-number">6.2</span> Less information than it looks</a></li>
+  <li><a href="#detecting-it-breuschgodfrey-and-durbinwatson-by-hand" id="toc-detecting-it-breuschgodfrey-and-durbinwatson-by-hand" class="nav-link" data-scroll-target="#detecting-it-breuschgodfrey-and-durbinwatson-by-hand"><span class="header-section-number">6.3</span> Detecting it: Breusch–Godfrey and Durbin–Watson, by hand</a></li>
+  <li><a href="#fix-1-neweywest-by-hand" id="toc-fix-1-neweywest-by-hand" class="nav-link" data-scroll-target="#fix-1-neweywest-by-hand"><span class="header-section-number">6.4</span> Fix 1: Newey–West by hand</a></li>
+  <li><a href="#fix-2-gls-for-ar1-errors" id="toc-fix-2-gls-for-ar1-errors" class="nav-link" data-scroll-target="#fix-2-gls-for-ar1-errors"><span class="header-section-number">6.5</span> Fix 2: GLS for AR(1) errors</a></li>
+  </ul></li>
+  <li><a href="#common-mistakes" id="toc-common-mistakes" class="nav-link" data-scroll-target="#common-mistakes"><span class="header-section-number">7</span> Common Mistakes</a></li>
+  <li><a href="#summary-and-key-takeaways" id="toc-summary-and-key-takeaways" class="nav-link" data-scroll-target="#summary-and-key-takeaways"><span class="header-section-number">8</span> Summary and Key Takeaways</a></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading"><span class="header-section-number">9</span> Further Reading</a></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content column-page-right" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Heteroskedasticity, Serial Correlation, and GLS</h1>
+<p class="subtitle lead">Companion Notebook<br>ECONGA-1001.001: Applied Statistics and Econometrics I<br>New York University</p>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-right">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dragos Ailoae </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="what-this-notebook-covers" class="level1 unnumbered">
+<h1 class="unnumbered">What This Notebook Covers</h1>
+<p>Assumption A4 says the errors all have the same variance and are uncorrelated with each other. When it fails, OLS is <strong>still unbiased</strong>, but it <strong>misjudges its own precision</strong> and <strong>treats noisy and precise observations alike</strong>. Robust standard errors fix the first problem; generalized least squares (GLS) fixes both, if we know the structure of the noise. Every section below is a version of that idea.</p>
+<ol type="1">
+<li>What A4 failure does, and what it doesn’t: a simulated Engel curve</li>
+<li>Detecting heteroskedasticity: residual plots, Breusch–Pagan, White</li>
+<li>Robust standard errors: the sandwich, by hand</li>
+<li>GLS and weighted least squares: the transformation, FGLS, and wrong weights</li>
+<li>Serial correlation: detection, Newey–West, and Prais–Winsten FGLS</li>
+</ol>
+<p>Both examples are <strong>simulated</strong>, so we know the true data generating process (DGP) and can check every estimator and every standard error against the truth. They use the same functions and seeds as the lecture, so the numbers match the slides. Where the lecture states a formula, this notebook computes it <strong>by hand</strong> and checks it against the R function you would use in practice.</p>
+<hr>
+</section>
+<section id="setup" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Setup</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>packages <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"AER"</span>,     <span class="co"># loads sandwich (vcovHC, NeweyWest) and lmtest (coeftest, bptest, bgtest, dwtest)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"nlme"</span>,    <span class="co"># gls() with AR(1) errors</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"knitr"</span>    <span class="co"># kable() tables</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>missing <span class="ot">&lt;-</span> packages[<span class="sc">!</span>packages <span class="sc">%in%</span> <span class="fu">rownames</span>(<span class="fu">installed.packages</span>())]</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(missing) <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="fu">install.packages</span>(missing)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">lapply</span>(packages, library, <span class="at">character.only =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>col_blue   <span class="ot">&lt;-</span> <span class="st">"#1F4788"</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>col_orange <span class="ot">&lt;-</span> <span class="st">"#E07B00"</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>col_grey   <span class="ot">&lt;-</span> <span class="st">"grey55"</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>se2 <span class="ot">&lt;-</span> <span class="cf">function</span>(V) <span class="fu">sqrt</span>(V[<span class="dv">2</span>, <span class="dv">2</span>])                       <span class="co"># SE of the slope from a vcov matrix</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<hr>
+</section>
+<section id="part-1.-what-a4-failure-does---and-doesnt" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Part 1. What A4 Failure Does - and Doesn’t</h1>
+<section id="a-simulated-engel-curve" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="a-simulated-engel-curve"><span class="header-section-number">2.1</span> A simulated Engel curve</h2>
+<p>Food spending and income (both in $000 per year) across <span class="math inline">\(N = 200\)</span> households:</p>
+<p><span class="math display">\[\text{food}_i = 2 + 0.10\,\text{income}_i + \varepsilon_i, \qquad \text{sd}(\varepsilon_i \mid \text{income}_i) = 0.025 \times \text{income}_i\]</span></p>
+<p>The <strong>true slope is 0.10</strong>: ten cents of each extra dollar goes to food. The noise grows with income - poor households all spend about the same on food; rich households differ a lot. That is <strong>heteroskedasticity</strong>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>make_engel <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">n =</span> <span class="dv">200</span>, <span class="at">sd_slope =</span> <span class="fl">0.025</span>, <span class="at">seed =</span> <span class="dv">2026</span>) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(seed)) <span class="fu">set.seed</span>(seed)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  income <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">exp</span>(<span class="fu">rnorm</span>(n, <span class="fu">log</span>(<span class="dv">60</span>), <span class="fl">0.5</span>)), <span class="dv">1</span>)      <span class="co"># household income, median ~ $60k</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  e      <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="dv">0</span>, sd_slope <span class="sc">*</span> income)             <span class="co"># noise grows with income</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  food   <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">+</span> <span class="fl">0.10</span> <span class="sc">*</span> income <span class="sc">+</span> e</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(income, food)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>eng <span class="ot">&lt;-</span> <span class="fu">make_engel</span>()</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(eng)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["income"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["food"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"77.8","2":"8.939709","_rn_":"1"},{"1":"35.0","2":"5.901267","_rn_":"2"},{"1":"64.3","2":"8.061317","_rn_":"3"},{"1":"57.5","2":"5.080617","_rn_":"4"},{"1":"43.0","2":"5.988600","_rn_":"5"},{"1":"17.1","2":"4.465453","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+</section>
+<section id="ols-looks-fine" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="ols-looks-fine"><span class="header-section-number">2.2</span> OLS looks fine</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(food <span class="sc">~</span> income, <span class="at">data =</span> eng)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(<span class="fu">summary</span>(ols))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            Estimate Std. Error   t value     Pr(&gt;|t|)
+(Intercept) 1.736480 0.28978967  5.992209 9.624933e-09
+income      0.104654 0.00375775 27.850186 2.092202e-70</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(eng<span class="sc">$</span>income, eng<span class="sc">$</span>food, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="fu">adjustcolor</span>(col_orange, <span class="fl">0.6</span>), <span class="at">las =</span> <span class="dv">1</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"household income ($000 per year)"</span>, <span class="at">ylab =</span> <span class="st">"food spending ($000 per year)"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(ols, <span class="at">lwd =</span> <span class="fl">2.5</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a =</span> <span class="dv">2</span>, <span class="at">b =</span> <span class="fl">0.10</span>, <span class="at">lty =</span> <span class="dv">3</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> col_blue)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>, <span class="at">bg =</span> <span class="st">"white"</span>, <span class="at">box.col =</span> <span class="cn">NA</span>, <span class="at">inset =</span> <span class="fl">0.015</span>, <span class="at">cex =</span> <span class="fl">0.85</span>, <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>), <span class="at">lwd =</span> <span class="fu">c</span>(<span class="fl">2.5</span>, <span class="dv">2</span>),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"black"</span>, col_blue), <span class="fu">c</span>(<span class="fu">sprintf</span>(<span class="st">"OLS: slope %.3f"</span>, <span class="fu">coef</span>(ols)[<span class="dv">2</span>]), <span class="st">"Truth: slope 0.100"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-engel" class="quarto-float quarto-figure quarto-figure-center anchored" width="624">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-engel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="GLS_Companion_files/figure-html/fig-engel-1.png" id="fig-engel" class="img-fluid figure-img" width="624">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-engel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The slope, 0.105, is close to the truth. The question is whether the reported standard error, 0.0038, is right.</p>
+</section>
+<section id="unbiased-but-the-default-standard-error-is-wrong" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="unbiased-but-the-default-standard-error-is-wrong"><span class="header-section-number">2.3</span> Unbiased, but the default standard error is wrong</h2>
+<p>Draw 2,000 new samples and run OLS on each. Along the way we store several other estimators and standard errors that later parts of the notebook use, so the simulation runs only once.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">7</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>mc_e <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">replicate</span>(<span class="dv">2000</span>, {</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  d  <span class="ot">&lt;-</span> <span class="fu">make_engel</span>(<span class="at">seed =</span> <span class="cn">NULL</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  o  <span class="ot">&lt;-</span> <span class="fu">lm</span>(food <span class="sc">~</span> income, <span class="at">data =</span> d)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  wl <span class="ot">&lt;-</span> <span class="fu">lm</span>(food <span class="sc">~</span> income, <span class="at">data =</span> d, <span class="at">weights =</span> <span class="dv">1</span> <span class="sc">/</span> income<span class="sc">^</span><span class="dv">2</span>)     <span class="co"># WLS, correct weights (Part 4)</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  wr <span class="ot">&lt;-</span> <span class="fu">lm</span>(food <span class="sc">~</span> income, <span class="at">data =</span> d, <span class="at">weights =</span> <span class="dv">1</span> <span class="sc">/</span> income)       <span class="co"># WLS, wrong weights (Part 4)</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">b   =</span> <span class="fu">coef</span>(o)[[<span class="dv">2</span>]],  <span class="at">se  =</span> <span class="fu">se2</span>(<span class="fu">vcov</span>(o)),  <span class="at">hc1  =</span> <span class="fu">se2</span>(<span class="fu">vcovHC</span>(o, <span class="st">"HC1"</span>)),  <span class="at">hc3 =</span> <span class="fu">se2</span>(<span class="fu">vcovHC</span>(o, <span class="st">"HC3"</span>)),</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">bw  =</span> <span class="fu">coef</span>(wl)[[<span class="dv">2</span>]], <span class="at">sew =</span> <span class="fu">se2</span>(<span class="fu">vcov</span>(wl)), <span class="at">sew_hc  =</span> <span class="fu">se2</span>(<span class="fu">vcovHC</span>(wl, <span class="st">"HC1"</span>)),</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">bwr =</span> <span class="fu">coef</span>(wr)[[<span class="dv">2</span>]], <span class="at">sewr =</span> <span class="fu">se2</span>(<span class="fu">vcov</span>(wr)), <span class="at">sewr_hc =</span> <span class="fu">se2</span>(<span class="fu">vcovHC</span>(wr, <span class="st">"HC1"</span>)))</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>}))</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>rej <span class="ot">&lt;-</span> <span class="cf">function</span>(b, se, <span class="at">truth =</span> <span class="fl">0.10</span>) <span class="fu">mean</span>(<span class="fu">abs</span>((b <span class="sc">-</span> truth) <span class="sc">/</span> se) <span class="sc">&gt;</span> <span class="fl">1.96</span>)   <span class="co"># share rejecting the TRUE null at 5%</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">Quantity =</span> <span class="fu">c</span>(<span class="st">"Average OLS estimate"</span>, <span class="st">"Actual SD of the estimates"</span>, <span class="st">"Average default SE"</span>,</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Rejection rate of the true H0 (default SE)"</span>),</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">Value =</span> <span class="fu">c</span>(<span class="fu">sprintf</span>(<span class="st">"%.4f"</span>, <span class="fu">mean</span>(mc_e[, <span class="st">"b"</span>])), <span class="fu">sprintf</span>(<span class="st">"%.4f"</span>, <span class="fu">sd</span>(mc_e[, <span class="st">"b"</span>])),</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>            <span class="fu">sprintf</span>(<span class="st">"%.4f"</span>, <span class="fu">mean</span>(mc_e[, <span class="st">"se"</span>])), <span class="fu">sprintf</span>(<span class="st">"%.1f%%"</span>, <span class="dv">100</span> <span class="sc">*</span> <span class="fu">rej</span>(mc_e[, <span class="st">"b"</span>], mc_e[, <span class="st">"se"</span>])))))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Quantity</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Average OLS estimate</td>
+<td style="text-align: left;">0.1000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Actual SD of the estimates</td>
+<td style="text-align: left;">0.0073</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Average default SE</td>
+<td style="text-align: left;">0.0038</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rejection rate of the true H0 (default SE)</td>
+<td style="text-align: left;">31.2%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>OLS is centred on 0.10 - <strong>unbiased</strong>, since that needs only A3. But the default SE is about half the actual spread of the estimates, so a 5% test of the <strong>true</strong> null rejects 31% of the time.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>h  <span class="ot">&lt;-</span> <span class="fu">hist</span>(mc_e[, <span class="st">"b"</span>], <span class="at">breaks =</span> <span class="dv">50</span>, <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>xs <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">min</span>(mc_e[, <span class="st">"b"</span>]), <span class="fu">max</span>(mc_e[, <span class="st">"b"</span>]), <span class="at">length.out =</span> <span class="dv">300</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>claimed <span class="ot">&lt;-</span> <span class="dv">2000</span> <span class="sc">*</span> <span class="fu">diff</span>(h<span class="sc">$</span>breaks)[<span class="dv">1</span>] <span class="sc">*</span> <span class="fu">dnorm</span>(xs, <span class="fl">0.10</span>, <span class="fu">mean</span>(mc_e[, <span class="st">"se"</span>]))</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(h, <span class="at">col =</span> col_blue, <span class="at">border =</span> <span class="st">"white"</span>, <span class="at">las =</span> <span class="dv">1</span>, <span class="at">main =</span> <span class="st">""</span>, <span class="at">ylab =</span> <span class="st">""</span>, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">max</span>(claimed) <span class="sc">*</span> <span class="fl">1.05</span>),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"OLS slope estimate across 2,000 samples"</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(xs, claimed, <span class="at">lwd =</span> <span class="fl">2.5</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> col_orange)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="fl">0.10</span>, <span class="at">lwd =</span> <span class="fl">2.5</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>, <span class="at">bty =</span> <span class="st">"n"</span>, <span class="at">cex =</span> <span class="fl">0.85</span>, <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">lwd =</span> <span class="fl">2.5</span>, <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"black"</span>, col_orange),</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>       <span class="fu">c</span>(<span class="st">"Truth = 0.10"</span>, <span class="st">"Spread the default SE claims"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-engel-mc" class="quarto-float quarto-figure quarto-figure-center anchored" width="624">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-engel-mc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="GLS_Companion_files/figure-html/fig-engel-mc-1.png" id="fig-engel-mc" class="img-fluid figure-img" width="624">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-engel-mc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="why-the-variance-formula-with-unequal-variances" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="why-the-variance-formula-with-unequal-variances"><span class="header-section-number">2.4</span> Why: the variance formula with unequal variances</h2>
+<p>With one regressor, conditional on the incomes,</p>
+<p><span class="math display">\[\text{Var}(\hat{\beta}_1 \mid \mathbf{X}) = \frac{\sum_i (x_i - \bar{x})^2\,\sigma_i^2}{\left[\sum_i (x_i - \bar{x})^2\right]^2} \qquad \text{vs. the default} \qquad \frac{\sigma^2}{\sum_i (x_i - \bar{x})^2}.\]</span></p>
+<p>In the simulation we know every <span class="math inline">\(\sigma_i\)</span>, so we can evaluate both formulas for our 200 households - and check them by redrawing only the errors, holding the incomes fixed:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>x  <span class="ot">&lt;-</span> eng<span class="sc">$</span>income</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>s2 <span class="ot">&lt;-</span> (<span class="fl">0.025</span> <span class="sc">*</span> x)<span class="sc">^</span><span class="dv">2</span>                                   <span class="co"># true sigma_i^2</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>dx <span class="ot">&lt;-</span> x <span class="sc">-</span> <span class="fu">mean</span>(x)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>true_sd    <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">sum</span>(dx<span class="sc">^</span><span class="dv">2</span> <span class="sc">*</span> s2) <span class="sc">/</span> <span class="fu">sum</span>(dx<span class="sc">^</span><span class="dv">2</span>)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>default_sd <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>(s2) <span class="sc">/</span> <span class="fu">sum</span>(dx<span class="sc">^</span><span class="dv">2</span>))               <span class="co"># what the default formula targets</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="dv">1</span>, x)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>b_fixedX <span class="ot">&lt;-</span> <span class="fu">replicate</span>(<span class="dv">5000</span>, <span class="fu">lm.fit</span>(X, <span class="dv">2</span> <span class="sc">+</span> <span class="fl">0.10</span> <span class="sc">*</span> x <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fu">length</span>(x), <span class="dv">0</span>, <span class="fl">0.025</span> <span class="sc">*</span> x))<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">`</span><span class="at">true SD (formula)</span><span class="st">`</span> <span class="ot">=</span> true_sd, <span class="st">`</span><span class="at">SD across redraws</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sd</span>(b_fixedX), <span class="st">`</span><span class="at">default formula</span><span class="st">`</span> <span class="ot">=</span> default_sd)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>true SD (formula) SD across redraws   default formula 
+      0.006850279       0.006875769       0.003788448 </code></pre>
+</div>
+</div>
+<p>The formula matches the simulation. The default is too small because the noise is largest exactly where <span class="math inline">\(x\)</span> is far from its mean - the observations that pin down a slope.</p>
+<hr>
+</section>
+</section>
+<section id="part-2.-detecting-heteroskedasticity" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Part 2. Detecting Heteroskedasticity</h1>
+<section id="look-first" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="look-first"><span class="header-section-number">3.1</span> Look first</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>e <span class="ot">&lt;-</span> <span class="fu">resid</span>(ols)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(eng<span class="sc">$</span>income, e, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="fu">adjustcolor</span>(col_grey, <span class="fl">0.7</span>), <span class="at">las =</span> <span class="dv">1</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"income ($000)"</span>, <span class="at">ylab =</span> <span class="st">"OLS residual"</span>, <span class="at">main =</span> <span class="st">"Residuals vs income"</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(eng<span class="sc">$</span>income, e<span class="sc">^</span><span class="dv">2</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="fu">adjustcolor</span>(<span class="st">"firebrick"</span>, <span class="fl">0.5</span>), <span class="at">las =</span> <span class="dv">1</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"income ($000)"</span>, <span class="at">ylab =</span> <span class="st">"squared residual"</span>, <span class="at">main =</span> <span class="st">"Squared residuals vs income"</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">lm</span>(e<span class="sc">^</span><span class="dv">2</span> <span class="sc">~</span> eng<span class="sc">$</span>income), <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"firebrick"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-resid" class="quarto-float quarto-figure quarto-figure-center anchored" width="864">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-resid-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="GLS_Companion_files/figure-html/fig-resid-1.png" id="fig-resid" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-resid-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="breuschpagan-by-hand" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="breuschpagan-by-hand"><span class="header-section-number">3.2</span> Breusch–Pagan by hand</h2>
+<p>Regress the squared residuals on the variables suspected of driving the variance; <span class="math inline">\(LM = N \cdot R^2 \sim \chi^2_m\)</span> under homoskedasticity.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>aux <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">I</span>(e<span class="sc">^</span><span class="dv">2</span>) <span class="sc">~</span> income, <span class="at">data =</span> eng)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>LM  <span class="ot">&lt;-</span> <span class="fu">nrow</span>(eng) <span class="sc">*</span> <span class="fu">summary</span>(aux)<span class="sc">$</span>r.squared</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">`</span><span class="at">N R^2 by hand</span><span class="st">`</span> <span class="ot">=</span> LM, <span class="st">`</span><span class="at">bptest()</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">unname</span>(<span class="fu">bptest</span>(ols)<span class="sc">$</span>statistic),</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">p-value</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">pchisq</span>(LM, <span class="at">df =</span> <span class="dv">1</span>, <span class="at">lower.tail =</span> <span class="cn">FALSE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>N R^2 by hand      bptest()       p-value 
+ 3.362695e+01  3.362695e+01  6.676131e-09 </code></pre>
+</div>
+</div>
+<p><code>bptest()</code> computes exactly this <span class="math inline">\(N \cdot R^2\)</span> statistic: Koenker’s <strong>studentized</strong> version, which does not need normal errors. Breusch and Pagan’s original statistic divides by <span class="math inline">\(2\hat\sigma^4\)</span> instead and relies on normality:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>s2hat <span class="ot">&lt;-</span> <span class="fu">mean</span>(e<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>LM_orig <span class="ot">&lt;-</span> <span class="fu">sum</span>((<span class="fu">fitted</span>(aux) <span class="sc">-</span> <span class="fu">mean</span>(e<span class="sc">^</span><span class="dv">2</span>))<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> (<span class="dv">2</span> <span class="sc">*</span> s2hat<span class="sc">^</span><span class="dv">2</span>)     <span class="co"># explained SS of e^2 / (2 sigma^4)</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">`</span><span class="at">original BP by hand</span><span class="st">`</span> <span class="ot">=</span> LM_orig, <span class="st">`</span><span class="at">bptest(studentize = FALSE)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">unname</span>(<span class="fu">bptest</span>(ols, <span class="at">studentize =</span> <span class="cn">FALSE</span>)<span class="sc">$</span>statistic))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       original BP by hand bptest(studentize = FALSE) 
+                   127.959                    127.959 </code></pre>
+</div>
+</div>
+</section>
+<section id="whites-test" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="whites-test"><span class="header-section-number">3.3</span> White’s test</h2>
+<p>White’s test adds squares and cross-products of the regressors, so it needs no guess about the form. With one regressor that is just income and income²:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>aux_w <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">I</span>(e<span class="sc">^</span><span class="dv">2</span>) <span class="sc">~</span> income <span class="sc">+</span> <span class="fu">I</span>(income<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> eng)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">`</span><span class="at">N R^2 by hand</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">nrow</span>(eng) <span class="sc">*</span> <span class="fu">summary</span>(aux_w)<span class="sc">$</span>r.squared,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">bptest(~ income + income^2)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">unname</span>(<span class="fu">bptest</span>(ols, <span class="sc">~</span> income <span class="sc">+</span> <span class="fu">I</span>(income<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> eng)<span class="sc">$</span>statistic))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              N R^2 by hand bptest(~ income + income^2) 
+                   34.21051                    34.21051 </code></pre>
+</div>
+</div>
+<p>Both tests reject decisively here. Remember the limits: White’s test also rejects when the <strong>functional form</strong> is wrong, and <strong>failing to reject does not prove homoskedasticity</strong>.</p>
+<hr>
+</section>
+</section>
+<section id="part-3.-robust-standard-errors" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Part 3. Robust Standard Errors</h1>
+<section id="the-sandwich-by-hand" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="the-sandwich-by-hand"><span class="header-section-number">4.1</span> The sandwich by hand</h2>
+<p><span class="math display">\[\widehat{\text{Var}}_{HC0}(\hat{\boldsymbol\beta}) = \underbrace{(\mathbf{X}'\mathbf{X})^{-1}}_{\text{bread}}\ \underbrace{\Big(\sum_i e_i^2\,\mathbf{x}_i\mathbf{x}_i'\Big)}_{\text{meat}}\ \underbrace{(\mathbf{X}'\mathbf{X})^{-1}}_{\text{bread}}\]</span></p>
+<p>The meat is a <span class="math inline">\(k \times k\)</span> matrix - here <span class="math inline">\(2 \times 2\)</span>, symmetric, so <span class="math inline">\(k(k+1)/2 = 3\)</span> distinct numbers - even though <span class="math inline">\(\boldsymbol\Sigma\)</span> itself is <span class="math inline">\(200 \times 200\)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>X     <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(ols)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(X); k <span class="ot">&lt;-</span> <span class="fu">ncol</span>(X)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>bread <span class="ot">&lt;-</span> <span class="fu">solve</span>(<span class="fu">crossprod</span>(X))</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>meat  <span class="ot">&lt;-</span> <span class="fu">crossprod</span>(X <span class="sc">*</span> e)                       <span class="co"># = sum_i e_i^2 x_i x_i'</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>V_hc0 <span class="ot">&lt;-</span> bread <span class="sc">%*%</span> meat <span class="sc">%*%</span> bread</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>V_hc1 <span class="ot">&lt;-</span> V_hc0 <span class="sc">*</span> n <span class="sc">/</span> (n <span class="sc">-</span> k)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>h     <span class="ot">&lt;-</span> <span class="fu">hatvalues</span>(ols)                         <span class="co"># leverage h_ii</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>V_hc3 <span class="ot">&lt;-</span> bread <span class="sc">%*%</span> <span class="fu">crossprod</span>(X <span class="sc">*</span> (e <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">-</span> h))) <span class="sc">%*%</span> bread</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">Version  =</span> <span class="fu">c</span>(<span class="st">"Default"</span>, <span class="st">"HC0"</span>, <span class="st">"HC1"</span>, <span class="st">"HC3"</span>),</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">By hand</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.5f"</span>, <span class="fu">c</span>(<span class="fu">se2</span>(<span class="fu">sigma</span>(ols)<span class="sc">^</span><span class="dv">2</span> <span class="sc">*</span> bread), <span class="fu">se2</span>(V_hc0), <span class="fu">se2</span>(V_hc1), <span class="fu">se2</span>(V_hc3))),</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">sandwich::vcovHC</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.5f"</span>, <span class="fu">c</span>(<span class="fu">se2</span>(<span class="fu">vcov</span>(ols)), <span class="fu">se2</span>(<span class="fu">vcovHC</span>(ols, <span class="st">"HC0"</span>)),</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>                                         <span class="fu">se2</span>(<span class="fu">vcovHC</span>(ols, <span class="st">"HC1"</span>)), <span class="fu">se2</span>(<span class="fu">vcovHC</span>(ols, <span class="st">"HC3"</span>)))),</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">By hand</th>
+<th style="text-align: left;">sandwich::vcovHC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Default</td>
+<td style="text-align: left;">0.00376</td>
+<td style="text-align: left;">0.00376</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">HC0</td>
+<td style="text-align: left;">0.00640</td>
+<td style="text-align: left;">0.00640</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">HC1</td>
+<td style="text-align: left;">0.00643</td>
+<td style="text-align: left;">0.00643</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">HC3</td>
+<td style="text-align: left;">0.00668</td>
+<td style="text-align: left;">0.00668</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>HC1 is Stata’s <code>, robust</code>; HC3 is the default of R’s <code>vcovHC()</code> and behaves better in small samples. The coefficient never changes - only its standard error. In practice:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(ols, <span class="at">vcov =</span> <span class="fu">vcovHC</span>(ols, <span class="at">type =</span> <span class="st">"HC1"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+t test of coefficients:
+
+             Estimate Std. Error t value  Pr(&gt;|t|)    
+(Intercept) 1.7364803  0.3635327  4.7767 3.463e-06 ***
+income      0.1046540  0.0064289 16.2787 &lt; 2.2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+<section id="does-it-work-rejection-rates" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="does-it-work-rejection-rates"><span class="header-section-number">4.2</span> Does it work? Rejection rates</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Standard error</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"Default"</span>, <span class="st">"HC1"</span>, <span class="st">"HC3"</span>),</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Rejects true H0 (target 5%)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.1f%%"</span>, <span class="dv">100</span> <span class="sc">*</span> <span class="fu">c</span>(<span class="fu">rej</span>(mc_e[, <span class="st">"b"</span>], mc_e[, <span class="st">"se"</span>]),</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>                                                          <span class="fu">rej</span>(mc_e[, <span class="st">"b"</span>], mc_e[, <span class="st">"hc1"</span>]),</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>                                                          <span class="fu">rej</span>(mc_e[, <span class="st">"b"</span>], mc_e[, <span class="st">"hc3"</span>]))),</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Average SE</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.4f"</span>, <span class="fu">c</span>(<span class="fu">mean</span>(mc_e[, <span class="st">"se"</span>]), <span class="fu">mean</span>(mc_e[, <span class="st">"hc1"</span>]), <span class="fu">mean</span>(mc_e[, <span class="st">"hc3"</span>]))),</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Standard error</th>
+<th style="text-align: left;">Rejects true H0 (target 5%)</th>
+<th style="text-align: left;">Average SE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Default</td>
+<td style="text-align: left;">31.2%</td>
+<td style="text-align: left;">0.0038</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">HC1</td>
+<td style="text-align: left;">8.9%</td>
+<td style="text-align: left;">0.0065</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">HC3</td>
+<td style="text-align: left;">7.3%</td>
+<td style="text-align: left;">0.0071</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The actual SD of the estimates is 0.0073: robust SEs now roughly match it. But the estimates themselves are exactly as spread out as before. <strong>Robust SEs fix inference, not efficiency.</strong></p>
+<hr>
+</section>
+</section>
+<section id="part-4.-gls-and-weighted-least-squares" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Part 4. GLS and Weighted Least Squares</h1>
+<section id="the-idea-two-scales" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="the-idea-two-scales"><span class="header-section-number">5.1</span> The idea: two scales</h2>
+<p>Scale A is precise (<span class="math inline">\(\sigma_A = 1\)</span>), scale B is noisy (<span class="math inline">\(\sigma_B = 3\)</span>). Weigh the same 10-unit object many times:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">3</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="dv">10</span> <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fl">1e5</span>, <span class="dv">0</span>, <span class="dv">1</span>); B <span class="ot">&lt;-</span> <span class="dv">10</span> <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fl">1e5</span>, <span class="dv">0</span>, <span class="dv">3</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">`</span><span class="at">only A</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">var</span>(A), <span class="st">`</span><span class="at">simple average (OLS-like)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">var</span>((A <span class="sc">+</span> B) <span class="sc">/</span> <span class="dv">2</span>),</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">weights 0.9 / 0.1 (GLS-like)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">var</span>(<span class="fl">0.9</span> <span class="sc">*</span> A <span class="sc">+</span> <span class="fl">0.1</span> <span class="sc">*</span> B))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                      only A    simple average (OLS-like) 
+                   1.0081851                    2.5097281 
+weights 0.9 / 0.1 (GLS-like) 
+                   0.9099199 </code></pre>
+</div>
+</div>
+<p>Equal weighting (theory: 2.5) is worse than ignoring scale B; weighting by <span class="math inline">\(1/\sigma^2\)</span> (theory: 0.9) beats both.</p>
+</section>
+<section id="wls-ols-on-transformed-data" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="wls-ols-on-transformed-data"><span class="header-section-number">5.2</span> WLS = OLS on transformed data</h2>
+<p>With <span class="math inline">\(\text{sd}(\varepsilon_i) \propto \text{income}_i\)</span>, divide every variable - including the constant - by income. The transformed error has constant variance:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>eng<span class="sc">$</span>food_s   <span class="ot">&lt;-</span> eng<span class="sc">$</span>food <span class="sc">/</span> eng<span class="sc">$</span>income</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>eng<span class="sc">$</span>const_s  <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">/</span> eng<span class="sc">$</span>income</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>eng<span class="sc">$</span>income_s <span class="ot">&lt;-</span> eng<span class="sc">$</span>income <span class="sc">/</span> eng<span class="sc">$</span>income                <span class="co"># = 1</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>by_hand <span class="ot">&lt;-</span> <span class="fu">lm</span>(food_s <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> const_s <span class="sc">+</span> income_s, <span class="at">data =</span> eng)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>wls     <span class="ot">&lt;-</span> <span class="fu">lm</span>(food <span class="sc">~</span> income, <span class="at">data =</span> eng, <span class="at">weights =</span> <span class="dv">1</span> <span class="sc">/</span> income<span class="sc">^</span><span class="dv">2</span>)   <span class="co"># weights = 1 / VARIANCE</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(<span class="st">`</span><span class="at">OLS on transformed data</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">coef</span>(by_hand), <span class="st">`</span><span class="at">lm(weights = 1/income^2)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">coef</span>(wls))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                          const_s   income_s
+OLS on transformed data  2.083491 0.09875226
+lm(weights = 1/income^2) 2.083491 0.09875226</code></pre>
+</div>
+</div>
+<p>Note the roles flip in the transformed regression: the slope 0.10 is now the coefficient on the constant-like <code>income_s</code>, and the intercept 2 is the coefficient on <span class="math inline">\(1/\text{income}\)</span>. And note <strong><code>lm()</code> weights are one over the variance</strong>, not one over the standard deviation.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(eng<span class="sc">$</span>income, <span class="fu">resid</span>(ols), <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="fu">adjustcolor</span>(col_orange, <span class="fl">0.6</span>), <span class="at">las =</span> <span class="dv">1</span>,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"income ($000)"</span>, <span class="at">ylab =</span> <span class="st">"residual"</span>, <span class="at">main =</span> <span class="st">"Original model: a fan"</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(eng<span class="sc">$</span>income, <span class="fu">resid</span>(by_hand), <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="fu">adjustcolor</span>(col_blue, <span class="fl">0.6</span>), <span class="at">las =</span> <span class="dv">1</span>,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"income ($000)"</span>, <span class="at">ylab =</span> <span class="st">"transformed residual"</span>, <span class="at">main =</span> <span class="st">"Transformed model: a band"</span>)</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-wls" class="quarto-float quarto-figure quarto-figure-center anchored" width="864">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-wls-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="GLS_Companion_files/figure-html/fig-wls-1.png" id="fig-wls" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-wls-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="the-gls-formula-by-hand" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="the-gls-formula-by-hand"><span class="header-section-number">5.3</span> The GLS formula by hand</h2>
+<p><span class="math display">\[\hat{\boldsymbol\beta}_{GLS} = (\mathbf{X}'\boldsymbol\Omega^{-1}\mathbf{X})^{-1}\mathbf{X}'\boldsymbol\Omega^{-1}\mathbf{y}, \qquad \widehat{\text{Var}}(\hat{\boldsymbol\beta}_{GLS}) = \hat\sigma^2(\mathbf{X}'\boldsymbol\Omega^{-1}\mathbf{X})^{-1}, \qquad \hat\sigma^2 = \frac{1}{N-k}\sum_i \frac{(y_i - \mathbf{x}_i'\hat{\boldsymbol\beta})^2}{\omega_i}\]</span></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>y      <span class="ot">&lt;-</span> eng<span class="sc">$</span>food</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>Oinv   <span class="ot">&lt;-</span> <span class="fu">diag</span>(<span class="dv">1</span> <span class="sc">/</span> eng<span class="sc">$</span>income<span class="sc">^</span><span class="dv">2</span>)                       <span class="co"># Omega^{-1}, with omega_i = income_i^2</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>XOX    <span class="ot">&lt;-</span> <span class="fu">t</span>(X) <span class="sc">%*%</span> Oinv <span class="sc">%*%</span> X</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>b_gls  <span class="ot">&lt;-</span> <span class="fu">solve</span>(XOX, <span class="fu">t</span>(X) <span class="sc">%*%</span> Oinv <span class="sc">%*%</span> y)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>s2_gls <span class="ot">&lt;-</span> <span class="fu">sum</span>((y <span class="sc">-</span> X <span class="sc">%*%</span> b_gls)<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> eng<span class="sc">$</span>income<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> (n <span class="sc">-</span> k)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(<span class="st">`</span><span class="at">GLS formula</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(b_gls, <span class="at">SE =</span> <span class="fu">sqrt</span>(s2_gls <span class="sc">*</span> <span class="fu">solve</span>(XOX)[<span class="dv">2</span>, <span class="dv">2</span>])),</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>      <span class="st">`</span><span class="at">lm(weights)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">coef</span>(wls), <span class="at">SE =</span> <span class="fu">se2</span>(<span class="fu">vcov</span>(wls))))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                         SE
+GLS formula 2.083491 0.09875226 0.003864685
+lm(weights) 2.083491 0.09875226 0.003864685</code></pre>
+</div>
+</div>
+</section>
+<section id="feasible-gls-estimate-the-weights" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="feasible-gls-estimate-the-weights"><span class="header-section-number">5.4</span> Feasible GLS: estimate the weights</h2>
+<p>In practice we don’t know <span class="math inline">\(\omega_i\)</span>. Harvey’s model assumes <span class="math inline">\(\text{Var}(\varepsilon_i) = \sigma^2 \exp(\gamma \log \text{income}_i)\)</span>; with <span class="math inline">\(\text{sd} \propto \text{income}\)</span>, the true <span class="math inline">\(\gamma = 2\)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>aux_h <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(<span class="fu">resid</span>(ols)<span class="sc">^</span><span class="dv">2</span>) <span class="sc">~</span> <span class="fu">log</span>(income), <span class="at">data =</span> eng)    <span class="co"># step 2: skedastic regression</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>fgls  <span class="ot">&lt;-</span> <span class="fu">lm</span>(food <span class="sc">~</span> income, <span class="at">data =</span> eng, <span class="at">weights =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="fu">exp</span>(<span class="fu">fitted</span>(aux_h)))   <span class="co"># steps 3-4</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">`</span><span class="at">gamma-hat (truth 2)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">coef</span>(aux_h)[[<span class="dv">2</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>gamma-hat (truth 2) 
+            2.13646 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Estimator =</span> <span class="fu">c</span>(<span class="st">"OLS (HC1 SE)"</span>, <span class="st">"WLS, true weights"</span>, <span class="st">"FGLS, estimated weights"</span>),</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Slope =</span> <span class="fu">sprintf</span>(<span class="st">"%.4f"</span>, <span class="fu">c</span>(<span class="fu">coef</span>(ols)[<span class="dv">2</span>], <span class="fu">coef</span>(wls)[<span class="dv">2</span>], <span class="fu">coef</span>(fgls)[<span class="dv">2</span>])),</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">SE    =</span> <span class="fu">sprintf</span>(<span class="st">"%.4f"</span>, <span class="fu">c</span>(<span class="fu">se2</span>(<span class="fu">vcovHC</span>(ols, <span class="st">"HC1"</span>)), <span class="fu">se2</span>(<span class="fu">vcov</span>(wls)), <span class="fu">se2</span>(<span class="fu">vcov</span>(fgls))))))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Estimator</th>
+<th style="text-align: left;">Slope</th>
+<th style="text-align: left;">SE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">OLS (HC1 SE)</td>
+<td style="text-align: left;">0.1047</td>
+<td style="text-align: left;">0.0064</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">WLS, true weights</td>
+<td style="text-align: left;">0.0988</td>
+<td style="text-align: left;">0.0039</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FGLS, estimated weights</td>
+<td style="text-align: left;">0.0982</td>
+<td style="text-align: left;">0.0039</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The intercept of the skedastic regression is off by a constant (the mean of <span class="math inline">\(\log \chi^2_1\)</span> is not zero), but that rescales every weight by the same factor, which changes nothing.</p>
+</section>
+<section id="correct-weights-wrong-weights-and-ols" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="correct-weights-wrong-weights-and-ols"><span class="header-section-number">5.5</span> Correct weights, wrong weights, and OLS</h2>
+<p>From the 2,000 samples in Part 1:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Estimator =</span> <span class="fu">c</span>(<span class="st">"OLS"</span>, <span class="st">"WLS, correct weights 1/income^2"</span>, <span class="st">"WLS, wrong weights 1/income"</span>),</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Mean =</span> <span class="fu">sprintf</span>(<span class="st">"%.4f"</span>, <span class="fu">colMeans</span>(mc_e[, <span class="fu">c</span>(<span class="st">"b"</span>, <span class="st">"bw"</span>, <span class="st">"bwr"</span>)])),</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">SD of estimates</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.4f"</span>, <span class="fu">apply</span>(mc_e[, <span class="fu">c</span>(<span class="st">"b"</span>, <span class="st">"bw"</span>, <span class="st">"bwr"</span>)], <span class="dv">2</span>, sd)),</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Rejects true H0 (default SE)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.1f%%"</span>, <span class="dv">100</span> <span class="sc">*</span> <span class="fu">c</span>(<span class="fu">rej</span>(mc_e[, <span class="st">"b"</span>], mc_e[, <span class="st">"se"</span>]),</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>                                                            <span class="fu">rej</span>(mc_e[, <span class="st">"bw"</span>], mc_e[, <span class="st">"sew"</span>]),</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>                                                            <span class="fu">rej</span>(mc_e[, <span class="st">"bwr"</span>], mc_e[, <span class="st">"sewr"</span>]))),</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Rejects true H0 (HC1 robust SE)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.1f%%"</span>, <span class="dv">100</span> <span class="sc">*</span> <span class="fu">c</span>(<span class="fu">rej</span>(mc_e[, <span class="st">"b"</span>], mc_e[, <span class="st">"hc1"</span>]),</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>                                                              <span class="fu">rej</span>(mc_e[, <span class="st">"bw"</span>], mc_e[, <span class="st">"sew_hc"</span>]),</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>                                                              <span class="fu">rej</span>(mc_e[, <span class="st">"bwr"</span>], mc_e[, <span class="st">"sewr_hc"</span>]))),</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 6%">
+<col style="width: 13%">
+<col style="width: 25%">
+<col style="width: 27%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Estimator</th>
+<th style="text-align: left;">Mean</th>
+<th style="text-align: left;">SD of estimates</th>
+<th style="text-align: left;">Rejects true H0 (default SE)</th>
+<th style="text-align: left;">Rejects true H0 (HC1 robust SE)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">OLS</td>
+<td style="text-align: left;">0.1000</td>
+<td style="text-align: left;">0.0073</td>
+<td style="text-align: left;">31.2%</td>
+<td style="text-align: left;">8.9%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">WLS, correct weights 1/income^2</td>
+<td style="text-align: left;">0.1000</td>
+<td style="text-align: left;">0.0037</td>
+<td style="text-align: left;">4.8%</td>
+<td style="text-align: left;">5.1%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">WLS, wrong weights 1/income</td>
+<td style="text-align: left;">0.1000</td>
+<td style="text-align: left;">0.0046</td>
+<td style="text-align: left;">10.8%</td>
+<td style="text-align: left;">5.9%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Each rejection column uses that row’s <strong>own</strong> estimator; the robust column computes HC1 standard errors for the WLS coefficients themselves (<code>vcovHC()</code> works on weighted regressions).</p>
+<ul>
+<li>All three are <strong>unbiased</strong>: weights that depend only on <span class="math inline">\(x\)</span> cannot bias the coefficients when <span class="math inline">\(E[\varepsilon \mid x] = 0\)</span>.</li>
+<li>Correct weights halve the spread relative to OLS; wrong weights land in between.</li>
+<li>Wrong weights make the <strong>default WLS standard errors wrong</strong>; robust SEs repair them. Hence the recipe: <strong>WLS/FGLS for efficiency + robust SEs for honesty.</strong></li>
+</ul>
+</section>
+<section id="when-the-choice-of-weights-does-change-the-answer" class="level2" data-number="5.6">
+<h2 data-number="5.6" class="anchored" data-anchor-id="when-the-choice-of-weights-does-change-the-answer"><span class="header-section-number">5.6</span> When the choice of weights does change the answer</h2>
+<p>The “no bias” result needs a correct regression model <strong>and</strong> weights built from <span class="math inline">\(x\)</span> alone. Two ways it fails:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">3</span>)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>mc_bias <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">replicate</span>(<span class="dv">2000</span>, {</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  d <span class="ot">&lt;-</span> <span class="fu">make_engel</span>(<span class="at">seed =</span> <span class="cn">NULL</span>)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># (a) misspecified model: the food share of extra income rises with income</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  d<span class="sc">$</span>food_het <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">+</span> (<span class="fl">0.06</span> <span class="sc">+</span> <span class="fl">0.0006</span> <span class="sc">*</span> d<span class="sc">$</span>income) <span class="sc">*</span> d<span class="sc">$</span>income <span class="sc">+</span> (d<span class="sc">$</span>food <span class="sc">-</span> <span class="dv">2</span> <span class="sc">-</span> <span class="fl">0.10</span> <span class="sc">*</span> d<span class="sc">$</span>income)</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">`</span><span class="at">(a) OLS</span><span class="st">`</span>              <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">lm</span>(food_het <span class="sc">~</span> income, <span class="at">data =</span> d))[[<span class="dv">2</span>]],</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">(a) WLS 1/income^2</span><span class="st">`</span>   <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">lm</span>(food_het <span class="sc">~</span> income, <span class="at">data =</span> d, <span class="at">weights =</span> <span class="dv">1</span> <span class="sc">/</span> income<span class="sc">^</span><span class="dv">2</span>))[[<span class="dv">2</span>]],</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">(a) WLS 1/income</span><span class="st">`</span>     <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">lm</span>(food_het <span class="sc">~</span> income, <span class="at">data =</span> d, <span class="at">weights =</span> <span class="dv">1</span> <span class="sc">/</span> income))[[<span class="dv">2</span>]],</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># (b) weights built from y instead of x (correct model, truth 0.10)</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">(b) WLS 1/food^2</span><span class="st">`</span>     <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">lm</span>(food <span class="sc">~</span> income, <span class="at">data =</span> d, <span class="at">weights =</span> <span class="dv">1</span> <span class="sc">/</span> food<span class="sc">^</span><span class="dv">2</span>))[[<span class="dv">2</span>]])</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>}))</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(<span class="st">`</span><span class="at">Average estimate</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, <span class="fu">colMeans</span>(mc_bias)), <span class="at">check.names =</span> <span class="cn">FALSE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Average estimate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">0.177</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0.134</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">0.153</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0.086</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li><strong>(a)</strong> With no single slope, OLS and each WLS estimate a <strong>different weighted average</strong> of the households’ slopes. OLS’s target - the best linear approximation to the true relationship - is the only one that doesn’t depend on a model of the variance.</li>
+<li><strong>(b)</strong> Weights built from <span class="math inline">\(y\)</span> depend on the error, so they bias the estimate even when the model is right.</li>
+<li><strong>(c)</strong> In time series, AR(1) FGLS needs <strong>strict</strong> exogeneity (Part 5).</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="part-5.-serial-correlation" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Part 5. Serial Correlation</h1>
+<section id="a-simulated-consumption-function" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="a-simulated-consumption-function"><span class="header-section-number">6.1</span> A simulated consumption function</h2>
+<p>Quarterly consumption and income over <span class="math inline">\(T = 120\)</span> quarters:</p>
+<p><span class="math display">\[\text{cons}_t = 5 + 0.8\,\text{income}_t + \varepsilon_t, \qquad \varepsilon_t = 0.7\,\varepsilon_{t-1} + u_t\]</span></p>
+<p>Consumption shocks persist (an <strong>AR(1)</strong> error), and income fluctuations persist too (<span class="math inline">\(\rho_x = 0.8\)</span>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>make_cons <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">T =</span> <span class="dv">120</span>, <span class="at">rho =</span> <span class="fl">0.7</span>, <span class="at">rho_y =</span> <span class="fl">0.8</span>, <span class="at">seed =</span> <span class="dv">1990</span>) {</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(seed)) <span class="fu">set.seed</span>(seed)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> e <span class="ot">&lt;-</span> <span class="fu">numeric</span>(T)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  y[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">4</span> <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">-</span> rho_y<span class="sc">^</span><span class="dv">2</span>)); e[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span> <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">-</span> rho<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>T) {</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>    y[t] <span class="ot">&lt;-</span> rho_y <span class="sc">*</span> y[t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">4</span>)          <span class="co"># income fluctuations persist</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>    e[t] <span class="ot">&lt;-</span> rho   <span class="sc">*</span> e[t <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>)          <span class="co"># consumption shocks persist</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>  income <span class="ot">&lt;-</span> <span class="dv">100</span> <span class="sc">+</span> y</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">quarter =</span> <span class="dv">1</span><span class="sc">:</span>T, income, <span class="at">cons =</span> <span class="dv">5</span> <span class="sc">+</span> <span class="fl">0.8</span> <span class="sc">*</span> income <span class="sc">+</span> e)</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>cs <span class="ot">&lt;-</span> <span class="fu">make_cons</span>()</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>ols_c <span class="ot">&lt;-</span> <span class="fu">lm</span>(cons <span class="sc">~</span> income, <span class="at">data =</span> cs)</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>e_c <span class="ot">&lt;-</span> <span class="fu">resid</span>(ols_c); TT <span class="ot">&lt;-</span> <span class="fu">nrow</span>(cs)</span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(<span class="fu">summary</span>(ols_c))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             Estimate Std. Error   t value     Pr(&gt;|t|)
+(Intercept) 8.0564543 1.54938589  5.199773 8.490381e-07
+income      0.7648968 0.01609709 47.517701 8.765658e-79</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cs<span class="sc">$</span>quarter, e_c, <span class="at">type =</span> <span class="st">"o"</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="fl">0.5</span>, <span class="at">col =</span> <span class="st">"firebrick"</span>, <span class="at">las =</span> <span class="dv">1</span>,</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"quarter"</span>, <span class="at">ylab =</span> <span class="st">"OLS residual"</span>, <span class="at">main =</span> <span class="st">"Residuals over time"</span>)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(e_c[<span class="sc">-</span>TT], e_c[<span class="sc">-</span><span class="dv">1</span>], <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="fu">adjustcolor</span>(<span class="st">"firebrick"</span>, <span class="fl">0.6</span>), <span class="at">las =</span> <span class="dv">1</span>,</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"residual, quarter t-1"</span>, <span class="at">ylab =</span> <span class="st">"residual, quarter t"</span>,</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="fu">sprintf</span>(<span class="st">"Corr = %.2f"</span>, <span class="fu">cor</span>(e_c[<span class="sc">-</span><span class="dv">1</span>], e_c[<span class="sc">-</span>TT])))</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">lm</span>(e_c[<span class="sc">-</span><span class="dv">1</span>] <span class="sc">~</span> e_c[<span class="sc">-</span>TT]), <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-ar1" class="quarto-float quarto-figure quarto-figure-center anchored" width="864">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ar1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="GLS_Companion_files/figure-html/fig-ar1-1.png" id="fig-ar1" class="img-fluid figure-img" width="864">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-ar1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="less-information-than-it-looks" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="less-information-than-it-looks"><span class="header-section-number">6.2</span> Less information than it looks</h2>
+<p>When both the regressor and the error are AR(1), the true variance of the OLS slope is approximately <span class="math inline">\((1 + \rho_x\rho)/(1 - \rho_x\rho)\)</span> times what the default formula says. With 2,000 simulated samples (this simulation also stores the estimators used later in this part):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>prais_winsten <span class="ot">&lt;-</span> <span class="cf">function</span>(d, <span class="at">rho =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  o <span class="ot">&lt;-</span> <span class="fu">lm</span>(cons <span class="sc">~</span> income, <span class="at">data =</span> d); e <span class="ot">&lt;-</span> <span class="fu">resid</span>(o); Tn <span class="ot">&lt;-</span> <span class="fu">nrow</span>(d)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.null</span>(rho)) rho <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">lm</span>(e[<span class="sc">-</span><span class="dv">1</span>] <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> e[<span class="sc">-</span>Tn]))[[<span class="dv">1</span>]]       <span class="co"># step 2: estimate rho</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  s <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">-</span> rho<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  ystar <span class="ot">&lt;-</span> <span class="fu">c</span>(s <span class="sc">*</span> d<span class="sc">$</span>cons[<span class="dv">1</span>],   d<span class="sc">$</span>cons[<span class="sc">-</span><span class="dv">1</span>]   <span class="sc">-</span> rho <span class="sc">*</span> d<span class="sc">$</span>cons[<span class="sc">-</span>Tn])     <span class="co"># step 3: quasi-difference</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  xstar <span class="ot">&lt;-</span> <span class="fu">c</span>(s <span class="sc">*</span> d<span class="sc">$</span>income[<span class="dv">1</span>], d<span class="sc">$</span>income[<span class="sc">-</span><span class="dv">1</span>] <span class="sc">-</span> rho <span class="sc">*</span> d<span class="sc">$</span>income[<span class="sc">-</span>Tn])</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  cstar <span class="ot">&lt;-</span> <span class="fu">c</span>(s, <span class="fu">rep</span>(<span class="dv">1</span> <span class="sc">-</span> rho, Tn <span class="sc">-</span> <span class="dv">1</span>))                               <span class="co"># the transformed constant</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">rho =</span> rho, <span class="at">fit =</span> <span class="fu">lm</span>(ystar <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> cstar <span class="sc">+</span> xstar))             <span class="co"># step 4: OLS</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>L_nw <span class="ot">&lt;-</span> <span class="fu">floor</span>(<span class="fl">0.75</span> <span class="sc">*</span> TT<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>))                                      <span class="co"># rule of thumb: 3 here</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">11</span>)</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>mc_c <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">replicate</span>(<span class="dv">2000</span>, {</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>  d <span class="ot">&lt;-</span> <span class="fu">make_cons</span>(<span class="at">seed =</span> <span class="cn">NULL</span>); o <span class="ot">&lt;-</span> <span class="fu">lm</span>(cons <span class="sc">~</span> income, <span class="at">data =</span> d); p <span class="ot">&lt;-</span> <span class="fu">prais_winsten</span>(d)</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">b =</span> <span class="fu">coef</span>(o)[[<span class="dv">2</span>]], <span class="at">se =</span> <span class="fu">se2</span>(<span class="fu">vcov</span>(o)),</span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">nw   =</span> <span class="fu">se2</span>(<span class="fu">NeweyWest</span>(o, <span class="at">lag =</span> L_nw, <span class="at">prewhite =</span> <span class="cn">FALSE</span>)),</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">nw8  =</span> <span class="fu">se2</span>(<span class="fu">NeweyWest</span>(o, <span class="at">lag =</span> <span class="dv">8</span>, <span class="at">prewhite =</span> <span class="cn">FALSE</span>)),</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">nwau =</span> <span class="fu">se2</span>(<span class="fu">NeweyWest</span>(o)),                                         <span class="co"># package default: automatic lag, prewhitening</span></span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">bp =</span> <span class="fu">coef</span>(p<span class="sc">$</span>fit)[[<span class="st">"xstar"</span>]], <span class="at">sep =</span> <span class="fu">se2</span>(<span class="fu">vcov</span>(p<span class="sc">$</span>fit)))</span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>}))</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">`</span><span class="at">mean OLS slope (truth 0.8)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">mean</span>(mc_c[, <span class="st">"b"</span>]),</span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">(actual SD / avg default SE)^2</span><span class="st">`</span> <span class="ot">=</span> (<span class="fu">sd</span>(mc_c[, <span class="st">"b"</span>]) <span class="sc">/</span> <span class="fu">mean</span>(mc_c[, <span class="st">"se"</span>]))<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">formula (1 + 0.8*0.7)/(1 - 0.8*0.7)</span><span class="st">`</span> <span class="ot">=</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="fl">0.56</span>) <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">-</span> <span class="fl">0.56</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         mean OLS slope (truth 0.8)      (actual SD / avg default SE)^2 
+                          0.7991894                           3.4007143 
+formula (1 + 0.8*0.7)/(1 - 0.8*0.7) 
+                          3.5454545 </code></pre>
+</div>
+</div>
+<p>So 120 correlated quarters carry about as much information as 34 independent ones. A 5% test of the true null with the default SE rejects 28% of the time.</p>
+</section>
+<section id="detecting-it-breuschgodfrey-and-durbinwatson-by-hand" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="detecting-it-breuschgodfrey-and-durbinwatson-by-hand"><span class="header-section-number">6.3</span> Detecting it: Breusch–Godfrey and Durbin–Watson, by hand</h2>
+<p><strong>Breusch–Godfrey:</strong> regress <span class="math inline">\(e_t\)</span> on the regressors and <span class="math inline">\(p\)</span> lags of <span class="math inline">\(e_t\)</span> (missing lags set to 0); <span class="math inline">\(LM = T \cdot R^2 \sim \chi^2_p\)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>bg_by_hand <span class="ot">&lt;-</span> <span class="cf">function</span>(e, x, p) {</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  lags <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>p, <span class="cf">function</span>(l) <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, l), <span class="fu">head</span>(e, <span class="sc">-</span>l)))</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">length</span>(e) <span class="sc">*</span> <span class="fu">summary</span>(<span class="fu">lm</span>(e <span class="sc">~</span> x <span class="sc">+</span> lags))<span class="sc">$</span>r.squared</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>dw_by_hand <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">diff</span>(e_c)<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> <span class="fu">sum</span>(e_c<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">Test =</span> <span class="fu">c</span>(<span class="st">"Breusch-Godfrey, p = 1"</span>, <span class="st">"Breusch-Godfrey, p = 4"</span>, <span class="st">"Durbin-Watson"</span>),</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">By hand</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, <span class="fu">c</span>(<span class="fu">bg_by_hand</span>(e_c, cs<span class="sc">$</span>income, <span class="dv">1</span>), <span class="fu">bg_by_hand</span>(e_c, cs<span class="sc">$</span>income, <span class="dv">4</span>), dw_by_hand)),</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">lmtest</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, <span class="fu">c</span>(<span class="fu">bgtest</span>(ols_c, <span class="at">order =</span> <span class="dv">1</span>)<span class="sc">$</span>statistic, <span class="fu">bgtest</span>(ols_c, <span class="at">order =</span> <span class="dv">4</span>)<span class="sc">$</span>statistic,</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>                               <span class="fu">dwtest</span>(ols_c)<span class="sc">$</span>statistic)),</span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Test</th>
+<th style="text-align: left;">By hand</th>
+<th style="text-align: left;">lmtest</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Breusch-Godfrey, p = 1</td>
+<td style="text-align: left;">60.511</td>
+<td style="text-align: left;">60.511</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Breusch-Godfrey, p = 4</td>
+<td style="text-align: left;">62.191</td>
+<td style="text-align: left;">62.191</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Durbin-Watson</td>
+<td style="text-align: left;">0.577</td>
+<td style="text-align: left;">0.577</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Durbin–Watson is approximately <span class="math inline">\(2(1 - \hat\rho)\)</span>: here <span class="math inline">\(2(1 - 0.71) \approx 0.58\)</span>. It is only valid with strictly exogenous regressors (for example, no lagged dependent variable); Breusch–Godfrey has no such restriction.</p>
+</section>
+<section id="fix-1-neweywest-by-hand" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="fix-1-neweywest-by-hand"><span class="header-section-number">6.4</span> Fix 1: Newey–West by hand</h2>
+<p>The meat adds covariances between nearby periods, with Bartlett weights <span class="math inline">\(w_l = 1 - l/(L+1)\)</span>:</p>
+<p><span class="math display">\[\hat{\mathbf S} = \sum_t e_t^2\,\mathbf{x}_t\mathbf{x}_t' + \sum_{l=1}^{L} w_l \sum_{t=l+1}^{T} e_t e_{t-l}\left(\mathbf{x}_t\mathbf{x}_{t-l}' + \mathbf{x}_{t-l}\mathbf{x}_t'\right)\]</span></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>Xc <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(ols_c)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>S  <span class="ot">&lt;-</span> <span class="fu">crossprod</span>(Xc <span class="sc">*</span> e_c)                                   <span class="co"># l = 0: the White meat</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (l <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>L_nw) {</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  G <span class="ot">&lt;-</span> <span class="fu">crossprod</span>(Xc[(l <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>TT, , <span class="at">drop =</span> <span class="cn">FALSE</span>] <span class="sc">*</span> e_c[(l <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>TT],</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>                 Xc[<span class="dv">1</span><span class="sc">:</span>(TT <span class="sc">-</span> l), , <span class="at">drop =</span> <span class="cn">FALSE</span>] <span class="sc">*</span> e_c[<span class="dv">1</span><span class="sc">:</span>(TT <span class="sc">-</span> l)])   <span class="co"># sum_t e_t e_{t-l} x_t x_{t-l}'</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  S <span class="ot">&lt;-</span> S <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">-</span> l <span class="sc">/</span> (L_nw <span class="sc">+</span> <span class="dv">1</span>)) <span class="sc">*</span> (G <span class="sc">+</span> <span class="fu">t</span>(G))</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>bread_c <span class="ot">&lt;-</span> <span class="fu">solve</span>(<span class="fu">crossprod</span>(Xc))</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">`</span><span class="at">by hand</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">se2</span>(bread_c <span class="sc">%*%</span> S <span class="sc">%*%</span> bread_c),</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">NeweyWest(lag = 3, prewhite = FALSE)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">se2</span>(<span class="fu">NeweyWest</span>(ols_c, <span class="at">lag =</span> L_nw, <span class="at">prewhite =</span> <span class="cn">FALSE</span>)),</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">default SE</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">se2</span>(<span class="fu">vcov</span>(ols_c)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                             by hand NeweyWest(lag = 3, prewhite = FALSE) 
+                          0.02670752                           0.02670752 
+                          default SE 
+                          0.01609709 </code></pre>
+</div>
+</div>
+<p>How well does it repair inference?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Standard error</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"Default"</span>, <span class="fu">sprintf</span>(<span class="st">"Newey-West, L = %d"</span>, L_nw), <span class="st">"Newey-West, L = 8"</span>,</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"NeweyWest() defaults (automatic L, prewhitening)"</span>),</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Rejects true H0 (target 5%)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.1f%%"</span>, <span class="dv">100</span> <span class="sc">*</span> <span class="fu">c</span>(<span class="fu">rej</span>(mc_c[, <span class="st">"b"</span>], mc_c[, <span class="st">"se"</span>], <span class="fl">0.8</span>),</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>                                                          <span class="fu">rej</span>(mc_c[, <span class="st">"b"</span>], mc_c[, <span class="st">"nw"</span>], <span class="fl">0.8</span>),</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>                                                          <span class="fu">rej</span>(mc_c[, <span class="st">"b"</span>], mc_c[, <span class="st">"nw8"</span>], <span class="fl">0.8</span>),</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>                                                          <span class="fu">rej</span>(mc_c[, <span class="st">"b"</span>], mc_c[, <span class="st">"nwau"</span>], <span class="fl">0.8</span>))),</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 63%">
+<col style="width: 36%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Standard error</th>
+<th style="text-align: left;">Rejects true H0 (target 5%)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Default</td>
+<td style="text-align: left;">28.0%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Newey-West, L = 3</td>
+<td style="text-align: left;">16.5%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Newey-West, L = 8</td>
+<td style="text-align: left;">14.3%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NeweyWest() defaults (automatic L, prewhitening)</td>
+<td style="text-align: left;">9.4%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Much better than the default, but not 5%: with persistent errors <strong>and</strong> a persistent regressor, 120 quarters is a short sample for HAC standard errors. The package defaults do noticeably better here (9.4%): prewhitening first removes most of the AR(1) persistence from the residual-regressor products, then applies Newey–West to what is left. The textbook formula with a rule-of-thumb <span class="math inline">\(L\)</span> is the one to understand; in applied work, <code>NeweyWest(fit)</code> with its defaults is a reasonable choice.</p>
+</section>
+<section id="fix-2-gls-for-ar1-errors" class="level2" data-number="6.5">
+<h2 data-number="6.5" class="anchored" data-anchor-id="fix-2-gls-for-ar1-errors"><span class="header-section-number">6.5</span> Fix 2: GLS for AR(1) errors</h2>
+<p><strong>The transformation matrix.</strong> For AR(1) errors, <span class="math inline">\(\mathbf{C}\)</span> quasi-differences each row and rescales the first by <span class="math inline">\(\sqrt{1-\rho^2}\)</span>. Check that it turns <span class="math inline">\(\boldsymbol\Sigma\)</span> into <span class="math inline">\(\sigma_u^2\mathbf{I}\)</span> (with <span class="math inline">\(\sigma_u = 1\)</span>):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>rho <span class="ot">&lt;-</span> <span class="fl">0.7</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>Sigma <span class="ot">&lt;-</span> rho<span class="sc">^</span><span class="fu">abs</span>(<span class="fu">outer</span>(<span class="dv">1</span><span class="sc">:</span>TT, <span class="dv">1</span><span class="sc">:</span>TT, <span class="st">"-"</span>)) <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">-</span> rho<span class="sc">^</span><span class="dv">2</span>)       <span class="co"># Var(eps_t) = 1/(1 - rho^2), sigma_u = 1</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>C <span class="ot">&lt;-</span> <span class="fu">diag</span>(TT); C[<span class="dv">1</span>, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">-</span> rho<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>C[<span class="fu">cbind</span>(<span class="dv">2</span><span class="sc">:</span>TT, <span class="dv">1</span><span class="sc">:</span>(TT <span class="sc">-</span> <span class="dv">1</span>))] <span class="ot">&lt;-</span> <span class="sc">-</span>rho</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">`</span><span class="at">max |C Sigma C' - I|</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">max</span>(<span class="fu">abs</span>(C <span class="sc">%*%</span> Sigma <span class="sc">%*%</span> <span class="fu">t</span>(C) <span class="sc">-</span> <span class="fu">diag</span>(TT))))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>max |C Sigma C' - I| 
+        1.110223e-16 </code></pre>
+</div>
+</div>
+<p><strong>GLS with the true <span class="math inline">\(\rho\)</span> two ways</strong> - the matrix formula and the Prais–Winsten transformation - give the same estimate:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>y_c <span class="ot">&lt;-</span> cs<span class="sc">$</span>cons</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>Si  <span class="ot">&lt;-</span> <span class="fu">solve</span>(Sigma)</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>b_matrix <span class="ot">&lt;-</span> <span class="fu">solve</span>(<span class="fu">t</span>(Xc) <span class="sc">%*%</span> Si <span class="sc">%*%</span> Xc, <span class="fu">t</span>(Xc) <span class="sc">%*%</span> Si <span class="sc">%*%</span> y_c)</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(<span class="st">`</span><span class="at">(X' Sigma^-1 X)^-1 X' Sigma^-1 y</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(b_matrix),</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>      <span class="st">`</span><span class="at">Prais-Winsten with rho = 0.7</span><span class="st">`</span>     <span class="ot">=</span> <span class="fu">coef</span>(<span class="fu">prais_winsten</span>(cs, <span class="at">rho =</span> <span class="fl">0.7</span>)<span class="sc">$</span>fit))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                    cstar    xstar
+(X' Sigma^-1 X)^-1 X' Sigma^-1 y 8.647439 0.758673
+Prais-Winsten with rho = 0.7     8.647439 0.758673</code></pre>
+</div>
+</div>
+<p><strong>Feasible GLS</strong> estimates <span class="math inline">\(\rho\)</span> from the OLS residuals first. <code>nlme::gls()</code> fits the same model by maximum likelihood:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>pw  <span class="ot">&lt;-</span> <span class="fu">prais_winsten</span>(cs)</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>gl  <span class="ot">&lt;-</span> <span class="fu">gls</span>(cons <span class="sc">~</span> income, <span class="at">data =</span> cs, <span class="at">correlation =</span> <span class="fu">corAR1</span>(<span class="at">form =</span> <span class="sc">~</span> quarter))</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Estimator =</span> <span class="fu">c</span>(<span class="st">"OLS + Newey-West"</span>, <span class="st">"Prais-Winsten FGLS"</span>, <span class="st">"nlme::gls, AR(1)"</span>),</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">rho-hat</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">""</span>, <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, pw<span class="sc">$</span>rho), <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, <span class="fu">coef</span>(gl<span class="sc">$</span>modelStruct<span class="sc">$</span>corStruct, <span class="at">unconstrained =</span> <span class="cn">FALSE</span>)[[<span class="dv">1</span>]])),</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Slope =</span> <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, <span class="fu">c</span>(<span class="fu">coef</span>(ols_c)[<span class="dv">2</span>], <span class="fu">coef</span>(pw<span class="sc">$</span>fit)[[<span class="st">"xstar"</span>]], <span class="fu">coef</span>(gl)[[<span class="dv">2</span>]])),</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">SE =</span> <span class="fu">sprintf</span>(<span class="st">"%.4f"</span>, <span class="fu">c</span>(<span class="fu">se2</span>(<span class="fu">NeweyWest</span>(ols_c, <span class="at">lag =</span> L_nw, <span class="at">prewhite =</span> <span class="cn">FALSE</span>)), <span class="fu">se2</span>(<span class="fu">vcov</span>(pw<span class="sc">$</span>fit)),</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">summary</span>(gl)<span class="sc">$</span>tTable[<span class="dv">2</span>, <span class="dv">2</span>])),</span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Estimator</th>
+<th style="text-align: left;">rho-hat</th>
+<th style="text-align: left;">Slope</th>
+<th style="text-align: left;">SE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">OLS + Newey-West</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">0.765</td>
+<td style="text-align: left;">0.0267</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Prais-Winsten FGLS</td>
+<td style="text-align: left;">0.711</td>
+<td style="text-align: left;">0.759</td>
+<td style="text-align: left;">0.0197</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">nlme::gls, AR(1)</td>
+<td style="text-align: left;">0.723</td>
+<td style="text-align: left;">0.758</td>
+<td style="text-align: left;">0.0198</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Across the 2,000 samples, Prais–Winsten has an SD of 0.0232 against OLS’s 0.0363, and its own standard errors reject the true null 6.6% of the time.</p>
+<p><strong>The catch: strict exogeneity.</strong> The transformed regressor <span class="math inline">\(x_t - \rho x_{t-1}\)</span> contains last quarter’s income, so the error must be unrelated to past, present, <strong>and future</strong> regressors. That fails, for example, with a lagged dependent variable, and then FGLS is inconsistent. OLS with Newey–West standard errors needs only <strong>contemporaneous</strong> exogeneity - a weaker condition - but a lagged dependent variable combined with persistent errors violates that too: <span class="math inline">\(\text{cons}_{t-1}\)</span> contains <span class="math inline">\(\varepsilon_{t-1}\)</span>, which is correlated with <span class="math inline">\(\varepsilon_t\)</span>. Then OLS is inconsistent as well.</p>
+<hr>
+</section>
+</section>
+<section id="common-mistakes" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Common Mistakes</h1>
+<ol type="1">
+<li><strong>“Heteroskedasticity biases my coefficients.”</strong> It doesn’t: OLS stays centred on the truth (Part 1). It breaks the standard errors and costs efficiency.</li>
+<li><strong>“The Breusch–Pagan test didn’t reject, so default SEs are fine.”</strong> Not rejecting is not proof of homoskedasticity (Part 2).</li>
+<li><strong>“Robust SEs make OLS efficient.”</strong> They fix inference, not precision (Part 3).</li>
+<li><strong><code>lm(..., weights = 1/sd)</code>.</strong> <code>lm()</code> weights are one over the <strong>variance</strong> (Part 4).</li>
+<li><strong>Reporting WLS/FGLS with default SEs.</strong> If the variance model is wrong, those SEs are wrong; add robust SEs (Part 4).</li>
+<li><strong>Assuming HAC SEs are exact in short, persistent time series.</strong> Newey–West helps but can still over-reject (Part 5).</li>
+<li><strong>Prais–Winsten or Cochrane–Orcutt with a lagged dependent variable.</strong> FGLS needs strict exogeneity (Part 5).</li>
+</ol>
+<hr>
+</section>
+<section id="summary-and-key-takeaways" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Summary and Key Takeaways</h1>
+<ol type="1">
+<li><strong>When A4 fails</strong>, OLS is still unbiased (Engel: average 0.1000 vs truth 0.10), but default SEs are wrong: 31% false rejections with heteroskedasticity, 28% with AR(1) errors.</li>
+<li><strong>Detect</strong> with plots first; Breusch–Pagan/White for heteroskedasticity, Breusch–Godfrey for serial correlation - all <span class="math inline">\(N R^2\)</span> statistics from an auxiliary regression.</li>
+<li><strong>Robust SEs</strong> estimate the <span class="math inline">\(k \times k\)</span> meat <span class="math inline">\(\mathbf X'\boldsymbol\Sigma\mathbf X\)</span>, not the <span class="math inline">\(N \times N\)</span> matrix <span class="math inline">\(\boldsymbol\Sigma\)</span>. White (HC) for cross-sections, Newey–West (HAC) for time series. They fix inference, not efficiency.</li>
+<li><strong>GLS</strong> transforms the model so A4 holds: WLS divides by the noise level; AR(1) GLS quasi-differences. With the right weights the Engel estimates are half as spread out as OLS.</li>
+<li><strong>FGLS</strong> needs a model of the variance. Wrong weights cost efficiency and make the GLS SEs wrong (use robust SEs), but don’t bias the coefficients - unless the model itself is misspecified, the weights depend on <span class="math inline">\(y\)</span>, or (in time series) the regressors are not strictly exogenous.</li>
+<li><strong>The default in practice</strong> is OLS with robust SEs: no variance model needed, a clear target even if the model is wrong, weaker exogeneity in time series. The price is efficiency.</li>
+</ol>
+<hr>
+</section>
+<section id="further-reading" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> Further Reading</h1>
+<ul>
+<li>Greene, W. H. <em>Econometric Analysis</em>. Pearson. The chapters on the generalized regression model and heteroscedasticity, and on serial correlation.</li>
+<li>Wooldridge, J. M. <em>Introductory Econometrics: A Modern Approach</em>. Cengage. The chapters on heteroskedasticity and on serial correlation in time series regressions.</li>
+<li>Stock, J. H., &amp; Watson, M. W. <em>Introduction to Econometrics</em>. Pearson. The sections on heteroskedasticity-robust and HAC standard errors.</li>
+<li>White, H. (1980). A Heteroskedasticity-Consistent Covariance Matrix Estimator and a Direct Test for Heteroskedasticity. <em>Econometrica</em>, 48(4), 817–838.</li>
+<li>Newey, W. K., &amp; West, K. D. (1987). A Simple, Positive Semi-Definite, Heteroskedasticity and Autocorrelation Consistent Covariance Matrix. <em>Econometrica</em>, 55(3), 703–708.</li>
+<li>Solon, G., Haider, S. J., &amp; Wooldridge, J. M. (2015). What Are We Weighting For? <em>Journal of Human Resources</em>, 50(2), 301–316.</li>
+<li>Angrist, J. D., &amp; Pischke, J.-S. (2009). <em>Mostly Harmless Econometrics</em>. Princeton University Press. Chapter 8.</li>
+</ul>
+<hr>
+<p><strong>End of Notebook</strong></p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
